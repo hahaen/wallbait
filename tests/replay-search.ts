@@ -5,8 +5,15 @@ import {
   step,
   targetFor,
 } from '../src/core/engine';
+import { tacticComplete, magnetMove, pulseTargets } from '../src/core/engine';
 import { DIRECTIONS } from '../src/core/config';
-import type { Command, GameState, Level, Point } from '../src/core/types';
+import type {
+  Command,
+  GameState,
+  Level,
+  Point,
+  UtilitySkill,
+} from '../src/core/types';
 
 export interface Replay {
   level: number;
@@ -14,6 +21,7 @@ export interface Replay {
   dodges: number;
   beacons: number;
   commands: Command[];
+  utility?: UtilitySkill;
 }
 interface Node {
   state: GameState;
@@ -26,12 +34,18 @@ function clone(s: GameState): GameState {
     ...s,
     apple: { ...s.apple },
     events: [],
+    eliminations: s.eliminations.map((p) => ({ ...p })),
+    interference: s.interference.map((f) => ({ ...f })),
     highlights: s.highlights.map((h) => ({ ...h })),
     lureKills: s.lureKills.map((k) => ({ ...k })),
     beacon: s.beacon ? { ...s.beacon } : null,
     gates: s.gates.map((g) => ({ ...g })),
     wrecks: s.wrecks.map((w) => ({ ...w })),
-    snakes: s.snakes.map((v) => ({ ...v, body: [...v.body] })),
+    snakes: s.snakes.map((v) => ({
+      ...v,
+      body: [...v.body],
+      abilityTarget: v.abilityTarget ? { ...v.abilityTarget } : null,
+    })),
   };
 }
 const key = (p: Point): string => `${p.x},${p.y}`;
@@ -146,15 +160,24 @@ function score(s: GameState, seekWreck = false, wreckAt?: Point): number {
   return value;
 }
 function fingerprint(s: GameState): string {
-  return `${s.chipCollected};${s.highlights.map((h) => h.id).join(',')};${s.apple.x},${s.apple.y},${s.facing},${s.energy},${Math.ceil(s.rechargeMs / 240)},${s.cooldownMs},${s.moveTimer};${s.beacon ? `${s.beacon.x},${s.beacon.y},${Math.ceil(s.beacon.remainingMs / 120)}` : '-'};${s.gates.map((g) => `${g.closed},${g.pending}`).join(';')};${s.wrecks.map((w) => `${w.x},${w.y},${w.active}`).join(';')};${s.snakes.map((v) => (v.alive ? `${v.x},${v.y},${v.phase},${v.locked},${Math.ceil(v.timer / 120)},${v.aimDirection},${v.aim},${v.remaining}` : 'x')).join(';')}`;
+  return `${s.utility},${s.pulses},${s.pushes},${s.charges},${s.gateChanges};${s.eliminations.map(key).join(';')};${s.interference.map((f) => `${key(f)},${f.snake},${Math.ceil(f.remainingMs / 120)}`).join(';')};${s.chipCollected};${s.highlights.map((h) => h.id).join(',')};${s.apple.x},${s.apple.y},${s.facing},${s.energy},${Math.ceil(s.rechargeMs / 240)},${s.cooldownMs},${s.moveTimer};${s.beacon ? `${s.beacon.x},${s.beacon.y},${Math.ceil(s.beacon.remainingMs / 120)}` : '-'};${s.gates.map((g) => `${g.closed},${g.pending}`).join(';')};${s.wrecks.map((w) => `${w.x},${w.y},${w.active}`).join(';')};${s.snakes.map((v) => (v.alive ? `${v.x},${v.y},${v.phase},${v.locked},${Math.ceil(v.timer / 120)},${v.aimDirection},${v.aim},${v.remaining},${v.stunMs},${Math.ceil(v.abilityCooldownMs / 120)},${v.followup},${v.abilityTarget ? key(v.abilityTarget) : '-'}` : 'x')).join(';')}`;
 }
 /** 测试工具：120ms决策，只通过正常命令推进，生成文件不赋值游戏坐标/状态。 */
 export function findReplay(
   level: Level,
-  goal: { chip?: boolean; wreck?: boolean; wreckAt?: Point } = {},
+  goal: {
+    chip?: boolean;
+    wreck?: boolean;
+    wreckAt?: Point;
+    utility?: UtilitySkill;
+    useUtility?: boolean;
+    tactic?: boolean;
+  } = {},
   prefix: Command[] = [],
 ): Replay {
-  const initial = createState(level);
+  if (goal.tactic && level.tactic === 'chip') goal = { ...goal, chip: true };
+  if (goal.tactic && level.tactic === 'wreck') goal = { ...goal, wreck: true };
+  const initial = createState(level, goal.utility);
   for (const c of prefix)
     for (let i = 0; i < 6; i++)
       step(initial, {
@@ -186,6 +209,21 @@ export function findReplay(
         )
           continue;
         if (command.beacon && (node.state.beacon || node.state.energy === 0))
+          continue;
+        if (
+          command.dodge &&
+          node.state.utility === 'pulse' &&
+          !pulseTargets(node.state).length
+        )
+          continue;
+        if (
+          command.dodge &&
+          node.state.utility === 'magnet' &&
+          !magnetMove({
+            ...node.state,
+            facing: command.direction ?? node.state.facing,
+          })
+        )
           continue;
         const state = clone(node.state);
         let wreckHit = node.wreckHit;
@@ -237,14 +275,23 @@ export function findReplay(
           }
         }
         if (state.status === 'lost') continue;
+        if (
+          goal.tactic &&
+          level.tactic === 'first-lure' &&
+          state.charges > level.snakes.length
+        )
+          continue;
         const commands = [...node.commands, command];
         if (
           state.status === 'won' &&
           (!goal.chip || state.chipCollected) &&
-          (!goal.wreck || wreckHit)
+          (!goal.wreck || wreckHit) &&
+          (!goal.useUtility || state.pulses + state.pushes > 0) &&
+          (!goal.tactic || tacticComplete(state))
         )
           return {
             level: level.id,
+            ...(goal.utility ? { utility: goal.utility } : {}),
             elapsedMs: state.elapsedMs,
             dodges: state.dodges,
             beacons: state.beacons,
@@ -255,9 +302,29 @@ export function findReplay(
           goal.chip && level.chip && !state.chipCollected
             ? (distances(state).get(key(level.chip)) ?? 50)
             : 0;
+        let utilityScore = 0;
+        if (goal.useUtility) {
+          if (state.pulses + state.pushes > 0) utilityScore = 1600;
+          else if (state.utility === 'magnet') {
+            const path = distances(state);
+            let nearest = 50;
+            for (const wreck of state.wrecks.filter((w) => w.active))
+              for (const d of DIRECTIONS)
+                nearest = Math.min(
+                  nearest,
+                  path.get(key(ahead(wreck, d))) ?? 50,
+                );
+            if (state.wrecks.length)
+              utilityScore = 500 - nearest * 30 + (magnetMove(state) ? 100 : 0);
+          }
+        }
         const k = `${wreckHit}:${fingerprint(state)}`,
           value =
             score(state, goal.wreck, goal.wreckAt) +
+            utilityScore +
+            (goal.tactic && level.tactic === 'split'
+              ? new Set(state.eliminations.map(key)).size * 300
+              : 0) +
             (goal.chip && state.chipCollected ? 1000 : -chipDistance * 20) +
             (goal.wreck && wreckHit ? 1000 : 0) -
             (goal.wreckAt && !state.wrecks.length

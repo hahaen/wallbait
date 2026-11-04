@@ -47,7 +47,7 @@ for (const id of [7, 11, 18]) {
       .getByRole('button', { name: `继续挑战 · 第 ${id} 关` })
       .click({ force: true });
     await expect(page.locator('canvas')).toBeVisible();
-    await expect(page.locator('dialog')).toContainText('不影响星级');
+    await expect(page.locator('dialog')).toContainText('通关后保存');
     await page.getByRole('button', { name: '进入试验' }).click({ force: true });
     await page.clock.runFor(16);
     await expect(page.locator('.skills button')).toHaveCount(2);

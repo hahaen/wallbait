@@ -278,7 +278,7 @@ describe('生命周期与关卡', () => {
     expect(fresh.apple).toEqual(s.level.apple);
     expect(fresh.snakes[0]).not.toBe(s.snakes[0]);
   });
-  it('星级：通关一星，达标时间和闪避次数各加一星', () => {
+  it('星级：通关一星，达标时间和战术目标各加一星', () => {
     const s = make();
     expect(stars(s)).toBe(0);
     s.status = 'won';
@@ -286,6 +286,8 @@ describe('生命周期与关卡', () => {
     s.elapsedMs = s.level.parMs + 1;
     expect(stars(s)).toBe(2);
     s.dodges = 99;
+    expect(stars(s)).toBe(2);
+    s.charges = 2;
     expect(stars(s)).toBe(1);
   });
   it('20 关编号连续、地图合法、布局及组合有差异', () => {

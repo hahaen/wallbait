@@ -1,4 +1,5 @@
 import { awardHighlight } from './highlights';
+import { availableSkills } from './loadout';
 import {
   BEACON_MS,
   BEACON_CELLS,
@@ -20,6 +21,7 @@ import type {
   LossDetails,
   Point,
   Snake,
+  UtilitySkill,
 } from './types';
 
 export const same = (a: Point, b: Point): boolean => a.x === b.x && a.y === b.y;
@@ -58,7 +60,10 @@ export function beaconLanding(state: GameState): Point {
   }
   return point;
 }
-export function createState(level: Level): GameState {
+export function createState(
+  level: Level,
+  utility: UtilitySkill = 'dodge',
+): GameState {
   return {
     level,
     status: 'playing',
@@ -84,6 +89,15 @@ export function createState(level: Level): GameState {
     lossReason: null,
     loss: null,
     dodges: 0,
+    utility: availableSkills(level).includes(utility) ? utility : 'dodge',
+    pulses: 0,
+    pushes: 0,
+    pulseMs: 0,
+    pulseOrigin: null,
+    charges: 0,
+    gateChanges: 0,
+    eliminations: [],
+    interference: [],
     events: [],
     snakes: level.snakes.map((spawn, id) => ({
       x: spawn.x,
@@ -103,6 +117,11 @@ export function createState(level: Level): GameState {
       attackPath: [],
       attackBeacon: null,
       closeEscape: false,
+      elite: spawn.elite === true,
+      stunMs: 0,
+      abilityCooldownMs: spawn.kind === 'cautious' ? 1600 : 0,
+      followup: false,
+      abilityTarget: null,
     })),
   };
 }
@@ -166,6 +185,7 @@ function applyPendingTerrain(state: GameState): void {
       continue;
     current.closed = current.pending;
     current.pending = null;
+    state.gateChanges++;
   }
 }
 function enterSwitches(state: GameState, previous: Point, next: Point): void {
@@ -192,7 +212,7 @@ function moveApple(state: GameState, direction: Direction): boolean {
   if (head)
     hitPlayer(
       state,
-      '撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。',
+      '撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。',
       head,
       'contact',
     );
@@ -293,6 +313,97 @@ function moveSnake(snake: Snake, next: Point): void {
   snake.y = next.y;
 }
 
+/** 曼哈顿两格、直角路径至少一条无遮挡；隔墙不能释放脉冲。 */
+export function pulseTargets(state: GameState): Snake[] {
+  return state.snakes.filter((snake) => {
+    const dx = snake.x - state.apple.x,
+      dy = snake.y - state.apple.y;
+    if (!snake.alive || Math.abs(dx) + Math.abs(dy) > 2) return false;
+    if (dx && dy)
+      return (
+        !blocked(state, { x: snake.x, y: state.apple.y }) ||
+        !blocked(state, { x: state.apple.x, y: snake.y })
+      );
+    const direction =
+      dx > 0 ? 'right' : dx < 0 ? 'left' : dy > 0 ? 'down' : 'up';
+    return !blocked(state, ahead(state.apple, direction));
+  });
+}
+/** 攻击期间地形冻结；预览和执行共用校验，不移动机关/收藏上的残骸。 */
+export function magnetMove(
+  state: GameState,
+): { from: Point; to: Point } | null {
+  if (
+    state.snakes.some(
+      (s) => s.alive && (s.phase === 'charging' || s.phase === 'dashing'),
+    )
+  )
+    return null;
+  const from = ahead(state.apple, state.facing),
+    to = ahead(from, state.facing);
+  if (
+    !state.wrecks.some((w) => w.active && same(w, from)) ||
+    blocked(state, to) ||
+    headAt(state, to) ||
+    state.wrecks.some((w) => same(w, to))
+  )
+    return null;
+  const reserved = (state.level.gates ?? []).flatMap((g) => [
+    ...g.cells,
+    ...g.switches,
+  ]);
+  if (
+    reserved.some((p) => same(p, to)) ||
+    (state.level.chip && !state.chipCollected && same(state.level.chip, to)) ||
+    (state.beacon && same(state.beacon, to))
+  )
+    return null;
+  return { from, to };
+}
+export const inInterference = (state: GameState): boolean =>
+  state.interference.some(
+    (f) => Math.abs(f.x - state.apple.x) + Math.abs(f.y - state.apple.y) <= 1,
+  );
+
+function beginCharge(
+  state: GameState,
+  snake: Snake,
+  direction: Direction,
+): void {
+  snake.phase = 'charging';
+  snake.attackBeacon = state.beacon ? state.beacons : null;
+  snake.closeEscape = false;
+  snake.locked = direction;
+  snake.facing = direction;
+  snake.timer = snake.rules.chargeMs;
+  snake.attackPath = [{ x: snake.x, y: snake.y }, ...warningPath(state, snake)];
+  snake.aim = 0;
+  state.charges++;
+  state.events.push({
+    type: 'charge',
+    snake: snake.id,
+    x: snake.x,
+    y: snake.y,
+  });
+}
+/** 侧切只在正式锁向前选择，落点先预告，执行时重新检查阻挡与占格。 */
+function sidestepTarget(state: GameState, snake: Snake): Point | null {
+  const target = targetFor(state, snake);
+  for (const direction of DIRECTIONS) {
+    const next = ahead(snake, direction);
+    if (blocked(state, next) || headAt(state, next) || same(state.apple, next))
+      continue;
+    const candidate = { ...snake, ...next };
+    if (
+      aimDirection(state, candidate) &&
+      Math.abs(target.x - snake.x) > 0 &&
+      Math.abs(target.y - snake.y) > 0
+    )
+      return next;
+  }
+  return null;
+}
+
 /** 只推进一个固定步。渲染、回放均使用这一入口；不接收墙上时间。 */
 export function step(state: GameState, command: Command): void {
   state.events = [];
@@ -300,7 +411,14 @@ export function step(state: GameState, command: Command): void {
   state.elapsedMs += TICK_MS;
   state.moveTimer = Math.max(0, state.moveTimer - TICK_MS);
   state.cooldownMs = Math.max(0, state.cooldownMs - TICK_MS);
-  if (state.energy < MAX_ENERGY) {
+  state.pulseMs = Math.max(0, state.pulseMs - TICK_MS);
+  state.interference = state.interference.filter((f) => {
+    f.remainingMs -= TICK_MS;
+    return (
+      f.remainingMs > 0 && state.snakes.some((s) => s.id === f.snake && s.alive)
+    );
+  });
+  if (state.energy < MAX_ENERGY && !inInterference(state)) {
     state.rechargeMs += TICK_MS;
     if (state.rechargeMs >= RECHARGE_MS) {
       state.energy++;
@@ -326,7 +444,8 @@ export function step(state: GameState, command: Command): void {
   }
   let dodged = false;
   if (
-    command.dodge &&
+    (command.dodge || command.utility) &&
+    state.utility === 'dodge' &&
     state.energy > 0 &&
     state.cooldownMs === 0 &&
     !blocked(state, ahead(state.apple, state.facing))
@@ -342,6 +461,37 @@ export function step(state: GameState, command: Command): void {
     state.moveTimer = MOVE_MS;
   }
   if (state.status !== 'playing') return;
+  if (
+    (command.dodge || command.utility) &&
+    state.utility !== 'dodge' &&
+    state.energy > 0 &&
+    state.cooldownMs === 0
+  ) {
+    if (state.utility === 'pulse') {
+      const targets = pulseTargets(state);
+      if (targets.length) {
+        for (const snake of targets) snake.stunMs = 600;
+        state.energy--;
+        state.cooldownMs = COOLDOWN_MS;
+        state.pulses++;
+        state.pulseMs = 600;
+        state.pulseOrigin = { ...state.apple };
+        state.events.push({ type: 'pulse', ...state.apple });
+      }
+    } else {
+      const move = magnetMove(state);
+      if (move) {
+        Object.assign(
+          state.wrecks.find((w) => w.active && same(w, move.from))!,
+          move.to,
+        );
+        state.energy--;
+        state.cooldownMs = COOLDOWN_MS;
+        state.pushes++;
+        state.events.push({ type: 'magnet', ...move.to });
+      }
+    }
+  }
   if (
     command.beacon &&
     state.level.beaconEnabled &&
@@ -363,7 +513,41 @@ export function step(state: GameState, command: Command): void {
     { snake: Snake; kind: 'tracking' | 'dash'; path: Point[] } | undefined;
   for (const snake of state.snakes) {
     if (!snake.alive) continue;
+    snake.abilityCooldownMs = Math.max(0, snake.abilityCooldownMs - TICK_MS);
+    if (snake.stunMs > 0) {
+      snake.stunMs = Math.max(0, snake.stunMs - TICK_MS);
+      continue;
+    }
     const origin = { x: snake.x, y: snake.y };
+    if (snake.phase === 'sidestepping' || snake.phase === 'interfering') {
+      snake.timer -= TICK_MS;
+      if (snake.timer > 0) continue;
+      const target = snake.abilityTarget;
+      if (
+        target &&
+        snake.phase === 'sidestepping' &&
+        !blocked(state, target) &&
+        !headAt(state, target) &&
+        !same(state.apple, target)
+      )
+        moveSnake(snake, target);
+      if (target && snake.phase === 'interfering') {
+        state.interference = state.interference.filter(
+          (f) => f.snake !== snake.id,
+        );
+        state.interference.push({
+          ...target,
+          snake: snake.id,
+          remainingMs: 2400,
+        });
+      }
+      snake.phase = 'tracking';
+      snake.abilityTarget = null;
+      snake.aim = 0;
+      snake.aimDirection = null;
+      snake.timer = snake.rules.trackMs;
+      continue;
+    }
     if (snake.phase === 'charging' || snake.phase === 'recovering') {
       snake.timer -= TICK_MS;
       if (snake.timer > 0) continue;
@@ -380,31 +564,39 @@ export function step(state: GameState, command: Command): void {
       } else {
         snake.phase = 'tracking';
         snake.timer = snake.rules.trackMs;
+        if (snake.followup) {
+          const aim = aimDirection(state, snake);
+          if (aim) beginCharge(state, snake, aim);
+          else snake.followup = false;
+        }
       }
       continue;
     }
     if (snake.phase === 'tracking') {
+      if (
+        snake.elite &&
+        snake.abilityCooldownMs === 0 &&
+        (snake.kind === 'swift' || snake.kind === 'cautious')
+      ) {
+        const target =
+          snake.kind === 'swift'
+            ? sidestepTarget(state, snake)
+            : { ...state.apple };
+        if (target) {
+          snake.phase = snake.kind === 'swift' ? 'sidestepping' : 'interfering';
+          snake.abilityTarget = target;
+          snake.timer = snake.kind === 'swift' ? 400 : 600;
+          snake.abilityCooldownMs = snake.kind === 'swift' ? 4000 : 5000;
+          snake.aim = 0;
+          state.events.push({ type: 'ability', x: snake.x, y: snake.y });
+          continue;
+        }
+      }
       const aim = aimDirection(state, snake);
       snake.aim = aim && aim === snake.aimDirection ? snake.aim + TICK_MS : 0;
       snake.aimDirection = aim;
       if (aim && snake.aim >= snake.rules.aimMs) {
-        snake.phase = 'charging';
-        snake.attackBeacon = state.beacon ? state.beacons : null;
-        snake.closeEscape = false;
-        snake.locked = aim;
-        snake.facing = aim;
-        snake.timer = snake.rules.chargeMs;
-        snake.attackPath = [
-          { x: snake.x, y: snake.y },
-          ...warningPath(state, snake),
-        ];
-        snake.aim = 0;
-        state.events.push({
-          type: 'charge',
-          snake: snake.id,
-          x: snake.x,
-          y: snake.y,
-        });
+        beginCharge(state, snake, aim);
         continue;
       }
       snake.timer -= TICK_MS;
@@ -447,6 +639,10 @@ export function step(state: GameState, command: Command): void {
         const next = ahead(snake, snake.locked);
         if (blocked(state, next)) {
           snake.alive = false;
+          state.eliminations.push({ ...next });
+          state.interference = state.interference.filter(
+            (f) => f.snake !== snake.id,
+          );
           if (state.wrecks.some((w) => w.active && same(w, next)))
             awardHighlight(state, 'wreck-chain');
           if (snake.attackBeacon !== null) {
@@ -484,7 +680,10 @@ export function step(state: GameState, command: Command): void {
           if (snake.closeEscape) awardHighlight(state, 'close-call');
           snake.closeEscape = false;
           snake.phase = 'recovering';
-          snake.timer = snake.rules.recoverMs;
+          const followup =
+            snake.elite && snake.kind === 'normal' && !snake.followup;
+          snake.followup = followup;
+          snake.timer = followup ? 300 : snake.rules.recoverMs;
         }
       }
     }
@@ -512,13 +711,42 @@ export function step(state: GameState, command: Command): void {
   }
 }
 
+export function tacticComplete(
+  state: Pick<
+    GameState,
+    | 'status'
+    | 'level'
+    | 'charges'
+    | 'lureKills'
+    | 'highlights'
+    | 'chipCollected'
+    | 'eliminations'
+    | 'gateChanges'
+  >,
+): boolean {
+  if (state.status !== 'won') return false;
+  switch (state.level.tactic ?? 'first-lure') {
+    case 'first-lure':
+      return state.charges <= state.level.snakes.length;
+    case 'beacon':
+      return state.lureKills.length > 0;
+    case 'wreck':
+      return state.highlights.some((h) => h.id === 'wreck-chain');
+    case 'chip':
+      return state.chipCollected;
+    case 'split':
+      return new Set(state.eliminations.map((p) => `${p.x},${p.y}`)).size >= 2;
+    case 'gate':
+      return state.gateChanges > 0;
+  }
+}
 export function stars(
-  state: Pick<GameState, 'status' | 'elapsedMs' | 'dodges' | 'level'>,
+  state: Parameters<typeof tacticComplete>[0] & Pick<GameState, 'elapsedMs'>,
 ): number {
   if (state.status !== 'won') return 0;
   return (
     1 +
     Number(state.elapsedMs <= state.level.parMs) +
-    Number(state.dodges <= state.level.parDodges)
+    Number(tacticComplete(state))
   );
 }

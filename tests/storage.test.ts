@@ -70,6 +70,7 @@ it('新版恢复进度与设置，重玩独立提升用时、两类技能次数�
     dodges: 1,
     beacons: 1,
     stars: Math.max(firstStars, secondStars),
+    scoring: 'tactics-v1',
   });
   state.status = 'lost';
   recordWin(save, state);
@@ -155,4 +156,31 @@ it('存档明确绑定新版关卡集且写入只使用新版键', () => {
   expect(defaults().campaign).toBe(CAMPAIGN);
   expect(writeSave(storage, defaults())).toBe(true);
   expect(writes).toEqual([SAVE_KEY]);
+});
+
+it('技能偏好校验、历史星级封存与新战术计分独立保存', () => {
+  const old = {
+    ...defaults(),
+    utility: 'unknown',
+    best: { 1: { timeMs: 1000, dodges: 0, beacons: 0, stars: 3 } },
+  };
+  const storage = memory({ [SAVE_KEY]: JSON.stringify(old) });
+  const save = readSave(storage);
+  expect(save.utility).toBe('dodge');
+  expect(save.unlocked).toBe(2);
+  expect(save.best['1']!.stars).toBe(3);
+  const s = createState(LEVELS[0]!);
+  s.status = 'won';
+  s.elapsedMs = 20000;
+  s.charges = 2;
+  recordWin(save, s);
+  expect(save.best['1']).toMatchObject({
+    timeMs: 20000,
+    stars: 1,
+    legacyStars: 3,
+    scoring: 'tactics-v1',
+  });
+  save.utility = 'magnet';
+  writeSave(storage, save);
+  expect(readSave(storage)).toEqual(save);
 });

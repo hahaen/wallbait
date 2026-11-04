@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { expect, it } from 'vitest';
 import { createState, step } from '../src/core/engine';
+import { availableSkills, SKILLS, TACTICS } from '../src/core/loadout';
 import { LEVELS } from '../src/core/levels';
 import type { Command, Direction, Point } from '../src/core/types';
 import type { Replay } from './replay-search';
@@ -33,6 +34,7 @@ interface Metrics {
   movedCells: number;
   inputTurns: number;
   overlapMs: number;
+  abilities: { atMs: number; enemy: number; kind: string }[];
   charges: { atMs: number; enemy: number; direction: Direction }[];
   eliminations: {
     atMs: number;
@@ -60,6 +62,7 @@ function measure(replay: Replay): Metrics {
     movedCells: 0,
     inputTurns: 0,
     overlapMs: 0,
+    abilities: [],
     charges: [],
     eliminations: [],
     wreckActivations: [],
@@ -78,6 +81,7 @@ function measure(replay: Replay): Metrics {
       const before = {
         apple: { ...state.apple },
         beacons: state.beacons,
+        phases: state.snakes.map((s) => s.phase),
         wrecks: state.wrecks
           .filter((w) => w.active)
           .map((w) => `${w.x},${w.y}`),
@@ -106,7 +110,27 @@ function measure(replay: Replay): Metrics {
             atMs: state.elapsedMs,
             position: { x: wreck.x, y: wreck.y },
           });
+      for (const snake of state.snakes)
+        if (
+          (snake.phase === 'sidestepping' || snake.phase === 'interfering') &&
+          before.phases[snake.id] !== snake.phase
+        )
+          result.abilities.push({
+            atMs: state.elapsedMs,
+            enemy: snake.id + 1,
+            kind: snake.phase === 'sidestepping' ? '侧切预告' : '干扰预告',
+          });
       for (const event of state.events) {
+        if (
+          event.type === 'charge' &&
+          state.snakes[event.snake]!.kind === 'normal' &&
+          state.snakes[event.snake]!.followup
+        )
+          result.abilities.push({
+            atMs: state.elapsedMs,
+            enemy: event.snake + 1,
+            kind: '二段预警',
+          });
         if (event.type === 'charge')
           result.charges.push({
             atMs: state.elapsedMs,
@@ -193,7 +217,13 @@ function document(metrics: Metrics[]): string {
         '',
         `### ${String(level.id).padStart(2, '0')} · ${level.name}`,
         '',
-        `敌人：${level.snakes.map((s, i) => `${i + 1}号${kindText[s.kind]}`).join('、')}。机关：${level.gates?.length ? level.gates.map((g) => `${g.id}门（初始${g.initialClosed ? '关闭' : '打开'}）`).join('、') : '无闸门'}。${level.beaconEnabled ? '信标已启用。' : '信标未启用。'}`,
+        `敌人：${level.snakes.map((s, i) => `${i + 1}号${s.elite ? '强化' : ''}${kindText[s.kind]}`).join('、')}。机关：${level.gates?.length ? level.gates.map((g) => `${g.id}门（初始${g.initialClosed ? '关闭' : '打开'}）`).join('、') : '无闸门'}。${level.beaconEnabled ? '信标已启用。' : '信标未启用。'}`,
+        '',
+        `**装备与战术：** 工具可选${availableSkills(level)
+          .map((id) => SKILLS[id].name)
+          .join(
+            '、',
+          )}，信标${level.beaconEnabled ? '启用' : '未启用'}；战术星：${TACTICS[level.tactic ?? 'first-lure']}。`,
         '',
         `**设计意图：** ${level.intent}`,
         ...(level.chip
@@ -208,6 +238,8 @@ function document(metrics: Metrics[]): string {
         `**失败原因：** ${level.failure}`,
         '',
         `**可复现获胜方案：** ${commandPlan(replay.commands)}`,
+        '',
+        `**强化能力：** ${m.abilities.length ? m.abilities.map((a) => `${seconds(a.atMs)}s ${a.enemy}号${a.kind}`).join('、') : '该条回放未触发；不代表关卡没有强化能力'}。`,
         '',
         `**事件证据：** ${m.eliminations.map((e) => `${e.enemy}号在 ${seconds(e.atMs)}s 撞上${e.obstacle === 'wreck' ? '残骸' : '墙/门'} (${e.wall.x},${e.wall.y})`).join('；')}。${m.gateChanges.length ? `实际切门：${m.gateChanges.map((g) => `${seconds(g.atMs)}s ${g.gate}${g.closed ? '关' : '开'}`).join('、')}。` : ''}${m.beaconPlacements.length ? `信标：${m.beaconPlacements.map((b) => `${seconds(b.atMs)}s 投于 (${b.position.x},${b.position.y})`).join('、')}。` : ''}`,
       );

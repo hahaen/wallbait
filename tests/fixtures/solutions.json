@@ -938,42 +938,48 @@
   {
     "level": 12,
     "elapsedMs": 4440,
-    "dodges": 2,
-    "beacons": 1,
+    "dodges": 1,
+    "beacons": 2,
     "commands": [
-      {
-        "direction": "right",
-        "dodge": true
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "right"
-      },
       {
         "direction": "up",
         "dodge": true
       },
       {
-        "direction": "up"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "left"
+        "direction": "right"
       },
       {
         "direction": "right"
       },
       {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
         "direction": "left"
       },
       {
@@ -990,15 +996,9 @@
       },
       {
         "direction": "left"
-      },
-      {
-        "direction": "up"
       },
       {
         "direction": null
-      },
-      {
-        "direction": "left"
       },
       {
         "direction": null
@@ -1192,7 +1192,7 @@
   },
   {
     "level": 14,
-    "elapsedMs": 4440,
+    "elapsedMs": 4400,
     "dodges": 2,
     "beacons": 1,
     "commands": [
@@ -1235,22 +1235,13 @@
         "direction": "right"
       },
       {
-        "direction": "right"
-      },
-      {
         "direction": null
       },
       {
-        "direction": "left"
+        "direction": "up"
       },
       {
-        "direction": "right"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "left"
+        "direction": "down"
       },
       {
         "direction": "right"
@@ -1259,10 +1250,22 @@
         "direction": null
       },
       {
-        "direction": "left"
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
       },
       {
         "direction": "right"
+      },
+      {
+        "direction": null
       },
       {
         "direction": null
@@ -1271,13 +1274,10 @@
         "direction": "up"
       },
       {
-        "direction": null
+        "direction": "left"
       },
       {
-        "direction": "right"
-      },
-      {
-        "direction": "left",
+        "direction": "up",
         "beacon": true
       },
       {
@@ -1314,7 +1314,7 @@
   },
   {
     "level": 15,
-    "elapsedMs": 7560,
+    "elapsedMs": 8840,
     "dodges": 1,
     "beacons": 3,
     "commands": [
@@ -1454,10 +1454,19 @@
         "direction": "up"
       },
       {
+        "direction": "left"
+      },
+      {
         "direction": "up"
       },
       {
+        "direction": "right"
+      },
+      {
         "direction": "left"
+      },
+      {
+        "direction": null
       },
       {
         "direction": null
@@ -1469,23 +1478,47 @@
         "direction": null
       },
       {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
         "direction": "left"
       },
       {
-        "direction": "right"
-      },
-      {
-        "direction": "up"
+        "direction": "left"
       },
       {
         "direction": "down",
         "beacon": true
       },
       {
-        "direction": "down"
+        "direction": null
       },
       {
-        "direction": "right"
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
       },
       {
         "direction": null
@@ -1692,6 +1725,15 @@
         "direction": "up"
       },
       {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
         "direction": null
       },
       {
@@ -1699,30 +1741,12 @@
       },
       {
         "direction": "right"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": null
       },
       {
         "direction": "left"
       },
       {
-        "direction": "right"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "left"
+        "direction": "down"
       },
       {
         "direction": "right"
@@ -1731,7 +1755,16 @@
         "direction": null
       },
       {
-        "direction": null,
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right",
         "beacon": true
       },
       {
@@ -1841,10 +1874,10 @@
         "direction": "right"
       },
       {
-        "direction": "right"
+        "direction": "down"
       },
       {
-        "direction": "down"
+        "direction": "right"
       },
       {
         "direction": "right"
@@ -1917,9 +1950,9 @@
   },
   {
     "level": 19,
-    "elapsedMs": 5420,
+    "elapsedMs": 8560,
     "dodges": 0,
-    "beacons": 3,
+    "beacons": 4,
     "commands": [
       {
         "direction": "left"
@@ -1959,44 +1992,13 @@
         "direction": null
       },
       {
-        "direction": "down"
-      },
-      {
-        "direction": "down"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "left"
+        "direction": null
       },
       {
         "direction": null
       },
       {
-        "direction": "left"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "right",
-        "beacon": true
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "right"
+        "direction": "down"
       },
       {
         "direction": "down"
@@ -2008,22 +2010,16 @@
         "direction": null
       },
       {
-        "direction": "down"
-      },
-      {
-        "direction": "up"
+        "direction": null
       },
       {
         "direction": null
       },
       {
-        "direction": "up"
+        "direction": null
       },
       {
-        "direction": "right"
-      },
-      {
-        "direction": "right"
+        "direction": null
       },
       {
         "direction": "down",
@@ -2031,6 +2027,122 @@
       },
       {
         "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": null
       },
       {
         "direction": null
@@ -2066,16 +2178,10 @@
   },
   {
     "level": 20,
-    "elapsedMs": 5740,
+    "elapsedMs": 6920,
     "dodges": 1,
     "beacons": 2,
     "commands": [
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "up"
-      },
       {
         "direction": "down"
       },
@@ -2084,14 +2190,35 @@
         "dodge": true
       },
       {
-        "direction": "left"
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
       },
       {
         "direction": "up",
         "beacon": true
       },
       {
-        "direction": "up"
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
       },
       {
         "direction": "up"
@@ -2101,33 +2228,36 @@
       },
       {
         "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
       },
       {
         "direction": null
       },
       {
-        "direction": "left"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "up"
-      },
-      {
         "direction": "right"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "left"
       },
       {
         "direction": null
@@ -2136,53 +2266,59 @@
         "direction": "right"
       },
       {
-        "direction": "down"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "down"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null,
+        "direction": "left",
         "beacon": true
       },
       {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
         "direction": "left"
       },
       {
         "direction": "up"
       },
       {
-        "direction": "left"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "right"
+        "direction": "down"
       },
       {
         "direction": "down"
+      },
+      {
+        "direction": "right"
       },
       {
         "direction": "down"
@@ -2191,13 +2327,19 @@
         "direction": null
       },
       {
-        "direction": "down"
+        "direction": "left"
+      },
+      {
+        "direction": "left"
       },
       {
         "direction": null
       },
       {
-        "direction": "right"
+        "direction": "up"
+      },
+      {
+        "direction": null
       },
       {
         "direction": null

@@ -38,13 +38,27 @@ export function dangerText(state: GameState): string {
     .sort(
       (a, b) =>
         Number(b.phase === 'dashing') - Number(a.phase === 'dashing') ||
-        a.timer - b.timer ||
+        a.timer + a.stunMs - (b.timer + b.stunMs) ||
         a.id - b.id,
     );
   return threats
     .map(
       (s) =>
-        `${enemyName(s)}${s.phase === 'dashing' ? '冲刺' : '蓄力'}${arrows[s.locked]}`,
+        `${enemyName(s)}${s.stunMs ? '暂停·' : ''}${s.phase === 'dashing' ? '冲刺' : '蓄力'}${arrows[s.locked]}${s.elite && s.kind === 'normal' && s.followup ? '·第二段' : ''}`,
+    )
+    .concat(
+      state.snakes
+        .filter(
+          (s) =>
+            s.alive &&
+            (s.phase === 'sidestepping' ||
+              s.phase === 'interfering' ||
+              (s.kind === 'normal' && s.followup && s.phase === 'recovering')),
+        )
+        .map(
+          (s) =>
+            `${enemyName(s)}${s.phase === 'sidestepping' ? '预告侧切' : s.phase === 'interfering' ? '预告干扰' : '准备第二段'}`,
+        ),
     )
     .join(' · ');
 }
@@ -52,7 +66,7 @@ export function dangerText(state: GameState): string {
 export function lossAdvice(state: GameState): string {
   if (!state.loss) return state.level.focus;
   return {
-    contact: '闪避也不能穿过敌人头部；先确认相邻格和两格落点。',
+    contact: '任何工具都不能穿过敌人头部；先确认相邻格与工具作用范围。',
     tracking: '恢复结束后仍会追踪；绕墙拉开距离，别贴着敌头等待。',
     dash: '橙色箭头已经锁向；横向离开整条通道，不要沿箭头逃跑。',
   }[state.loss.kind];

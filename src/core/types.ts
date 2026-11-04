@@ -1,6 +1,15 @@
 export type Direction = 'up' | 'right' | 'down' | 'left';
 export type SnakeKind = 'normal' | 'swift' | 'cautious';
-export type Phase = 'tracking' | 'charging' | 'dashing' | 'recovering';
+export type UtilitySkill = 'dodge' | 'pulse' | 'magnet';
+export type Tactic =
+  'first-lure' | 'beacon' | 'wreck' | 'chip' | 'split' | 'gate';
+export type Phase =
+  | 'tracking'
+  | 'charging'
+  | 'dashing'
+  | 'recovering'
+  | 'sidestepping'
+  | 'interfering';
 export interface Point {
   x: number;
   y: number;
@@ -16,6 +25,7 @@ export interface SnakeRules {
 }
 export interface Spawn extends Point {
   kind: SnakeKind;
+  elite?: boolean;
   delayMs?: number;
   rules?: Partial<SnakeRules>;
 }
@@ -54,6 +64,8 @@ export interface Level {
   snakes: Spawn[];
   parMs: number;
   parDodges: number;
+  tactic?: Tactic;
+  utilitySkills?: UtilitySkill[];
 }
 export interface Snake extends Point {
   id: number;
@@ -71,6 +83,11 @@ export interface Snake extends Point {
   attackPath: Point[];
   attackBeacon: number | null;
   closeEscape: boolean;
+  elite: boolean;
+  stunMs: number;
+  abilityCooldownMs: number;
+  followup: boolean;
+  abilityTarget: Point | null;
 }
 export type GameEvent =
   | { type: 'charge' | 'dash'; snake: number; x: number; y: number }
@@ -81,7 +98,11 @@ export type GameEvent =
       y: number;
       obstacle: 'wall' | 'wreck';
     }
-  | { type: 'dodge' | 'chip' | 'won' | 'lost'; x: number; y: number }
+  | {
+      type: 'dodge' | 'pulse' | 'magnet' | 'ability' | 'chip' | 'won' | 'lost';
+      x: number;
+      y: number;
+    }
   | { type: 'highlight'; id: HighlightId; x: number; y: number };
 export interface LossDetails {
   enemy: number;
@@ -110,11 +131,21 @@ export interface GameState {
   lossReason: string | null;
   loss: LossDetails | null;
   dodges: number;
+  utility: UtilitySkill;
+  pulses: number;
+  pushes: number;
+  pulseMs: number;
+  pulseOrigin: Point | null;
+  charges: number;
+  gateChanges: number;
+  eliminations: Point[];
+  interference: (Point & { snake: number; remainingMs: number })[];
   snakes: Snake[];
   events: GameEvent[];
 }
 export interface Command {
   direction: Direction | null;
   dodge?: boolean;
+  utility?: boolean;
   beacon?: boolean;
 }

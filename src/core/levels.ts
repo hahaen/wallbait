@@ -1,6 +1,6 @@
 import { ahead, solid } from './engine';
 import { DIRECTIONS, SNAKE_RULES, TICK_MS } from './config';
-import type { Level, MemoryChip, Point, Spawn } from './types';
+import type { Level, MemoryChip, Point, Spawn, Tactic } from './types';
 
 const h = (x: number, y: number, n: number): Point[] =>
   Array.from({ length: n }, (_, i) => ({ x: x + i, y }));
@@ -55,6 +55,18 @@ function stage(
   parMs = 30000,
   parDodges = 4,
 ): Level {
+  const enhanced: Record<number, number[]> = {
+    11: [0],
+    12: [1],
+    14: [0],
+    15: [0],
+    16: [0],
+    17: [0, 2],
+    18: [2],
+    19: [0, 1],
+    20: [0, 1, 2],
+  };
+  for (const index of enhanced[id] ?? []) snakes[index]!.elite = true;
   return {
     id,
     name,
@@ -74,6 +86,36 @@ function stage(
     ...(chips[id] ? { chip: chips[id] } : {}),
     parMs,
     parDodges,
+    tactic: (
+      [
+        'first-lure',
+        'first-lure',
+        'first-lure',
+        'gate',
+        'beacon',
+        'split',
+        'chip',
+        'wreck',
+        'split',
+        'gate',
+        'chip',
+        'gate',
+        'split',
+        'beacon',
+        'wreck',
+        'gate',
+        'split',
+        'chip',
+        'wreck',
+        'split',
+      ] as Tactic[]
+    )[id - 1]!,
+    utilitySkills:
+      id >= 9
+        ? ['dodge', 'pulse', 'magnet']
+        : id >= 6
+          ? ['dodge', 'pulse']
+          : ['dodge'],
   };
 }
 export const LEVELS: Level[] = [
@@ -250,7 +292,7 @@ export const LEVELS: Level[] = [
   stage(
     11,
     '分头设局',
-    '中央口借墙后会被残骸堵住；先选撞毁位置，右侧还留着绕行口。',
+    '强化冲锋者冲空后会再次预警追击；中央残骸能造墙，也会封路。',
     'T形中央口与右侧绕道：残骸能提供诱撞点，也会封住中央出口。',
     '先取左侧芯片再封中央口，或先解决冲锋者，经右侧绕行回收；用残骸诱导侦察者。',
     '把中央残骸当成还能穿过的出口，或在没有侧撤空间时放信标。',
@@ -264,7 +306,7 @@ export const LEVELS: Level[] = [
   stage(
     12,
     '两边都有门',
-    'A、B 门分别受同字母踏板控制。先开一侧，再决定是否换路。',
+    '强化截击者会先预告侧切一步，再锁向；用A、B门控制它的入场路线。',
     '两条可选择的入侵通路，门的状态决定追逐汇合点。',
     '只打开合适的门分离敌人，用另一边作为后续退路。',
     '同时开门让两条攻击在中场合流。',
@@ -309,7 +351,7 @@ export const LEVELS: Level[] = [
   stage(
     14,
     '环岛不是答案',
-    '短墙打断环岛退路。先选绕墙出口，再朝岛的另一侧投信标。',
+    '强化侦察者会布下十字干扰场，站在其中暂停回充；换个位置投信标。',
     '错位短墙打断固定绕圈，用岛的不同侧面建立信标诱导线。',
     '选择停下放信标的窗口，离开环线制造对齐。',
     '只绕圈不改变目标，或在狭窄侧边闪避迎撞。',
@@ -329,7 +371,7 @@ export const LEVELS: Level[] = [
   stage(
     15,
     '十字交班',
-    '两截击者的蓄力时长不同。看编号和倒计时，躲第一条线时就选好下一格。',
+    '强化截击者会侧切，两者蓄力时长不同；看编号，躲第一条线时选好下一格。',
     '两截击者与一侦察者，要求持续检查朝向与安全出口。',
     '避免让两个预测点都落在同一路口，预留信标电量。',
     '在路口连续闪避，第三条敌人到来时失去应对资源。',
@@ -456,7 +498,7 @@ export const LEVELS: Level[] = [
   stage(
     20,
     '墙就在那儿',
-    '终局试验：开门、分流、借墙。三种追逐者，三次清楚的选择。',
+    '终局试验：连冲、侧切、干扰。用门分流，选好装备，逐室借墙收场。',
     '终局三室串联，逐步释放三种策略威胁；无需增血或强制等待。',
     '处理下室截击者，开A门安排冲锋者，再开B门诱骗侦察者。',
     '急开双门合流；最后没有信标电量或安全撤离格。',
@@ -488,6 +530,22 @@ export const LEVELS: Level[] = [
 
 export function validateLevel(l: Level): string[] {
   const errors: string[] = [];
+  if (
+    l.tactic &&
+    !['first-lure', 'beacon', 'wreck', 'chip', 'split', 'gate'].includes(
+      l.tactic,
+    )
+  )
+    errors.push('战术目标无效');
+  if (l.tactic === 'chip' && !l.chip) errors.push('芯片目标缺少芯片');
+  if (l.tactic === 'gate' && !l.gates?.length) errors.push('机关目标缺少闸门');
+  if (
+    l.utilitySkills &&
+    (!l.utilitySkills.includes('dodge') ||
+      new Set(l.utilitySkills).size !== l.utilitySkills.length ||
+      l.utilitySkills.some((s) => !['dodge', 'pulse', 'magnet'].includes(s)))
+  )
+    errors.push('装备配置无效');
   const integer = (n: number): boolean => Number.isInteger(n);
   if (
     !integer(l.id) ||

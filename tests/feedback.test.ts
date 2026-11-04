@@ -97,3 +97,11 @@ describe('多敌预警与失败归因', () => {
     expect(createState(s.level).loss).toBeNull();
   });
 });
+
+it('蓄力排序计入脉冲暂停时间，优先提示实际先发动者', () => {
+  const s = createState(LEVELS[12]!);
+  Object.assign(s.snakes[0]!, { phase: 'charging', timer: 100, stunMs: 600 });
+  Object.assign(s.snakes[1]!, { phase: 'charging', timer: 200, stunMs: 0 });
+  const text = dangerText(s);
+  expect(text.indexOf('2号')).toBeLessThan(text.indexOf('1号'));
+});

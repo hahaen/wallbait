@@ -156,7 +156,7 @@
         {
           "level": 14,
           "status": "lost",
-          "elapsedMs": 4600,
+          "elapsedMs": 5360,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
@@ -189,7 +189,7 @@
         {
           "level": 17,
           "status": "lost",
-          "elapsedMs": 3880,
+          "elapsedMs": 3720,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
@@ -248,7 +248,7 @@
           "remaining": 1,
           "movedCells": 121,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 2,
@@ -270,7 +270,7 @@
           "remaining": 1,
           "movedCells": 118,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 4,
@@ -292,7 +292,7 @@
           "remaining": 1,
           "movedCells": 161,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 6,
@@ -314,7 +314,7 @@
           "remaining": 1,
           "movedCells": 39,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 8,
@@ -325,7 +325,7 @@
           "remaining": 2,
           "movedCells": 110,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 9,
@@ -336,7 +336,7 @@
           "remaining": 2,
           "movedCells": 70,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 10,
@@ -358,7 +358,7 @@
           "remaining": 2,
           "movedCells": 17,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 12,
@@ -380,7 +380,7 @@
           "remaining": 3,
           "movedCells": 24,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 14,
@@ -391,18 +391,18 @@
           "remaining": 2,
           "movedCells": 25,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 15,
           "status": "lost",
-          "elapsedMs": 2780,
+          "elapsedMs": 1340,
           "dodges": 0,
           "beacons": 0,
-          "remaining": 2,
-          "movedCells": 24,
+          "remaining": 3,
+          "movedCells": 12,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 16,
@@ -413,7 +413,7 @@
           "remaining": 3,
           "movedCells": 14,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 17,
@@ -424,7 +424,7 @@
           "remaining": 3,
           "movedCells": 25,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 18,
@@ -435,7 +435,7 @@
           "remaining": 3,
           "movedCells": 16,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 19,
@@ -446,18 +446,18 @@
           "remaining": 3,
           "movedCells": 22,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 20,
-          "status": "timeout",
-          "elapsedMs": 60000,
+          "status": "lost",
+          "elapsedMs": 500,
           "dodges": 0,
           "beacons": 0,
-          "remaining": 2,
-          "movedCells": 500,
+          "remaining": 3,
+          "movedCells": 5,
           "gateChanges": 0,
-          "reason": null
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         }
       ]
     },
@@ -477,7 +477,7 @@
           "remaining": 1,
           "movedCells": 6,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 2,
@@ -488,7 +488,7 @@
           "remaining": 1,
           "movedCells": 54,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 3,
@@ -521,7 +521,7 @@
           "remaining": 1,
           "movedCells": 92,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 6,
@@ -543,7 +543,7 @@
           "remaining": 1,
           "movedCells": 17,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 8,
@@ -554,7 +554,7 @@
           "remaining": 2,
           "movedCells": 90,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 9,
@@ -565,7 +565,7 @@
           "remaining": 2,
           "movedCells": 11,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 10,
@@ -587,7 +587,7 @@
           "remaining": 2,
           "movedCells": 24,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 12,
@@ -620,7 +620,7 @@
           "remaining": 2,
           "movedCells": 10,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 15,
@@ -631,7 +631,7 @@
           "remaining": 3,
           "movedCells": 12,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 16,
@@ -642,7 +642,7 @@
           "remaining": 3,
           "movedCells": 9,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 17,
@@ -653,7 +653,7 @@
           "remaining": 3,
           "movedCells": 15,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 18,
@@ -664,7 +664,7 @@
           "remaining": 3,
           "movedCells": 13,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 19,
@@ -675,18 +675,18 @@
           "remaining": 3,
           "movedCells": 14,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 20,
           "status": "lost",
-          "elapsedMs": 1220,
+          "elapsedMs": 1340,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 11,
+          "movedCells": 12,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         }
       ]
     },
@@ -706,7 +706,7 @@
           "remaining": 1,
           "movedCells": 2,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 2,
@@ -739,7 +739,7 @@
           "remaining": 1,
           "movedCells": 30,
           "gateChanges": 1,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 5,
@@ -750,7 +750,7 @@
           "remaining": 1,
           "movedCells": 47,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 6,
@@ -772,7 +772,7 @@
           "remaining": 1,
           "movedCells": 22,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 8,
@@ -783,7 +783,7 @@
           "remaining": 2,
           "movedCells": 46,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 9,
@@ -794,7 +794,7 @@
           "remaining": 2,
           "movedCells": 8,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 10,
@@ -810,13 +810,13 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 6140,
+          "elapsedMs": 6380,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 30,
+          "movedCells": 32,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 12,
@@ -827,7 +827,7 @@
           "remaining": 2,
           "movedCells": 56,
           "gateChanges": 2,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 13,
@@ -838,7 +838,7 @@
           "remaining": 3,
           "movedCells": 9,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 14,
@@ -849,7 +849,7 @@
           "remaining": 2,
           "movedCells": 7,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 15,
@@ -860,7 +860,7 @@
           "remaining": 3,
           "movedCells": 9,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 16,
@@ -871,7 +871,7 @@
           "remaining": 2,
           "movedCells": 23,
           "gateChanges": 1,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 17,
@@ -882,7 +882,7 @@
           "remaining": 3,
           "movedCells": 9,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 18,
@@ -893,7 +893,7 @@
           "remaining": 3,
           "movedCells": 27,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 19,
@@ -904,18 +904,18 @@
           "remaining": 3,
           "movedCells": 32,
           "gateChanges": 2,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 20,
           "status": "lost",
-          "elapsedMs": 5900,
+          "elapsedMs": 6020,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 23,
+          "movedCells": 24,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         }
       ]
     },
@@ -968,7 +968,7 @@
           "remaining": 1,
           "movedCells": 32,
           "gateChanges": 1,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 5,
@@ -979,7 +979,7 @@
           "remaining": 1,
           "movedCells": 30,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 6,
@@ -990,7 +990,7 @@
           "remaining": 2,
           "movedCells": 342,
           "gateChanges": 1,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 7,
@@ -1001,7 +1001,7 @@
           "remaining": 1,
           "movedCells": 22,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 8,
@@ -1023,7 +1023,7 @@
           "remaining": 2,
           "movedCells": 51,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 10,
@@ -1034,29 +1034,29 @@
           "remaining": 2,
           "movedCells": 29,
           "gateChanges": 1,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 6020,
+          "elapsedMs": 6380,
           "dodges": 4,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 31,
+          "movedCells": 34,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 12,
           "status": "lost",
-          "elapsedMs": 14540,
+          "elapsedMs": 14360,
           "dodges": 6,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 86,
+          "movedCells": 84,
           "gateChanges": 1,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
         },
         {
           "level": 13,
@@ -1067,7 +1067,7 @@
           "remaining": 3,
           "movedCells": 10,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 14,
@@ -1078,7 +1078,7 @@
           "remaining": 2,
           "movedCells": 7,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 15,
@@ -1089,7 +1089,7 @@
           "remaining": 3,
           "movedCells": 9,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 16,
@@ -1100,7 +1100,7 @@
           "remaining": 2,
           "movedCells": 24,
           "gateChanges": 1,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 17,
@@ -1111,7 +1111,7 @@
           "remaining": 3,
           "movedCells": 9,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 18,
@@ -1122,29 +1122,29 @@
           "remaining": 3,
           "movedCells": 26,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 19,
           "status": "lost",
           "elapsedMs": 6020,
-          "dodges": 4,
+          "dodges": 3,
           "beacons": 0,
           "remaining": 3,
           "movedCells": 33,
           "gateChanges": 1,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 20,
           "status": "lost",
-          "elapsedMs": 6020,
-          "dodges": 4,
+          "elapsedMs": 6140,
+          "dodges": 3,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 25,
+          "movedCells": 26,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         }
       ]
     },
@@ -1268,7 +1268,7 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 5200,
+          "elapsedMs": 4700,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
@@ -1301,7 +1301,7 @@
         {
           "level": 14,
           "status": "lost",
-          "elapsedMs": 4240,
+          "elapsedMs": 5000,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
@@ -1334,7 +1334,7 @@
         {
           "level": 17,
           "status": "lost",
-          "elapsedMs": 4660,
+          "elapsedMs": 4160,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
@@ -1345,7 +1345,7 @@
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 4120,
+          "elapsedMs": 4280,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
@@ -1356,7 +1356,7 @@
         {
           "level": 19,
           "status": "lost",
-          "elapsedMs": 4080,
+          "elapsedMs": 5720,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
@@ -1367,7 +1367,7 @@
         {
           "level": 20,
           "status": "lost",
-          "elapsedMs": 3300,
+          "elapsedMs": 3700,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
@@ -1393,7 +1393,7 @@
           "remaining": 1,
           "movedCells": 2,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 2,
@@ -1426,7 +1426,7 @@
           "remaining": 1,
           "movedCells": 30,
           "gateChanges": 1,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 5,
@@ -1437,7 +1437,7 @@
           "remaining": 1,
           "movedCells": 115,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 6,
@@ -1470,7 +1470,7 @@
           "remaining": 2,
           "movedCells": 13,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 9,
@@ -1481,7 +1481,7 @@
           "remaining": 2,
           "movedCells": 8,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 10,
@@ -1497,24 +1497,24 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 6360,
+          "elapsedMs": 6380,
           "dodges": 0,
           "beacons": 3,
           "remaining": 2,
-          "movedCells": 31,
+          "movedCells": 32,
           "gateChanges": 0,
-          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 12,
           "status": "lost",
-          "elapsedMs": 10440,
+          "elapsedMs": 10340,
           "dodges": 0,
           "beacons": 5,
           "remaining": 2,
           "movedCells": 58,
           "gateChanges": 2,
-          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 13,
@@ -1525,7 +1525,7 @@
           "remaining": 3,
           "movedCells": 9,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 14,
@@ -1536,7 +1536,7 @@
           "remaining": 2,
           "movedCells": 7,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 15,
@@ -1547,7 +1547,7 @@
           "remaining": 3,
           "movedCells": 9,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 16,
@@ -1569,7 +1569,7 @@
           "remaining": 3,
           "movedCells": 8,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 18,
@@ -1580,7 +1580,7 @@
           "remaining": 2,
           "movedCells": 27,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 19,
@@ -1596,13 +1596,13 @@
         {
           "level": 20,
           "status": "lost",
-          "elapsedMs": 6620,
+          "elapsedMs": 6380,
           "dodges": 0,
           "beacons": 3,
           "remaining": 3,
-          "movedCells": 29,
+          "movedCells": 27,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         }
       ]
     }

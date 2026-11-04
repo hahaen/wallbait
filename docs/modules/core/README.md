@@ -2,8 +2,8 @@
 
 实现于 `src/core/`：类型、参数、20 关配置、固定步状态机、三类目标策略、BFS 追踪、门与信标、共享电量和逐格碰撞。规则不依赖浏览器、Phaser 或存储。
 
-- `createState(level)` 创建独立对局，包括各门状态、电量、信标和独立残骸数组；重开使用新状态。
-- `step(state, command)` 推进 20ms，命令包含四向/停止、闪避和信标意图。只有这个入口推进对局。
+- `createState(level, utility)` 创建独立对局，包括各门状态、电量、信标和独立残骸数组；重开使用新状态。
+- `step(state, command)` 推进 20ms，命令包含四向/停止、所选工具和信标意图。只有这个入口推进对局。
 - `solid(level, point)` 检查静态墙；`blocked(state, point)` 加上当前关闭门与实心残骸。待生效地形不改变碰撞。
 - `targetFor(state, snake)` 给出追踪目标；正式锁向后使用 `locked`。`warningPath` 提供真实危险格，供渲染显示。
 - `setPaused(state, paused)` 冻结或恢复，不重置普通移动间隔。电量回充与信标寿命属于规则时间。
@@ -17,3 +17,9 @@
 投掷落点由 `beaconLanding(state)` 计算，规则放置与画面预览共用。残骸在最后头部格生成；与门一样等待所有正式攻击结束，并等待占格角色离开后生效。冲刺撞残骸继续产生撞毁事件，以 `obstacle` 区分墙/门和残骸。新增边界与第八关正常命令接力见[机制测试](../../../tests/wrecks-and-throw.test.ts)。
 
 新增 `chipCollected`、`highlights`、`lureKills`；正式锁向时记录信标序号，位移离开预警通道时记录最后窗口资格，冲刺结束后判定反馈。`highlights.ts` 保持纯规则。芯片只由玩家成功位移拾取，暂停与重开边界同其他规则。
+
+## 技能版
+
+`loadout.ts` 定义工具元数据、关卡开放列表与战术目标文案。`createState(level, utility)` 校验装备并默认回退闪避。`Command.utility` 与旧 `dodge` 命令均触发已装备工具；旧命令兼容既有回放，实际闪避次数只计位移技能。脉冲与磁推规则由 `pulseTargets` / `magnetMove` 同时供预览与执行使用；正式攻击地形冻结、逐格碰撞顺序不变。
+
+强化型复用三类敌人，增加控场剩余、能力冷却、二段标志、预告落点与两个明确阶段。干扰场由来源编号关联，暂停冻结、死亡清理；回充只暂停进度，不重置或扣电。`tacticComplete` 与 `stars` 统一结算战术评分。完整边界见[技能规格](../../design/skills.md)。

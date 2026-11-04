@@ -1,5 +1,11 @@
 import Phaser from 'phaser';
-import { beaconLanding, solid, warningPath } from '../../core/engine';
+import {
+  beaconLanding,
+  solid,
+  warningPath,
+  magnetMove,
+  pulseTargets,
+} from '../../core/engine';
 import { BEACON_MS, RECHARGE_MS, VECTOR } from '../../core/config';
 import type {
   Direction,
@@ -34,6 +40,8 @@ export class Arena {
     private state: GameState,
   ) {
     const background = scene.add.graphics();
+    const chapter = Math.floor((state.level.id - 1) / 5);
+    const accents = [0x80949a, 0x88b9ae, 0xc4aa80, 0xa7a2cc];
     for (let y = 0; y < state.level.height; y++) {
       for (let x = 0; x < state.level.width; x++) {
         if (solid(state.level, { x, y })) {
@@ -41,7 +49,7 @@ export class Arena {
           background.fillRoundedRect(x * CELL + 1, y * CELL + 2, 30, 30, 5);
           background.fillStyle(0x4e6570);
           background.fillRoundedRect(x * CELL + 2, y * CELL + 1, 28, 26, 4);
-          background.lineStyle(2, 0x80949a);
+          background.lineStyle(2, accents[chapter] ?? 0x80949a);
           background.lineBetween(
             x * CELL + 7,
             y * CELL + 6,
@@ -55,6 +63,24 @@ export class Arena {
           background.fillRect(x * CELL, y * CELL, CELL, CELL);
           background.lineStyle(1, 0x36515b, 0.45);
           background.strokeRect(x * CELL, y * CELL, CELL, CELL);
+          if ((x + y * 2) % 11 === 0) {
+            background.lineStyle(1, accents[chapter] ?? 0x80949a, 0.25);
+            background.lineBetween(
+              x * CELL + 5,
+              y * CELL + 26,
+              x * CELL + 13,
+              y * CELL + 26,
+            );
+            if (chapter >= 1)
+              background.strokeCircle(x * CELL + 24, y * CELL + 8, 2);
+            if (chapter >= 2)
+              background.lineBetween(
+                x * CELL + 16,
+                y * CELL + 24,
+                x * CELL + 24,
+                y * CELL + 16,
+              );
+          }
         }
       }
     }
@@ -96,7 +122,13 @@ export class Arena {
   events(events: GameEvent[], reducedMotion: boolean): void {
     for (const event of events) {
       if (event.type === 'dodge') this.positions.delete('apple');
-      if ((event.type === 'wall' || event.type === 'dodge') && !reducedMotion)
+      if (
+        (event.type === 'wall' ||
+          event.type === 'dodge' ||
+          event.type === 'pulse' ||
+          event.type === 'magnet') &&
+        !reducedMotion
+      )
         this.bursts.push({ ...center(event), type: event.type, life: 360 });
       if (event.type === 'wall' && !reducedMotion)
         this.scene.cameras.main.shake(100, 0.004);
@@ -198,7 +230,7 @@ export class Arena {
       const text = group.enemies
         .map(
           (s) =>
-            `${s.id + 1}${ENEMY_SYMBOLS[s.kind]}${s.phase === 'charging' ? ` ${(Math.ceil(s.timer / 100) / 10).toFixed(1)}s` : s.phase === 'dashing' ? ' 冲刺' : ''}`,
+            `${s.id + 1}${ENEMY_SYMBOLS[s.kind]}${s.elite ? '+' : ''}${s.stunMs ? ` 暂停${(s.stunMs / 1000).toFixed(1)}` : s.phase === 'charging' ? ` ${(Math.ceil(s.timer / 100) / 10).toFixed(1)}s` : s.phase === 'dashing' ? ' 冲刺' : s.phase === 'sidestepping' ? ' 侧切' : s.phase === 'interfering' ? ' 干扰' : s.followup ? ' 二段' : ''}`,
         )
         .join(' / ');
       this.placeLabel(this.labels.get(leader.id)!, text, p.x, p.y - 25);
@@ -276,6 +308,21 @@ export class Arena {
   }
   private mechanisms(reducedMotion: boolean): void {
     const g = this.graphics;
+    for (const field of this.state.interference)
+      this.interferenceArea(field, false);
+    for (const snake of this.state.snakes) {
+      if (!snake.alive || !snake.abilityTarget) continue;
+      if (snake.phase === 'interfering')
+        this.interferenceArea(snake.abilityTarget, true);
+      if (snake.phase === 'sidestepping') {
+        const c = center(snake.abilityTarget),
+          origin = center(snake);
+        g.lineStyle(2, 0xf58e7c);
+        g.strokeRoundedRect(c.x - 13, c.y - 13, 26, 26, 4);
+        g.lineBetween(origin.x, origin.y, c.x, c.y);
+        g.strokeCircle(c.x, c.y, 4);
+      }
+    }
     for (const definition of this.state.level.gates ?? []) {
       const gate = this.state.gates.find((s) => s.id === definition.id)!;
       for (const p of definition.switches) {
@@ -341,6 +388,41 @@ export class Arena {
       }
     }
     if (
+      this.state.utility === 'magnet' &&
+      this.state.energy > 0 &&
+      this.state.status === 'playing'
+    ) {
+      const move = magnetMove(this.state);
+      if (move) {
+        const a = center(move.from),
+          b = center(move.to);
+        g.lineStyle(2, 0x9af3d4);
+        g.strokeRect(b.x - 12, b.y - 12, 24, 24);
+        g.lineBetween(a.x, a.y, b.x, b.y);
+        g.strokeCircle(b.x, b.y, 4);
+      }
+    }
+    if (
+      this.state.utility === 'pulse' &&
+      this.state.energy > 0 &&
+      this.state.status === 'playing'
+    ) {
+      for (const s of pulseTargets(this.state)) {
+        const c = center(s);
+        g.lineStyle(1, 0x9af3d4, 0.65);
+        g.strokeCircle(c.x, c.y, 18);
+      }
+    }
+    if (this.state.pulseMs > 0 && this.state.pulseOrigin) {
+      const c = center(this.state.pulseOrigin);
+      g.lineStyle(2, 0x9af3d4, 0.6);
+      g.strokeCircle(
+        c.x,
+        c.y,
+        reducedMotion ? 22 : 20 + (600 - this.state.pulseMs) / 15,
+      );
+    }
+    if (
       this.state.level.beaconEnabled &&
       !this.state.beacon &&
       this.state.energy > 0 &&
@@ -370,6 +452,25 @@ export class Arena {
       g.fillCircle(c.x, c.y, 4);
       g.fillStyle(0xc6a1f2);
       g.fillRect(c.x - 12, c.y + 13, (24 * b.remainingMs) / BEACON_MS, 3);
+    }
+  }
+  private interferenceArea(point: Point, preparing: boolean): void {
+    const g = this.graphics;
+    for (const p of [
+      point,
+      ...Object.values(VECTOR).map((v) => ({
+        x: point.x + v.x,
+        y: point.y + v.y,
+      })),
+    ]) {
+      if (solid(this.state.level, p)) continue;
+      const c = center(p);
+      g.fillStyle(0xc6a1f2, preparing ? 0.08 : 0.22);
+      g.fillRect(c.x - 14, c.y - 14, 28, 28);
+      g.lineStyle(1, preparing ? 0xe9dcff : 0xc6a1f2, 0.8);
+      g.strokeRect(c.x - 13, c.y - 13, 26, 26);
+      for (const offset of [-6, 2, 10])
+        g.lineBetween(c.x - 9, c.y + offset, c.x + 9, c.y + offset - 7);
     }
   }
   private warning(s: Snake): void {
@@ -473,6 +574,15 @@ export class Arena {
     if (s.phase === 'recovering') {
       g.lineStyle(2, 0xb7d3e3, 0.9);
       g.lineBetween(p.x - 10, p.y + 17, p.x + 10, p.y + 17);
+    }
+    if (s.elite) {
+      g.lineStyle(2, 0xfff3d9);
+      g.lineBetween(p.x - 8, p.y - 17, p.x - 3, p.y - 17);
+      g.lineBetween(p.x + 3, p.y - 17, p.x + 8, p.y - 17);
+    }
+    if (s.stunMs > 0) {
+      g.lineStyle(2, 0x9af3d4);
+      g.strokeCircle(p.x, p.y, 19);
     }
   }
   private robot(p: Point): void {

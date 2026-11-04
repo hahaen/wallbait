@@ -766,3 +766,55 @@ button.skill.cooling {
   margin: 4px 0 0;
   color: var(--muted);
 }
+
+.loadout h3 {
+  margin: 12px 0 8px;
+  font-size: 1rem;
+}
+.loadout h3 small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-weight: 400;
+}
+.loadout-options {
+  display: grid;
+  gap: 8px;
+}
+.loadout-options button {
+  min-height: 52px;
+  padding: 10px 12px;
+  text-align: left;
+}
+.loadout-options button[aria-pressed='true'] {
+  border-color: #8ee9c8;
+  background: #234d4c;
+}
+.loadout-options small {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #c3d8db;
+}
+.skill[data-utility='pulse'] {
+  background: #9edbeb;
+}
+.skill[data-utility='magnet'] {
+  background: #efd09c;
+}
+.play-screen[data-zone='1'] .play-header small {
+  color: #a4decb;
+}
+.play-screen[data-zone='2'] .play-header small {
+  color: #efd09c;
+}
+.play-screen[data-zone='3'] .play-header small {
+  color: #d9c1f4;
+}
+.zone-note {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+}

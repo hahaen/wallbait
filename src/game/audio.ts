@@ -25,6 +25,9 @@ export class Sound {
       lost: [200, 60],
       chip: [880, 1320],
       highlight: [660, 990],
+      pulse: [180, 720],
+      magnet: [420, 180],
+      ability: [220, 330],
     };
     try {
       const ctx = this.context,

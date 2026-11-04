@@ -1,0 +1,6505 @@
+[
+  {
+    "level": 1,
+    "elapsedMs": 1020,
+    "dodges": 0,
+    "beacons": 0,
+    "commands": [
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 2,
+    "elapsedMs": 1660,
+    "dodges": 0,
+    "beacons": 0,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 3,
+    "elapsedMs": 1220,
+    "dodges": 1,
+    "beacons": 0,
+    "commands": [
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 4,
+    "elapsedMs": 1960,
+    "dodges": 2,
+    "beacons": 0,
+    "commands": [
+      {
+        "direction": null
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 5,
+    "elapsedMs": 4680,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 6,
+    "utility": "pulse",
+    "elapsedMs": 3540,
+    "dodges": 0,
+    "beacons": 1,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 6,
+    "elapsedMs": 2180,
+    "dodges": 2,
+    "beacons": 0,
+    "commands": [
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 7,
+    "utility": "pulse",
+    "elapsedMs": 2440,
+    "dodges": 0,
+    "beacons": 1,
+    "commands": [
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 7,
+    "elapsedMs": 2440,
+    "dodges": 1,
+    "beacons": 1,
+    "commands": [
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 8,
+    "utility": "pulse",
+    "elapsedMs": 3120,
+    "dodges": 0,
+    "beacons": 1,
+    "commands": [
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 8,
+    "elapsedMs": 3120,
+    "dodges": 1,
+    "beacons": 1,
+    "commands": [
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 9,
+    "utility": "pulse",
+    "elapsedMs": 5060,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down",
+        "dodge": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 9,
+    "utility": "magnet",
+    "elapsedMs": 4440,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 9,
+    "elapsedMs": 4440,
+    "dodges": 1,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 10,
+    "utility": "pulse",
+    "elapsedMs": 4560,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 10,
+    "utility": "magnet",
+    "elapsedMs": 9920,
+    "dodges": 0,
+    "beacons": 4,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 10,
+    "elapsedMs": 4440,
+    "dodges": 2,
+    "beacons": 1,
+    "commands": [
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "dodge": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 11,
+    "utility": "pulse",
+    "elapsedMs": 4240,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 11,
+    "utility": "magnet",
+    "elapsedMs": 5040,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right",
+        "dodge": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 11,
+    "elapsedMs": 4440,
+    "dodges": 1,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 12,
+    "utility": "pulse",
+    "elapsedMs": 3600,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 12,
+    "utility": "magnet",
+    "elapsedMs": 3600,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 12,
+    "elapsedMs": 4440,
+    "dodges": 1,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 13,
+    "utility": "pulse",
+    "elapsedMs": 4920,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "dodge": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 13,
+    "utility": "magnet",
+    "elapsedMs": 5800,
+    "dodges": 0,
+    "beacons": 3,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 13,
+    "elapsedMs": 9220,
+    "dodges": 0,
+    "beacons": 4,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 14,
+    "utility": "pulse",
+    "elapsedMs": 3560,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 14,
+    "utility": "magnet",
+    "elapsedMs": 3560,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 14,
+    "elapsedMs": 4400,
+    "dodges": 2,
+    "beacons": 1,
+    "commands": [
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 15,
+    "utility": "pulse",
+    "elapsedMs": 5500,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 15,
+    "utility": "magnet",
+    "elapsedMs": 10480,
+    "dodges": 0,
+    "beacons": 4,
+    "commands": [
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 15,
+    "elapsedMs": 4400,
+    "dodges": 2,
+    "beacons": 1,
+    "commands": [
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 16,
+    "utility": "pulse",
+    "elapsedMs": 4800,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 16,
+    "utility": "magnet",
+    "elapsedMs": 4960,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 16,
+    "elapsedMs": 4800,
+    "dodges": 1,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 17,
+    "utility": "pulse",
+    "elapsedMs": 6240,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 17,
+    "utility": "magnet",
+    "elapsedMs": 4880,
+    "dodges": 0,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 17,
+    "elapsedMs": 5980,
+    "dodges": 1,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 18,
+    "utility": "pulse",
+    "elapsedMs": 7840,
+    "dodges": 0,
+    "beacons": 3,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 18,
+    "utility": "magnet",
+    "elapsedMs": 8040,
+    "dodges": 0,
+    "beacons": 4,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 18,
+    "elapsedMs": 5500,
+    "dodges": 1,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 19,
+    "utility": "pulse",
+    "elapsedMs": 9120,
+    "dodges": 0,
+    "beacons": 3,
+    "commands": [
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 19,
+    "utility": "magnet",
+    "elapsedMs": 7640,
+    "dodges": 0,
+    "beacons": 3,
+    "commands": [
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 19,
+    "elapsedMs": 10200,
+    "dodges": 0,
+    "beacons": 4,
+    "commands": [
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  },
+  {
+    "level": 20,
+    "utility": "pulse",
+    "elapsedMs": 6360,
+    "dodges": 0,
+    "beacons": 3,
+    "commands": [
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 20,
+    "utility": "magnet",
+    "elapsedMs": 5880,
+    "dodges": 0,
+    "beacons": 3,
+    "commands": [
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "loadout"
+  },
+  {
+    "level": 20,
+    "elapsedMs": 6060,
+    "dodges": 1,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right",
+        "beacon": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ],
+    "goal": "tactic"
+  }
+]

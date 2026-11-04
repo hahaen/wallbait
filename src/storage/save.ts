@@ -1,7 +1,7 @@
 import { LEVELS } from '../core/levels';
 import { stars } from '../core/engine';
 import { HIGHLIGHTS } from '../core/highlights';
-import type { GameState, HighlightId } from '../core/types';
+import type { GameState, HighlightId, UtilitySkill } from '../core/types';
 
 export const SAVE_KEY = 'wallbait.save.v2';
 export const LEGACY_SAVE_KEY = 'wallbait.save.v1';
@@ -11,6 +11,8 @@ export interface Best {
   dodges: number;
   beacons: number;
   stars: number;
+  scoring?: 'tactics-v1';
+  legacyStars?: number;
 }
 export interface Save {
   version: 2;
@@ -21,6 +23,7 @@ export interface Save {
   muted: boolean;
   reducedMotion: boolean;
   legacyCompleted: number;
+  utility: UtilitySkill;
 }
 export interface StoragePort {
   getItem(key: string): string | null;
@@ -35,6 +38,7 @@ export const defaults = (): Save => ({
   muted: false,
   reducedMotion: false,
   legacyCompleted: 0,
+  utility: 'dodge',
 });
 const record = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -78,6 +82,8 @@ export function readSave(storage: StoragePort): Save {
   }
   const parsed = readObject(storage, SAVE_KEY);
   if (parsed?.version === 2 && parsed.campaign === CAMPAIGN) {
+    if (parsed.utility === 'pulse' || parsed.utility === 'magnet')
+      save.utility = parsed.utility;
     save.muted = parsed.muted === true;
     save.reducedMotion = parsed.reducedMotion === true;
     if (integer(parsed.legacyCompleted, 0, LEVELS.length))
@@ -94,6 +100,12 @@ export function readSave(storage: StoragePort): Save {
             dodges: best.dodges,
             beacons: best.beacons,
             stars: best.stars,
+            ...(best.scoring === 'tactics-v1'
+              ? { scoring: 'tactics-v1' as const }
+              : {}),
+            ...(integer(best.legacyStars, 1, 3)
+              ? { legacyStars: best.legacyStars }
+              : {}),
           };
         }
       }
@@ -128,12 +140,17 @@ export function writeSave(storage: StoragePort, save: Save): boolean {
 export function recordWin(save: Save, state: GameState): void {
   if (state.status !== 'won') return;
   const key = String(state.level.id),
-    previous = save.best[key];
+    old = save.best[key],
+    previous = old?.scoring === 'tactics-v1' ? old : undefined;
   save.best[key] = {
     timeMs: Math.min(previous?.timeMs ?? Infinity, state.elapsedMs),
     dodges: Math.min(previous?.dodges ?? Infinity, state.dodges),
     beacons: Math.min(previous?.beacons ?? Infinity, state.beacons),
     stars: Math.max(previous?.stars ?? 0, stars(state)),
+    scoring: 'tactics-v1',
+    ...((old?.legacyStars ?? (old?.scoring ? undefined : old?.stars))
+      ? { legacyStars: old?.legacyStars ?? old?.stars }
+      : {}),
   };
   const collected = save.collections[key];
   const highlights = [
