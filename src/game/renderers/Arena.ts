@@ -234,7 +234,12 @@ export class Arena {
     const alive = this.state.snakes.filter((s) => s.alive);
     for (const group of groupEnemies(alive, (s) => s)) {
       const leader = group.enemies[0]!;
-      if (this.state.snakes.length === 1 && !leader.elite && !leader.stunMs)
+      if (
+        this.state.snakes.length === 1 &&
+        leader.kind === 'normal' &&
+        !leader.elite &&
+        !leader.stunMs
+      )
         continue;
       const p = this.positions.get(`head${leader.id}`)!;
       this.placeLabel(
