@@ -3,11 +3,11 @@ import atlasUrl from '../assets/characters/bean-mascots.png';
 /** 透明手绘贴图：4×4等分，前11格为角色，其余留空。 */
 export const CHARACTER_ATLAS = atlasUrl;
 export const ATLAS_SIZE = 1254;
-// 各类蛇的头、身体与开心表情始终使用绿色版本，类型由编号和符号区分。
+// 同一套软萌手绘造型：嫩绿、奶黄、浅紫，各自的头、身体和开心表情配色一致。
 export const CHARACTER_FRAMES = {
   normal: { head: 0, happy: 1, body: 2 },
-  swift: { head: 0, happy: 1, body: 2 },
-  cautious: { head: 0, happy: 1, body: 2 },
+  swift: { head: 4, happy: 5, body: 6 },
+  cautious: { head: 8, happy: 9, body: 10 },
 } as const;
 export const APPLE_FRAME = 3;
 export const CAUGHT_APPLE_FRAME = 7;

@@ -7,7 +7,7 @@ import {
 } from '../../core/engine';
 import { BEACON_MS, VECTOR } from '../../core/config';
 import type { GameEvent, GameState, Point, Snake } from '../../core/types';
-import { ENEMY_SYMBOLS, groupEnemies } from '../feedback';
+import { groupEnemies } from '../feedback';
 import {
   CHARACTER_FRAMES,
   APPLE_FRAME,
@@ -33,9 +33,9 @@ export class Arena {
   private endingMs = 0;
   private graphics: Phaser.GameObjects.Graphics;
   private inspection: Phaser.GameObjects.Graphics;
+  private signals: Phaser.GameObjects.Graphics;
   private positions = new Map<string, Point>();
   private bursts: Burst[] = [];
-  private labels = new Map<number, Phaser.GameObjects.Text>();
   constructor(
     private scene: Phaser.Scene,
     private state: GameState,
@@ -84,6 +84,7 @@ export class Arena {
     }
     this.graphics = scene.add.graphics();
     this.inspection = scene.add.graphics().setDepth(3);
+    this.signals = scene.add.graphics().setDepth(2.5);
     this.fruit = scene.add
       .image(0, 0, 'characters', APPLE_FRAME)
       .setDisplaySize(48, 48)
@@ -104,19 +105,6 @@ export class Arena {
           .image(0, 0, 'characters', CHARACTER_FRAMES[snake.kind].head)
           .setDisplaySize(56, 56)
           .setDepth(1),
-      );
-      const style = {
-        resolution: Math.min(window.devicePixelRatio || 1, 3),
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '11px',
-        fontStyle: 'bold',
-        color: '#3d2c24',
-        backgroundColor: '#fff5e4',
-        padding: { left: 2, right: 2 },
-      };
-      this.labels.set(
-        snake.id,
-        scene.add.text(0, 0, '', style).setOrigin(0.5, 1).setDepth(3),
       );
     }
     this.draw(100, true);
@@ -159,9 +147,9 @@ export class Arena {
     const g = this.graphics;
     g.clear();
     this.inspection.clear();
+    this.signals.clear();
     this.mechanisms(reducedMotion);
     for (const s of this.state.snakes) {
-      this.labels.get(s.id)!.setVisible(false);
       this.heads.get(s.id)!.setVisible(s.alive);
       for (const segment of this.segments.get(s.id)!) segment.setVisible(false);
       if (!s.alive) continue;
@@ -192,7 +180,7 @@ export class Arena {
       reducedMotion || ended ? 1 : 40,
     );
     this.apple(fruitPoint, reducedMotion, inspectingLoss);
-    this.enemyLabels();
+    this.enemyBadges();
     this.bursts = this.bursts.filter((b) => b.life > 0);
     for (const b of this.bursts) {
       b.life -= delta;
@@ -214,45 +202,30 @@ export class Arena {
     }
     if (this.state.loss && inspectingLoss) this.lossMarker();
   }
-  private placeLabel(
-    label: Phaser.GameObjects.Text,
-    text: string,
-    x: number,
-    y: number,
-  ): void {
-    label.setText(text).setVisible(true);
-    label.setPosition(
-      Phaser.Math.Clamp(
-        x,
-        label.width / 2 + 2,
-        this.state.level.width * CELL - label.width / 2 - 2,
-      ),
-      Math.max(label.height + 2, y),
-    );
-  }
-  private enemyLabels(): void {
+  private enemyBadges(): void {
     const alive = this.state.snakes.filter((s) => s.alive);
     for (const group of groupEnemies(alive, (s) => s)) {
-      const leader = group.enemies[0]!;
-      if (
-        this.state.snakes.length === 1 &&
-        leader.kind === 'normal' &&
-        !leader.elite &&
-        !leader.stunMs
-      )
-        continue;
-      const p = this.positions.get(`head${leader.id}`)!;
-      this.placeLabel(
-        this.labels.get(leader.id)!,
-        group.enemies
-          .map(
-            (s) =>
-              `${s.id + 1}${ENEMY_SYMBOLS[s.kind]}${s.elite ? '+' : ''}${s.stunMs ? ' 暂停' : ''}`,
-          )
-          .join(' / '),
-        p.x,
-        p.y - 18,
-      );
+      if (!group.enemies.some((s) => s.elite)) continue;
+      const p = this.positions.get(`head${group.enemies[0]!.id}`)!;
+      const x = Phaser.Math.Clamp(
+          p.x + 20,
+          CELL + 7,
+          (this.state.level.width - 1) * CELL - 7,
+        ),
+        y = Math.max(p.y - 14, CELL + 7);
+      // 用小星星表示强化，不把编号、类型或状态文字贴在豆豆身上。
+      const points = Array.from({ length: 10 }, (_, i) => {
+        const angle = -Math.PI / 2 + (i * Math.PI) / 5,
+          radius = i % 2 ? 2.7 : 5.8;
+        return {
+          x: x + Math.cos(angle) * radius,
+          y: y + Math.sin(angle) * radius,
+        };
+      });
+      this.signals.fillStyle(0xffd56a);
+      this.signals.lineStyle(1.4, 0x896137);
+      this.signals.fillPoints(points, true);
+      this.signals.strokePoints(points, true);
     }
   }
   private lossMarker(): void {
@@ -267,18 +240,6 @@ export class Arena {
     g.strokeCircle(c.x, c.y, 16);
     g.lineBetween(c.x - 8, c.y - 8, c.x + 8, c.y + 8);
     g.lineBetween(c.x + 8, c.y - 8, c.x - 8, c.y + 8);
-    const snake = this.state.snakes.find((s) => s.id === loss.enemy);
-    if (snake) {
-      for (const other of this.state.snakes)
-        if (other.x === snake.x && other.y === snake.y)
-          this.labels.get(other.id)!.setVisible(false);
-      this.placeLabel(
-        this.labels.get(snake.id)!,
-        `${snake.id + 1}${ENEMY_SYMBOLS[snake.kind]} 命中`,
-        c.x,
-        c.y - 25,
-      );
-    }
   }
   private mechanisms(reducedMotion: boolean): void {
     const g = this.graphics;

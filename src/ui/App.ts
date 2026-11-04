@@ -511,7 +511,7 @@ export class App {
     this.dialog(
       `<h2 id="dialog-title">你是苹果，借墙脱身</h2><div class="help-art">${heroArt}</div>
       <ol class="instructions"><li><b>引到墙边。</b>蛇冲出后不会转弯。</li><li><b>横向闪开。</b>普通走位或闪避都行，别碰蛇头。</li><li><b>全撞墙，就过关。</b>蛇身不伤人。</li></ol>
-      <details class="brief-details"><summary>技能与机关</summary><p>闪避走两格；信标朝前投出，骗蛇追它。共用两格电，每 ${RECHARGE_MS / 1000} 秒恢复一格。</p><p>第6关可选脉冲，暂停近处的蛇；第9关可选磁推，推开面前残骸。</p><p>踩字母踏板切换同字母门。空心残骸可通过，实心残骸会挡路。</p><p>› 直追你，ϟ 猜你前方，◇ 用信标骗。</p></details>
+      <details class="brief-details"><summary>技能与机关</summary><p>闪避走两格；信标朝前投出，骗蛇追它。共用两格电，每 ${RECHARGE_MS / 1000} 秒恢复一格。</p><p>第6关可选脉冲，暂停近处的蛇；第9关可选磁推，推开面前残骸。</p><p>踩字母踏板切换同字母门。空心残骸可通过，实心残骸会挡路。</p><p>嫩绿直追，奶黄预判，浅紫用信标骗。小星星表示强化。</p></details>
       <details class="brief-details"><summary>按键与收藏</summary><p>方向键 / WASD 移动，空格用工具，E 放信标，P 暂停。</p><p>过关、时间、本关目标各一星。收藏通关后保存，选关页可查看。</p></details>${button('close', '知道了', 'primary')}`,
     );
   }
