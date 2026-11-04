@@ -44,7 +44,7 @@
 - `npm run test:static`：**1 项通过**。使用构建后的 `dist/` 在本地 `/wallbait/` 提供静态文件，实际完成首页 → 对局 → 蓄力 → 闪避获胜 → 选关 → 刷新恢复进度。
 - 所有 JS 请求均在 `/wallbait/assets/`；主包与惰性游戏包正常加载，未出现失败资源、HTTP 错误响应或页面脚本错误。
 - 产物：入口 JS 约 28.08kB（gzip 12.28kB），CSS 8.19kB（gzip 2.61kB），按需 Phaser 游戏包 1213.18kB（gzip 334.36kB）。Vite 对游戏包有体积提示，构建通过；首页已与引擎拆分。
-- CI 工作流仅运行 `npm ci`、`npm run check`，本地浏览器验收不冒称远端 CI 浏览器验收。远端运行状态在实际推送后单独核对。
+- CI 工作流仅运行 `npm ci`、`npm run check`，本地浏览器验收不冒称远端 CI 浏览器验收。推送后尝试通过 GitHub 连接器读取提交状态，返回 404，未确认远端 Actions 结果；不能当作 CI 失败或通过。
 
 ## 实际截图
 
