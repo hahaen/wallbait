@@ -123,11 +123,13 @@ test('合法闯到信标教学：踏板开门、双技能触控、电量与暂�
   expect(await page.locator('#cooldown').textContent()).toBe(energy);
   await page.getByRole('button', { name: '继续游戏' }).click({ force: true });
   await page.clock.runFor(1200);
-  await expect(page.locator('#mechanisms')).toContainText('信标 1.');
+  await expect(page.locator('#mechanisms')).toContainText('信标 0.');
   await page.keyboard.press('p');
   await page.getByRole('button', { name: '重新挑战' }).click({ force: true });
   await page.clock.runFor(16);
   await expect(page.locator('#cooldown')).toContainText('▰▰');
-  await expect(page.locator('#mechanisms')).toHaveText('闪避 / 信标共用电量');
+  await expect(page.locator('#mechanisms')).toHaveText(
+    '前投≤2格 · 闪避 / 信标共用电量',
+  );
   await expect(page.getByRole('heading', { name: '试验准备' })).toHaveCount(0);
 });

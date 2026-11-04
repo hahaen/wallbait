@@ -8,6 +8,7 @@
     "beacons": 0,
     "movedCells": 1,
     "inputTurns": 0,
+    "overlapMs": 0,
     "charges": [
       {
         "atMs": 140,
@@ -22,6 +23,16 @@
         "wall": {
           "x": 8,
           "y": 13
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 1020,
+        "position": {
+          "x": 8,
+          "y": 12
         }
       }
     ],
@@ -37,6 +48,7 @@
     "beacons": 0,
     "movedCells": 5,
     "inputTurns": 0,
+    "overlapMs": 0,
     "charges": [
       {
         "atMs": 740,
@@ -50,6 +62,16 @@
         "enemy": 1,
         "wall": {
           "x": 9,
+          "y": 4
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 1660,
+        "position": {
+          "x": 8,
           "y": 4
         }
       }
@@ -66,6 +88,7 @@
     "beacons": 0,
     "movedCells": 5,
     "inputTurns": 1,
+    "overlapMs": 0,
     "charges": [
       {
         "atMs": 480,
@@ -79,6 +102,16 @@
         "enemy": 1,
         "wall": {
           "x": 3,
+          "y": 7
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 1220,
+        "position": {
+          "x": 4,
           "y": 7
         }
       }
@@ -95,6 +128,7 @@
     "beacons": 0,
     "movedCells": 10,
     "inputTurns": 4,
+    "overlapMs": 0,
     "charges": [
       {
         "atMs": 1040,
@@ -109,6 +143,16 @@
         "wall": {
           "x": 7,
           "y": 7
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 1960,
+        "position": {
+          "x": 7,
+          "y": 6
         }
       }
     ],
@@ -125,11 +169,12 @@
     "level": 5,
     "name": "送它一个信号",
     "status": "won",
-    "elapsedMs": 4760,
-    "dodges": 1,
+    "elapsedMs": 4680,
+    "dodges": 0,
     "beacons": 2,
     "movedCells": 21,
-    "inputTurns": 7,
+    "inputTurns": 8,
+    "overlapMs": 0,
     "charges": [
       {
         "atMs": 1700,
@@ -137,17 +182,27 @@
         "direction": "down"
       },
       {
-        "atMs": 3740,
+        "atMs": 3660,
         "enemy": 1,
         "direction": "right"
       }
     ],
     "eliminations": [
       {
-        "atMs": 4760,
+        "atMs": 4680,
         "enemy": 1,
         "wall": {
           "x": 12,
+          "y": 10
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 4680,
+        "position": {
+          "x": 11,
           "y": 10
         }
       }
@@ -155,16 +210,16 @@
     "gateChanges": [],
     "beaconPlacements": [
       {
-        "atMs": 380,
+        "atMs": 260,
         "position": {
           "x": 9,
           "y": 6
         }
       },
       {
-        "atMs": 3500,
+        "atMs": 3140,
         "position": {
-          "x": 11,
+          "x": 10,
           "y": 10
         }
       }
@@ -174,38 +229,57 @@
     "level": 6,
     "name": "开门请进",
     "status": "won",
-    "elapsedMs": 2260,
+    "elapsedMs": 2180,
     "dodges": 2,
     "beacons": 0,
     "movedCells": 13,
-    "inputTurns": 6,
+    "inputTurns": 5,
+    "overlapMs": 420,
     "charges": [
       {
-        "atMs": 1080,
-        "enemy": 2,
+        "atMs": 980,
+        "enemy": 1,
         "direction": "down"
       },
       {
-        "atMs": 1340,
-        "enemy": 1,
+        "atMs": 1440,
+        "enemy": 2,
         "direction": "down"
       }
     ],
     "eliminations": [
       {
-        "atMs": 1840,
+        "atMs": 1860,
+        "enemy": 1,
+        "wall": {
+          "x": 5,
+          "y": 7
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 2180,
         "enemy": 2,
         "wall": {
           "x": 10,
           "y": 7
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 2180,
+        "position": {
+          "x": 5,
+          "y": 6
         }
       },
       {
-        "atMs": 2260,
-        "enemy": 1,
-        "wall": {
-          "x": 7,
-          "y": 7
+        "atMs": 2180,
+        "position": {
+          "x": 10,
+          "y": 6
         }
       }
     ],
@@ -222,25 +296,105 @@
     "level": 7,
     "name": "转角留一格",
     "status": "won",
-    "elapsedMs": 3880,
-    "dodges": 0,
+    "elapsedMs": 3520,
+    "dodges": 1,
     "beacons": 1,
-    "movedCells": 20,
-    "inputTurns": 10,
+    "movedCells": 16,
+    "inputTurns": 8,
+    "overlapMs": 0,
     "charges": [
       {
-        "atMs": 2780,
+        "atMs": 2420,
         "enemy": 1,
-        "direction": "down"
+        "direction": "left"
       }
     ],
     "eliminations": [
       {
-        "atMs": 3880,
+        "atMs": 3520,
+        "enemy": 1,
+        "wall": {
+          "x": 0,
+          "y": 9
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 3520,
+        "position": {
+          "x": 1,
+          "y": 9
+        }
+      }
+    ],
+    "gateChanges": [],
+    "beaconPlacements": [
+      {
+        "atMs": 500,
+        "position": {
+          "x": 4,
+          "y": 9
+        }
+      }
+    ]
+  },
+  {
+    "level": 8,
+    "name": "残骸接力",
+    "status": "won",
+    "elapsedMs": 3120,
+    "dodges": 1,
+    "beacons": 1,
+    "movedCells": 7,
+    "inputTurns": 4,
+    "overlapMs": 0,
+    "charges": [
+      {
+        "atMs": 140,
+        "enemy": 1,
+        "direction": "up"
+      },
+      {
+        "atMs": 2060,
+        "enemy": 2,
+        "direction": "right"
+      }
+    ],
+    "eliminations": [
+      {
+        "atMs": 1020,
         "enemy": 1,
         "wall": {
           "x": 6,
-          "y": 14
+          "y": 5
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 3120,
+        "enemy": 2,
+        "wall": {
+          "x": 6,
+          "y": 6
+        },
+        "obstacle": "wreck"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 1020,
+        "position": {
+          "x": 6,
+          "y": 6
+        }
+      },
+      {
+        "atMs": 3120,
+        "position": {
+          "x": 5,
+          "y": 6
         }
       }
     ],
@@ -249,75 +403,8 @@
       {
         "atMs": 380,
         "position": {
-          "x": 6,
-          "y": 11
-        }
-      }
-    ]
-  },
-  {
-    "level": 8,
-    "name": "短跑接力",
-    "status": "won",
-    "elapsedMs": 6480,
-    "dodges": 1,
-    "beacons": 2,
-    "movedCells": 29,
-    "inputTurns": 9,
-    "charges": [
-      {
-        "atMs": 1040,
-        "enemy": 1,
-        "direction": "down"
-      },
-      {
-        "atMs": 2440,
-        "enemy": 2,
-        "direction": "left"
-      },
-      {
-        "atMs": 2880,
-        "enemy": 1,
-        "direction": "down"
-      },
-      {
-        "atMs": 5640,
-        "enemy": 1,
-        "direction": "left"
-      }
-    ],
-    "eliminations": [
-      {
-        "atMs": 3200,
-        "enemy": 2,
-        "wall": {
-          "x": 4,
-          "y": 9
-        }
-      },
-      {
-        "atMs": 6480,
-        "enemy": 1,
-        "wall": {
-          "x": 4,
-          "y": 9
-        }
-      }
-    ],
-    "gateChanges": [],
-    "beaconPlacements": [
-      {
-        "atMs": 260,
-        "position": {
-          "x": 6,
-          "y": 9
-        }
-      },
-      {
-        "atMs": 3860,
-        "position": {
-          "x": 5,
-          "y": 9
+          "x": 3,
+          "y": 6
         }
       }
     ]
@@ -326,60 +413,79 @@
     "level": 9,
     "name": "两格电的账",
     "status": "won",
-    "elapsedMs": 4520,
-    "dodges": 0,
+    "elapsedMs": 4440,
+    "dodges": 1,
     "beacons": 2,
-    "movedCells": 20,
-    "inputTurns": 9,
+    "movedCells": 23,
+    "inputTurns": 12,
+    "overlapMs": 520,
     "charges": [
       {
-        "atMs": 980,
-        "enemy": 1,
-        "direction": "down"
-      },
-      {
-        "atMs": 2920,
+        "atMs": 1120,
         "enemy": 2,
         "direction": "left"
       },
       {
-        "atMs": 3420,
+        "atMs": 1700,
         "enemy": 1,
         "direction": "down"
+      },
+      {
+        "atMs": 3380,
+        "enemy": 2,
+        "direction": "left"
       }
     ],
     "eliminations": [
       {
-        "atMs": 3940,
+        "atMs": 2800,
+        "enemy": 1,
+        "wall": {
+          "x": 8,
+          "y": 8
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 4440,
         "enemy": 2,
         "wall": {
-          "x": 4,
-          "y": 8
+          "x": 0,
+          "y": 6
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 2800,
+        "position": {
+          "x": 8,
+          "y": 7
         }
       },
       {
-        "atMs": 4520,
-        "enemy": 1,
-        "wall": {
-          "x": 6,
-          "y": 14
+        "atMs": 4440,
+        "position": {
+          "x": 1,
+          "y": 6
         }
       }
     ],
     "gateChanges": [],
     "beaconPlacements": [
       {
-        "atMs": 380,
+        "atMs": 500,
         "position": {
-          "x": 6,
-          "y": 8
+          "x": 8,
+          "y": 6
         }
       },
       {
-        "atMs": 3260,
+        "atMs": 3140,
         "position": {
-          "x": 6,
-          "y": 10
+          "x": 3,
+          "y": 6
         }
       }
     ]
@@ -391,8 +497,9 @@
     "elapsedMs": 4440,
     "dodges": 2,
     "beacons": 1,
-    "movedCells": 22,
-    "inputTurns": 10,
+    "movedCells": 24,
+    "inputTurns": 15,
+    "overlapMs": 0,
     "charges": [
       {
         "atMs": 960,
@@ -412,14 +519,32 @@
         "wall": {
           "x": 10,
           "y": 7
-        }
+        },
+        "obstacle": "wall"
       },
       {
         "atMs": 4440,
         "enemy": 1,
         "wall": {
-          "x": 11,
+          "x": 9,
           "y": 7
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 1720,
+        "position": {
+          "x": 10,
+          "y": 6
+        }
+      },
+      {
+        "atMs": 4440,
+        "position": {
+          "x": 9,
+          "y": 6
         }
       }
     ],
@@ -434,7 +559,7 @@
       {
         "atMs": 3140,
         "position": {
-          "x": 11,
+          "x": 9,
           "y": 4
         }
       }
@@ -444,65 +569,79 @@
     "level": 11,
     "name": "分头设局",
     "status": "won",
-    "elapsedMs": 6160,
+    "elapsedMs": 4440,
     "dodges": 1,
     "beacons": 2,
-    "movedCells": 31,
-    "inputTurns": 15,
+    "movedCells": 16,
+    "inputTurns": 8,
+    "overlapMs": 320,
     "charges": [
       {
-        "atMs": 1040,
-        "enemy": 1,
-        "direction": "down"
-      },
-      {
-        "atMs": 2460,
-        "enemy": 2,
-        "direction": "down"
-      },
-      {
-        "atMs": 2880,
-        "enemy": 1,
-        "direction": "down"
-      },
-      {
-        "atMs": 5140,
+        "atMs": 1340,
         "enemy": 2,
         "direction": "left"
+      },
+      {
+        "atMs": 2820,
+        "enemy": 1,
+        "direction": "up"
+      },
+      {
+        "atMs": 3380,
+        "enemy": 2,
+        "direction": "up"
       }
     ],
     "eliminations": [
       {
-        "atMs": 3760,
+        "atMs": 3700,
         "enemy": 1,
         "wall": {
-          "x": 7,
-          "y": 11
+          "x": 6,
+          "y": 0
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 4440,
+        "enemy": 2,
+        "wall": {
+          "x": 5,
+          "y": 0
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 4440,
+        "position": {
+          "x": 6,
+          "y": 1
         }
       },
       {
-        "atMs": 6160,
-        "enemy": 2,
-        "wall": {
-          "x": 4,
-          "y": 8
+        "atMs": 4440,
+        "position": {
+          "x": 5,
+          "y": 1
         }
       }
     ],
     "gateChanges": [],
     "beaconPlacements": [
       {
-        "atMs": 260,
+        "atMs": 500,
         "position": {
-          "x": 7,
-          "y": 9
+          "x": 6,
+          "y": 4
         }
       },
       {
-        "atMs": 3500,
+        "atMs": 3140,
         "position": {
           "x": 5,
-          "y": 8
+          "y": 3
         }
       }
     ]
@@ -511,38 +650,57 @@
     "level": 12,
     "name": "两边都有门",
     "status": "won",
-    "elapsedMs": 2840,
-    "dodges": 1,
+    "elapsedMs": 4440,
+    "dodges": 2,
     "beacons": 1,
-    "movedCells": 14,
-    "inputTurns": 6,
+    "movedCells": 26,
+    "inputTurns": 17,
+    "overlapMs": 0,
     "charges": [
       {
         "atMs": 1200,
         "enemy": 2,
-        "direction": "left"
+        "direction": "down"
       },
       {
-        "atMs": 1820,
+        "atMs": 3380,
         "enemy": 1,
-        "direction": "down"
+        "direction": "left"
       }
     ],
     "eliminations": [
       {
-        "atMs": 1960,
+        "atMs": 1940,
         "enemy": 2,
         "wall": {
-          "x": 6,
-          "y": 4
+          "x": 10,
+          "y": 7
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 4440,
+        "enemy": 1,
+        "wall": {
+          "x": 0,
+          "y": 2
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 1940,
+        "position": {
+          "x": 10,
+          "y": 6
         }
       },
       {
-        "atMs": 2840,
-        "enemy": 1,
-        "wall": {
-          "x": 5,
-          "y": 7
+        "atMs": 4440,
+        "position": {
+          "x": 1,
+          "y": 2
         }
       }
     ],
@@ -551,14 +709,19 @@
         "atMs": 380,
         "gate": "B",
         "closed": false
+      },
+      {
+        "atMs": 1940,
+        "gate": "A",
+        "closed": false
       }
     ],
     "beaconPlacements": [
       {
-        "atMs": 1580,
+        "atMs": 3140,
         "position": {
-          "x": 5,
-          "y": 6
+          "x": 3,
+          "y": 2
         }
       }
     ]
@@ -567,95 +730,96 @@
     "level": 13,
     "name": "别共用一条退路",
     "status": "won",
-    "elapsedMs": 8320,
+    "elapsedMs": 4820,
     "dodges": 0,
-    "beacons": 3,
-    "movedCells": 34,
-    "inputTurns": 14,
+    "beacons": 2,
+    "movedCells": 20,
+    "inputTurns": 9,
+    "overlapMs": 1420,
     "charges": [
       {
-        "atMs": 1340,
+        "atMs": 1040,
         "enemy": 1,
         "direction": "down"
       },
       {
-        "atMs": 1980,
-        "enemy": 3,
-        "direction": "down"
-      },
-      {
-        "atMs": 2700,
+        "atMs": 1400,
         "enemy": 2,
         "direction": "left"
       },
       {
-        "atMs": 4400,
+        "atMs": 1520,
+        "enemy": 3,
+        "direction": "down"
+      },
+      {
+        "atMs": 2900,
         "enemy": 1,
         "direction": "left"
       },
       {
-        "atMs": 5020,
-        "enemy": 3,
+        "atMs": 3540,
+        "enemy": 2,
         "direction": "left"
       },
       {
-        "atMs": 6260,
-        "enemy": 1,
-        "direction": "down"
-      },
-      {
-        "atMs": 7340,
+        "atMs": 3840,
         "enemy": 3,
-        "direction": "down"
+        "direction": "left"
       }
     ],
     "eliminations": [
       {
-        "atMs": 3460,
+        "atMs": 3740,
+        "enemy": 1,
+        "wall": {
+          "x": 4,
+          "y": 7
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 4300,
         "enemy": 2,
         "wall": {
           "x": 4,
-          "y": 9
-        }
+          "y": 7
+        },
+        "obstacle": "wall"
       },
       {
-        "atMs": 7100,
-        "enemy": 1,
-        "wall": {
-          "x": 2,
-          "y": 14
-        }
-      },
-      {
-        "atMs": 8320,
+        "atMs": 4820,
         "enemy": 3,
         "wall": {
-          "x": 2,
-          "y": 14
+          "x": 4,
+          "y": 7
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 4820,
+        "position": {
+          "x": 5,
+          "y": 7
         }
       }
     ],
     "gateChanges": [],
     "beaconPlacements": [
       {
-        "atMs": 380,
+        "atMs": 260,
         "position": {
           "x": 6,
-          "y": 9
+          "y": 8
         }
       },
       {
-        "atMs": 3260,
+        "atMs": 2540,
         "position": {
           "x": 5,
-          "y": 12
-        }
-      },
-      {
-        "atMs": 6140,
-        "position": {
-          "x": 2,
-          "y": 13
+          "y": 7
         }
       }
     ]
@@ -667,8 +831,9 @@
     "elapsedMs": 4440,
     "dodges": 2,
     "beacons": 1,
-    "movedCells": 25,
-    "inputTurns": 14,
+    "movedCells": 26,
+    "inputTurns": 17,
+    "overlapMs": 0,
     "charges": [
       {
         "atMs": 720,
@@ -688,14 +853,32 @@
         "wall": {
           "x": 10,
           "y": 0
-        }
+        },
+        "obstacle": "wall"
       },
       {
         "atMs": 4440,
         "enemy": 1,
         "wall": {
           "x": 12,
+          "y": 2
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 1480,
+        "position": {
+          "x": 10,
           "y": 1
+        }
+      },
+      {
+        "atMs": 4440,
+        "position": {
+          "x": 11,
+          "y": 2
         }
       }
     ],
@@ -705,7 +888,7 @@
         "atMs": 3140,
         "position": {
           "x": 9,
-          "y": 1
+          "y": 2
         }
       }
     ]
@@ -714,11 +897,12 @@
     "level": 15,
     "name": "十字交班",
     "status": "won",
-    "elapsedMs": 14140,
-    "dodges": 0,
-    "beacons": 5,
-    "movedCells": 57,
-    "inputTurns": 29,
+    "elapsedMs": 7560,
+    "dodges": 1,
+    "beacons": 3,
+    "movedCells": 42,
+    "inputTurns": 21,
+    "overlapMs": 2480,
     "charges": [
       {
         "atMs": 1160,
@@ -726,14 +910,14 @@
         "direction": "down"
       },
       {
-        "atMs": 1620,
-        "enemy": 3,
-        "direction": "down"
-      },
-      {
-        "atMs": 1660,
+        "atMs": 1480,
         "enemy": 2,
         "direction": "left"
+      },
+      {
+        "atMs": 1720,
+        "enemy": 3,
+        "direction": "down"
       },
       {
         "atMs": 3020,
@@ -741,150 +925,24 @@
         "direction": "down"
       },
       {
-        "atMs": 3540,
-        "enemy": 2,
-        "direction": "down"
-      },
-      {
-        "atMs": 3940,
-        "enemy": 3,
-        "direction": "down"
-      },
-      {
-        "atMs": 5160,
-        "enemy": 1,
-        "direction": "down"
-      },
-      {
-        "atMs": 5420,
-        "enemy": 2,
-        "direction": "up"
-      },
-      {
-        "atMs": 5900,
+        "atMs": 3680,
         "enemy": 3,
         "direction": "up"
       },
       {
-        "atMs": 7300,
-        "enemy": 1,
-        "direction": "right"
-      },
-      {
-        "atMs": 8080,
+        "atMs": 3840,
         "enemy": 2,
-        "direction": "down"
+        "direction": "left"
       },
       {
-        "atMs": 8940,
-        "enemy": 3,
-        "direction": "down"
-      },
-      {
-        "atMs": 9160,
+        "atMs": 4900,
         "enemy": 1,
         "direction": "right"
       },
       {
-        "atMs": 11260,
+        "atMs": 6000,
         "enemy": 2,
         "direction": "up"
-      },
-      {
-        "atMs": 13400,
-        "enemy": 2,
-        "direction": "right"
-      }
-    ],
-    "eliminations": [
-      {
-        "atMs": 9900,
-        "enemy": 1,
-        "wall": {
-          "x": 12,
-          "y": 11
-        }
-      },
-      {
-        "atMs": 10000,
-        "enemy": 3,
-        "wall": {
-          "x": 8,
-          "y": 14
-        }
-      },
-      {
-        "atMs": 14140,
-        "enemy": 2,
-        "wall": {
-          "x": 12,
-          "y": 6
-        }
-      }
-    ],
-    "gateChanges": [],
-    "beaconPlacements": [
-      {
-        "atMs": 380,
-        "position": {
-          "x": 6,
-          "y": 8
-        }
-      },
-      {
-        "atMs": 3260,
-        "position": {
-          "x": 7,
-          "y": 10
-        }
-      },
-      {
-        "atMs": 6260,
-        "position": {
-          "x": 8,
-          "y": 11
-        }
-      },
-      {
-        "atMs": 9380,
-        "position": {
-          "x": 10,
-          "y": 9
-        }
-      },
-      {
-        "atMs": 12260,
-        "position": {
-          "x": 11,
-          "y": 6
-        }
-      }
-    ]
-  },
-  {
-    "level": 16,
-    "name": "先开哪扇",
-    "status": "won",
-    "elapsedMs": 7560,
-    "dodges": 1,
-    "beacons": 3,
-    "movedCells": 37,
-    "inputTurns": 23,
-    "charges": [
-      {
-        "atMs": 740,
-        "enemy": 1,
-        "direction": "down"
-      },
-      {
-        "atMs": 2180,
-        "enemy": 2,
-        "direction": "down"
-      },
-      {
-        "atMs": 4040,
-        "enemy": 2,
-        "direction": "down"
       },
       {
         "atMs": 6500,
@@ -894,27 +952,157 @@
     ],
     "eliminations": [
       {
-        "atMs": 1660,
+        "atMs": 5640,
         "enemy": 1,
         "wall": {
-          "x": 6,
-          "y": 14
-        }
+          "x": 8,
+          "y": 9
+        },
+        "obstacle": "wall"
       },
       {
-        "atMs": 4800,
+        "atMs": 6960,
         "enemy": 2,
         "wall": {
-          "x": 6,
-          "y": 14
-        }
+          "x": 4,
+          "y": 5
+        },
+        "obstacle": "wall"
       },
       {
         "atMs": 7560,
         "enemy": 3,
         "wall": {
+          "x": 7,
+          "y": 9
+        },
+        "obstacle": "wreck"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 5640,
+        "position": {
+          "x": 7,
+          "y": 9
+        }
+      },
+      {
+        "atMs": 7560,
+        "position": {
+          "x": 4,
+          "y": 6
+        }
+      },
+      {
+        "atMs": 7560,
+        "position": {
+          "x": 7,
+          "y": 8
+        }
+      }
+    ],
+    "gateChanges": [],
+    "beaconPlacements": [
+      {
+        "atMs": 140,
+        "position": {
+          "x": 6,
+          "y": 8
+        }
+      },
+      {
+        "atMs": 2540,
+        "position": {
+          "x": 6,
+          "y": 7
+        }
+      },
+      {
+        "atMs": 6260,
+        "position": {
+          "x": 7,
+          "y": 7
+        }
+      }
+    ]
+  },
+  {
+    "level": 16,
+    "name": "先开哪扇",
+    "status": "won",
+    "elapsedMs": 4800,
+    "dodges": 1,
+    "beacons": 2,
+    "movedCells": 27,
+    "inputTurns": 12,
+    "overlapMs": 0,
+    "charges": [
+      {
+        "atMs": 500,
+        "enemy": 1,
+        "direction": "down"
+      },
+      {
+        "atMs": 2680,
+        "enemy": 2,
+        "direction": "up"
+      },
+      {
+        "atMs": 3740,
+        "enemy": 3,
+        "direction": "down"
+      }
+    ],
+    "eliminations": [
+      {
+        "atMs": 1420,
+        "enemy": 1,
+        "wall": {
           "x": 5,
+          "y": 14
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 3420,
+        "enemy": 2,
+        "wall": {
+          "x": 7,
           "y": 5
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 4800,
+        "enemy": 3,
+        "wall": {
+          "x": 6,
+          "y": 9
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 1420,
+        "position": {
+          "x": 5,
+          "y": 13
+        }
+      },
+      {
+        "atMs": 3420,
+        "position": {
+          "x": 7,
+          "y": 6
+        }
+      },
+      {
+        "atMs": 4800,
+        "position": {
+          "x": 6,
+          "y": 8
         }
       }
     ],
@@ -925,31 +1113,29 @@
         "closed": false
       },
       {
-        "atMs": 5300,
+        "atMs": 1420,
         "gate": "B",
         "closed": false
+      },
+      {
+        "atMs": 1940,
+        "gate": "A",
+        "closed": true
       }
     ],
     "beaconPlacements": [
       {
         "atMs": 380,
         "position": {
-          "x": 6,
+          "x": 5,
           "y": 11
         }
       },
       {
-        "atMs": 3260,
+        "atMs": 3500,
         "position": {
           "x": 6,
-          "y": 13
-        }
-      },
-      {
-        "atMs": 6260,
-        "position": {
-          "x": 5,
-          "y": 3
+          "y": 6
         }
       }
     ]
@@ -958,78 +1144,88 @@
     "level": 17,
     "name": "同频不同路",
     "status": "won",
-    "elapsedMs": 5000,
-    "dodges": 1,
-    "beacons": 2,
-    "movedCells": 27,
-    "inputTurns": 12,
+    "elapsedMs": 4400,
+    "dodges": 2,
+    "beacons": 1,
+    "movedCells": 22,
+    "inputTurns": 13,
+    "overlapMs": 1020,
     "charges": [
       {
-        "atMs": 1340,
+        "atMs": 1100,
+        "enemy": 3,
+        "direction": "down"
+      },
+      {
+        "atMs": 3380,
         "enemy": 1,
-        "direction": "down"
+        "direction": "right"
       },
       {
-        "atMs": 1340,
-        "enemy": 3,
-        "direction": "down"
-      },
-      {
-        "atMs": 3500,
-        "enemy": 3,
-        "direction": "left"
-      },
-      {
-        "atMs": 3620,
+        "atMs": 3380,
         "enemy": 2,
-        "direction": "left"
-      },
-      {
-        "atMs": 4020,
-        "enemy": 1,
-        "direction": "left"
+        "direction": "up"
       }
     ],
     "eliminations": [
       {
-        "atMs": 4340,
+        "atMs": 2020,
         "enemy": 3,
         "wall": {
-          "x": 4,
-          "y": 6
-        }
+          "x": 8,
+          "y": 7
+        },
+        "obstacle": "wall"
       },
       {
-        "atMs": 4600,
-        "enemy": 2,
-        "wall": {
-          "x": 4,
-          "y": 6
-        }
-      },
-      {
-        "atMs": 5000,
+        "atMs": 4400,
         "enemy": 1,
         "wall": {
-          "x": 4,
+          "x": 12,
+          "y": 2
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 4400,
+        "enemy": 2,
+        "wall": {
+          "x": 11,
+          "y": 0
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 2020,
+        "position": {
+          "x": 8,
           "y": 6
+        }
+      },
+      {
+        "atMs": 4400,
+        "position": {
+          "x": 11,
+          "y": 2
+        }
+      },
+      {
+        "atMs": 4400,
+        "position": {
+          "x": 11,
+          "y": 1
         }
       }
     ],
     "gateChanges": [],
     "beaconPlacements": [
       {
-        "atMs": 500,
+        "atMs": 3140,
         "position": {
-          "x": 6,
-          "y": 7
-        }
-      },
-      {
-        "atMs": 3380,
-        "position": {
-          "x": 5,
-          "y": 6
+          "x": 11,
+          "y": 2
         }
       }
     ]
@@ -1038,87 +1234,121 @@
     "level": 18,
     "name": "回收试验",
     "status": "won",
-    "elapsedMs": 7700,
+    "elapsedMs": 8080,
     "dodges": 1,
-    "beacons": 2,
-    "movedCells": 29,
-    "inputTurns": 12,
+    "beacons": 3,
+    "movedCells": 41,
+    "inputTurns": 22,
+    "overlapMs": 1340,
     "charges": [
       {
+        "atMs": 1560,
+        "enemy": 3,
+        "direction": "down"
+      },
+      {
         "atMs": 1940,
+        "enemy": 1,
+        "direction": "down"
+      },
+      {
+        "atMs": 2460,
         "enemy": 2,
         "direction": "left"
       },
       {
-        "atMs": 2160,
+        "atMs": 3420,
         "enemy": 3,
-        "direction": "left"
+        "direction": "down"
       },
       {
-        "atMs": 2540,
-        "enemy": 1,
-        "direction": "left"
-      },
-      {
-        "atMs": 4020,
-        "enemy": 3,
-        "direction": "left"
-      },
-      {
-        "atMs": 4100,
+        "atMs": 4780,
         "enemy": 2,
-        "direction": "left"
+        "direction": "right"
       },
       {
-        "atMs": 4380,
+        "atMs": 5460,
         "enemy": 1,
-        "direction": "left"
+        "direction": "right"
       },
       {
-        "atMs": 6960,
-        "enemy": 3,
-        "direction": "up"
+        "atMs": 7100,
+        "enemy": 2,
+        "direction": "right"
       }
     ],
     "eliminations": [
       {
-        "atMs": 5160,
-        "enemy": 2,
-        "wall": {
-          "x": 0,
-          "y": 6
-        }
-      },
-      {
-        "atMs": 5260,
-        "enemy": 1,
-        "wall": {
-          "x": 0,
-          "y": 6
-        }
-      },
-      {
-        "atMs": 7700,
+        "atMs": 4180,
         "enemy": 3,
         "wall": {
-          "x": 1,
-          "y": 5
+          "x": 8,
+          "y": 9
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 6380,
+        "enemy": 1,
+        "wall": {
+          "x": 12,
+          "y": 7
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 8080,
+        "enemy": 2,
+        "wall": {
+          "x": 12,
+          "y": 6
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 4180,
+        "position": {
+          "x": 8,
+          "y": 8
+        }
+      },
+      {
+        "atMs": 6380,
+        "position": {
+          "x": 11,
+          "y": 7
+        }
+      },
+      {
+        "atMs": 8080,
+        "position": {
+          "x": 11,
+          "y": 6
         }
       }
     ],
     "gateChanges": [],
     "beaconPlacements": [
       {
-        "atMs": 980,
+        "atMs": 740,
         "position": {
-          "x": 6,
-          "y": 6
+          "x": 8,
+          "y": 8
         }
       },
       {
-        "atMs": 3860,
+        "atMs": 3140,
         "position": {
-          "x": 1,
+          "x": 8,
+          "y": 7
+        }
+      },
+      {
+        "atMs": 6140,
+        "position": {
+          "x": 11,
           "y": 6
         }
       }
@@ -1128,11 +1358,12 @@
     "level": 19,
     "name": "把退路留下",
     "status": "won",
-    "elapsedMs": 7100,
+    "elapsedMs": 5420,
     "dodges": 0,
-    "beacons": 2,
-    "movedCells": 22,
-    "inputTurns": 11,
+    "beacons": 3,
+    "movedCells": 28,
+    "inputTurns": 9,
+    "overlapMs": 1220,
     "charges": [
       {
         "atMs": 1940,
@@ -1145,48 +1376,69 @@
         "direction": "down"
       },
       {
-        "atMs": 3620,
+        "atMs": 2780,
         "enemy": 3,
-        "direction": "right"
+        "direction": "up"
       },
       {
-        "atMs": 4340,
+        "atMs": 3820,
         "enemy": 1,
-        "direction": "down"
+        "direction": "left"
       },
       {
-        "atMs": 5080,
+        "atMs": 4360,
         "enemy": 2,
-        "direction": "right"
-      },
-      {
-        "atMs": 6360,
-        "enemy": 1,
         "direction": "right"
       }
     ],
     "eliminations": [
       {
-        "atMs": 4640,
+        "atMs": 3760,
         "enemy": 3,
         "wall": {
-          "x": 12,
-          "y": 8
-        }
+          "x": 6,
+          "y": 6
+        },
+        "obstacle": "wall"
       },
       {
-        "atMs": 6140,
+        "atMs": 4560,
+        "enemy": 1,
+        "wall": {
+          "x": 6,
+          "y": 7
+        },
+        "obstacle": "wreck"
+      },
+      {
+        "atMs": 5420,
         "enemy": 2,
         "wall": {
           "x": 12,
-          "y": 8
+          "y": 10
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 3760,
+        "position": {
+          "x": 6,
+          "y": 7
         }
       },
       {
-        "atMs": 7100,
-        "enemy": 1,
-        "wall": {
-          "x": 12,
+        "atMs": 5420,
+        "position": {
+          "x": 7,
+          "y": 7
+        }
+      },
+      {
+        "atMs": 5420,
+        "position": {
+          "x": 11,
           "y": 10
         }
       }
@@ -1194,17 +1446,24 @@
     "gateChanges": [],
     "beaconPlacements": [
       {
-        "atMs": 500,
+        "atMs": 260,
         "position": {
           "x": 8,
           "y": 9
         }
       },
       {
-        "atMs": 3380,
+        "atMs": 2540,
         "position": {
-          "x": 10,
-          "y": 8
+          "x": 6,
+          "y": 7
+        }
+      },
+      {
+        "atMs": 4100,
+        "position": {
+          "x": 9,
+          "y": 10
         }
       }
     ]
@@ -1213,11 +1472,12 @@
     "level": 20,
     "name": "墙就在那儿",
     "status": "won",
-    "elapsedMs": 8700,
+    "elapsedMs": 5740,
     "dodges": 1,
-    "beacons": 3,
-    "movedCells": 39,
-    "inputTurns": 24,
+    "beacons": 2,
+    "movedCells": 37,
+    "inputTurns": 23,
+    "overlapMs": 0,
     "charges": [
       {
         "atMs": 480,
@@ -1230,29 +1490,14 @@
         "direction": "down"
       },
       {
-        "atMs": 3500,
+        "atMs": 3740,
+        "enemy": 3,
+        "direction": "down"
+      },
+      {
+        "atMs": 4900,
         "enemy": 2,
         "direction": "up"
-      },
-      {
-        "atMs": 4580,
-        "enemy": 3,
-        "direction": "left"
-      },
-      {
-        "atMs": 5960,
-        "enemy": 2,
-        "direction": "left"
-      },
-      {
-        "atMs": 6900,
-        "enemy": 3,
-        "direction": "down"
-      },
-      {
-        "atMs": 7820,
-        "enemy": 2,
-        "direction": "down"
       }
     ],
     "eliminations": [
@@ -1262,22 +1507,48 @@
         "wall": {
           "x": 5,
           "y": 14
-        }
+        },
+        "obstacle": "wall"
       },
       {
-        "atMs": 7920,
+        "atMs": 4760,
         "enemy": 3,
         "wall": {
-          "x": 2,
-          "y": 9
+          "x": 7,
+          "y": 5
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 5740,
+        "enemy": 2,
+        "wall": {
+          "x": 6,
+          "y": 5
+        },
+        "obstacle": "wall"
+      }
+    ],
+    "wreckActivations": [
+      {
+        "atMs": 1240,
+        "position": {
+          "x": 5,
+          "y": 13
         }
       },
       {
-        "atMs": 8700,
-        "enemy": 2,
-        "wall": {
-          "x": 2,
-          "y": 9
+        "atMs": 4760,
+        "position": {
+          "x": 7,
+          "y": 4
+        }
+      },
+      {
+        "atMs": 5740,
+        "position": {
+          "x": 6,
+          "y": 6
         }
       }
     ],
@@ -1288,41 +1559,29 @@
         "closed": false
       },
       {
-        "atMs": 1340,
+        "atMs": 1460,
         "gate": "B",
         "closed": false
       },
       {
-        "atMs": 4420,
+        "atMs": 4760,
         "gate": "B",
         "closed": true
-      },
-      {
-        "atMs": 5680,
-        "gate": "B",
-        "closed": false
       }
     ],
     "beaconPlacements": [
       {
-        "atMs": 740,
+        "atMs": 620,
         "position": {
           "x": 6,
-          "y": 11
+          "y": 10
         }
       },
       {
-        "atMs": 3740,
+        "atMs": 3500,
         "position": {
-          "x": 5,
-          "y": 6
-        }
-      },
-      {
-        "atMs": 6620,
-        "position": {
-          "x": 2,
-          "y": 7
+          "x": 7,
+          "y": 4
         }
       }
     ]

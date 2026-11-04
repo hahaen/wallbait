@@ -30,8 +30,15 @@ interface Metrics {
   beacons: number;
   movedCells: number;
   inputTurns: number;
+  overlapMs: number;
   charges: { atMs: number; enemy: number; direction: Direction }[];
-  eliminations: { atMs: number; enemy: number; wall: Point }[];
+  eliminations: {
+    atMs: number;
+    enemy: number;
+    wall: Point;
+    obstacle: 'wall' | 'wreck';
+  }[];
+  wreckActivations: { atMs: number; position: Point }[];
   gateChanges: { atMs: number; gate: string; closed: boolean }[];
   beaconPlacements: { atMs: number; position: Point }[];
 }
@@ -48,8 +55,10 @@ function measure(replay: Replay): Metrics {
     beacons: 0,
     movedCells: 0,
     inputTurns: 0,
+    overlapMs: 0,
     charges: [],
     eliminations: [],
+    wreckActivations: [],
     gateChanges: [],
     beaconPlacements: [],
   };
@@ -65,6 +74,9 @@ function measure(replay: Replay): Metrics {
       const before = {
         apple: { ...state.apple },
         beacons: state.beacons,
+        wrecks: state.wrecks
+          .filter((w) => w.active)
+          .map((w) => `${w.x},${w.y}`),
         gates: state.gates.map((gate) => ({
           id: gate.id,
           closed: gate.closed,
@@ -78,6 +90,18 @@ function measure(replay: Replay): Metrics {
       result.movedCells +=
         Math.abs(state.apple.x - before.apple.x) +
         Math.abs(state.apple.y - before.apple.y);
+      if (
+        state.snakes.filter(
+          (s) => s.alive && (s.phase === 'charging' || s.phase === 'dashing'),
+        ).length >= 2
+      )
+        result.overlapMs += 20;
+      for (const wreck of state.wrecks)
+        if (wreck.active && !before.wrecks.includes(`${wreck.x},${wreck.y}`))
+          result.wreckActivations.push({
+            atMs: state.elapsedMs,
+            position: { x: wreck.x, y: wreck.y },
+          });
       for (const event of state.events) {
         if (event.type === 'charge')
           result.charges.push({
@@ -90,6 +114,7 @@ function measure(replay: Replay): Metrics {
             atMs: state.elapsedMs,
             enemy: event.snake + 1,
             wall: { x: event.x, y: event.y },
+            obstacle: event.obstacle,
           });
       }
       for (const gate of state.gates)
@@ -144,14 +169,14 @@ function document(metrics: Metrics[]): string {
     '',
     '## 回放统计',
     '',
-    '锁向次数统计正式 `charge` 事件；门变化只计实际开闭变化，不把待执行请求算成已切门。移动格数为逐 tick 实际位移累计，包含闪避；输入转向只计相邻非空方向改变，停顿不重置计数。完整事件时间、撞击格及信标落点保存在 [JSON 报告](testing/replay-metrics.json)。这些指标描述动作结构，不能直接等同于独立策略决策次数。',
+    '锁向次数统计正式 `charge` 事件；门变化只计实际开闭变化，不把待执行请求算成已切门。移动格数为逐 tick 实际位移累计，包含闪避；输入转向只计相邻非空方向改变，停顿不重置计数。完整事件时间、撞击格及信标落点保存在 [JSON 报告](testing/replay-metrics.json)。多敌攻击重叠统计至少两名存活敌人同时处于正式预警或冲刺的规则时间；撞残骸按淘汰事件来源统计。这些指标描述动作结构，不能直接等同于独立策略决策次数。',
     '',
-    '| 关 | 名称 | 用时 | 闪避 / 信标 | 锁向 | 门变化 | 移动格 | 输入转向 |',
-    '| --- | --- | --- | --- | --- | --- | --- | --- |',
+    '| 关 | 名称 | 用时 | 闪避 / 信标 | 锁向 | 门变化 | 移动格 | 输入转向 | 多敌攻击重叠 | 撞残骸 |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
   ];
   for (const m of metrics)
     lines.push(
-      `| ${m.level} | ${m.name} | ${seconds(m.elapsedMs)}s | ${m.dodges} / ${m.beacons} | ${m.charges.length} | ${m.gateChanges.length} | ${m.movedCells} | ${m.inputTurns} |`,
+      `| ${m.level} | ${m.name} | ${seconds(m.elapsedMs)}s | ${m.dodges} / ${m.beacons} | ${m.charges.length} | ${m.gateChanges.length} | ${m.movedCells} | ${m.inputTurns} | ${seconds(m.overlapMs)}s | ${m.eliminations.filter((e) => e.obstacle === 'wreck').length} |`,
     );
   for (let chapter = 0; chapter < 4; chapter++) {
     lines.push('', `## 第 ${chapter + 1} 章 · ${LEVELS[chapter * 5]!.chapter}`);
@@ -172,7 +197,7 @@ function document(metrics: Metrics[]): string {
         '',
         `**可复现获胜方案：** ${commandPlan(replay.commands)}`,
         '',
-        `**事件证据：** ${m.eliminations.map((e) => `${e.enemy}号在 ${seconds(e.atMs)}s 撞上 (${e.wall.x},${e.wall.y})`).join('；')}。${m.gateChanges.length ? `实际切门：${m.gateChanges.map((g) => `${seconds(g.atMs)}s ${g.gate}${g.closed ? '关' : '开'}`).join('、')}。` : ''}${m.beaconPlacements.length ? `信标：${m.beaconPlacements.map((b) => `${seconds(b.atMs)}s 放于 (${b.position.x},${b.position.y})`).join('、')}。` : ''}`,
+        `**事件证据：** ${m.eliminations.map((e) => `${e.enemy}号在 ${seconds(e.atMs)}s 撞上${e.obstacle === 'wreck' ? '残骸' : '墙/门'} (${e.wall.x},${e.wall.y})`).join('；')}。${m.gateChanges.length ? `实际切门：${m.gateChanges.map((g) => `${seconds(g.atMs)}s ${g.gate}${g.closed ? '关' : '开'}`).join('、')}。` : ''}${m.beaconPlacements.length ? `信标：${m.beaconPlacements.map((b) => `${seconds(b.atMs)}s 投于 (${b.position.x},${b.position.y})`).join('、')}。` : ''}`,
       );
     }
   }
@@ -196,6 +221,12 @@ function document(metrics: Metrics[]): string {
 it('逐关纯命令回放与设计报告保持一致', () => {
   expect(replays.map((r) => r.level)).toEqual(LEVELS.map((l) => l.id));
   const metrics = replays.map(measure);
+  expect(
+    metrics
+      .find((m) => m.level === 8)!
+      .eliminations.some((e) => e.obstacle === 'wreck'),
+  ).toBe(true);
+  expect(metrics.find((m) => m.level === 15)!.overlapMs).toBeGreaterThan(0);
   for (const [index, report] of metrics.entries()) {
     const replay = replays[index]!;
     expect(report.status, `第 ${report.level} 关`).toBe('won');

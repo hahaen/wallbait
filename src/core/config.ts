@@ -6,7 +6,8 @@ export const DODGE_CELLS = 2;
 export const COOLDOWN_MS = 240;
 export const MAX_ENERGY = 2;
 export const RECHARGE_MS = 3000;
-export const BEACON_MS = 2800;
+export const BEACON_MS = 2200;
+export const BEACON_CELLS = 2;
 export const DIRECTIONS: Direction[] = ['up', 'right', 'down', 'left'];
 export const VECTOR: Record<Direction, Point> = {
   up: { x: 0, y: -1 },

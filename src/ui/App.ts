@@ -141,7 +141,7 @@ export class App {
       'play',
       `<section class="play-screen screen"><header class="play-header"><div><small>第 ${String(id).padStart(2, '0')} / 20 关</small><h1 tabindex="-1">${level.name}</h1></div>${button('pause', 'Ⅱ', 'pause-button')} </header>
       <div class="hud"><span id="enemy-count"></span><span id="clock">0.0s</span><span id="cooldown" class="ready">电量 ▰▰</span><span id="mechanisms" class="mechanisms"></span></div>
-      <div class="arena-slot"><div id="arena" role="img" aria-label="对局地图：青色机器人阿零、机械追逐者、墙、配对闸门与橙色危险通道"><span class="loading">正在摆好墙…</span></div></div>
+      <div class="arena-slot"><div id="arena" role="img" aria-label="对局地图：青色机器人阿零、机械追逐者、墙、配对闸门、残骸叉框、信标落点准星与橙色危险通道"><span class="loading">正在摆好墙…</span></div></div>
       <div class="play-status" id="play-status" aria-live="polite">${level.focus}</div>
       <aside class="loss-inspection" hidden aria-label="失败现场说明"><b id="loss-title" tabindex="-1"></b><p id="loss-advice"></p><small>红圈 ×：碰撞格 · 金色框：致命敌人的路线</small><div>${button('result', '返回结算')}${button('retry', '再试一次', 'primary')}</div></aside>
       <div class="controls"><div class="dpad" aria-label="四向移动"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span aria-hidden="true">移动</span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="skills"><button class="skill dodge" data-dodge aria-label="闪避"><span aria-hidden="true">↟</span><b>闪避</b><small id="dodge-text">1 格电</small></button><button class="skill beacon" data-beacon aria-label="信标" ${level.beaconEnabled ? '' : 'disabled'}><span aria-hidden="true">⌖</span><b>信标</b><small id="beacon-text">${level.beaconEnabled ? '1 格电' : '未启用'}</small></button></div></div>
@@ -224,7 +224,7 @@ export class App {
         : s.beacon
           ? `${seconds(s.beacon.remainingMs)}s`
           : beaconReady
-            ? '1 格电'
+            ? '前投 ≤2格'
             : '充电中',
     );
     this.root
@@ -251,8 +251,11 @@ export class App {
         s.beacon
           ? `信标 ${seconds(s.beacon.remainingMs)}s`
           : s.level.beaconEnabled
-            ? '闪避 / 信标共用电量'
+            ? '前投≤2格 · 闪避 / 信标共用电量'
             : '闪避两格 · 每3秒回1电',
+        s.wrecks.length
+          ? `残骸 ${s.wrecks.filter((w) => w.active).length} 阻挡${s.wrecks.some((w) => !w.active) ? ` / ${s.wrecks.filter((w) => !w.active).length} 待生效` : ''}`
+          : '',
       ]
         .filter(Boolean)
         .join('  |  '),
@@ -353,7 +356,7 @@ export class App {
   }
   private help(): void {
     this.dialog(
-      `<h2 id="dialog-title">你是阿零，借墙脱身</h2><div class="help-art">${heroArt}</div><ol class="instructions"><li><b>把墙留在它前方。</b>追逐者只冲几格。先引近墙，再对齐；橙色箭头出现后方向和长度锁定。</li><li><b>两格电，两种用途。</b>闪避走两格，无无敌；信标留在原地吸引追逐者 ${BEACON_MS / 1000} 秒。各耗一格电，每 ${RECHARGE_MS / 1000} 秒恢复一格。</li><li><b>踩踏板，切通路。</b>踏板和闸门用同一字母配对。再次走上踏板切换；攻击期间或门口有人时等待执行，不会夹人。</li></ol><div class="enemy-guide"><p><b class="normal-color">冲锋者 ›</b>直追目标，近墙对齐后侧移。</p><p><b class="swift-color">截击者 ϟ</b>预判你朝向前两格，变向甩开截击。</p><p><b class="cautious-color">侦察者 ◇</b>会识破撞墙路线；留下信标，骗它冒进。</p></div><p>手机：左手方向，右手闪避 / 信标。<br>电脑：WASD / 方向键、空格、E、Esc / P。</p><p class="score-rule">只碰头部会失败，履带不伤人。通关得一星，时间和闪避达标各加一星；超目标也能过关。</p>${button('close', '知道了', 'primary')}`,
+      `<h2 id="dialog-title">你是阿零，借墙脱身</h2><div class="help-art">${heroArt}</div><ol class="instructions"><li><b>把墙留在它前方。</b>追逐者只冲几格。先引近墙，再对齐；橙色箭头出现后方向和长度锁定。</li><li><b>两格电，两种用途。</b>闪避走两格，无无敌；信标沿朝向投出最多两格，遇障碍停在前方，贴墙落在脚下；准星显示落点，持续 ${BEACON_MS / 1000} 秒。各耗一格电，每 ${RECHARGE_MS / 1000} 秒恢复一格。</li><li><b>踩踏板，切通路。</b>踏板和闸门用同一字母配对。再次走上踏板切换；攻击期间或门口有人时等待执行，不会夹人。</li><li><b>把残骸变成下一堵墙。</b>敌人撞毁后，最后所在格留下残骸。空心叉框表示待生效、仍可通过；其他攻击结束且该格无人后变实心，阻挡所有角色，也能淘汰冲刺敌人。</li></ol><div class="enemy-guide"><p><b class="normal-color">冲锋者 ›</b>直追目标，近墙对齐后侧移。</p><p><b class="swift-color">截击者 ϟ</b>预判你朝向前两格，变向甩开截击。</p><p><b class="cautious-color">侦察者 ◇</b>会识破撞墙路线；留下信标，骗它冒进。</p></div><p>手机：左手方向，右手闪避 / 信标。<br>电脑：WASD / 方向键、空格、E、Esc / P。</p><p class="score-rule">只碰头部会失败，履带不伤人。通关得一星，时间和闪避达标各加一星；超目标也能过关。</p>${button('close', '知道了', 'primary')}`,
     );
   }
   private settings(): void {

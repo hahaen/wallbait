@@ -1,5 +1,6 @@
 import {
   BEACON_MS,
+  BEACON_CELLS,
   COOLDOWN_MS,
   DIRECTIONS,
   DODGE_CELLS,
@@ -34,16 +35,27 @@ export function solid(level: Level, p: Point): boolean {
     level.walls.some((w) => same(w, p))
   );
 }
-/** 静态墙与当前关闭的门；动画和待切换状态都不会改变碰撞。 */
+/** 静态墙、当前关闭的门与已生效残骸；待生效状态不参与碰撞。 */
 export function blocked(state: GameState, p: Point): boolean {
   return (
     solid(state.level, p) ||
+    state.wrecks.some((w) => w.active && same(w, p)) ||
     (state.level.gates ?? []).some(
       (gate) =>
         state.gates.some((g) => g.id === gate.id && g.closed) &&
         gate.cells.some((cell) => same(cell, p)),
     )
   );
+}
+/** 与实际投掷共用落点计算；障碍后方不可投，贴墙时落在脚下。 */
+export function beaconLanding(state: GameState): Point {
+  let point = { ...state.apple };
+  for (let i = 0; i < BEACON_CELLS; i++) {
+    const next = ahead(point, state.facing);
+    if (blocked(state, next)) break;
+    point = next;
+  }
+  return point;
 }
 export function createState(level: Level): GameState {
   return {
@@ -59,6 +71,7 @@ export function createState(level: Level): GameState {
     rechargeMs: 0,
     beacon: null,
     beacons: 0,
+    wrecks: [],
     gates: (level.gates ?? []).map((gate) => ({
       id: gate.id,
       closed: gate.initialClosed,
@@ -121,7 +134,7 @@ function hitPlayer(
   };
   finish(state, 'lost');
 }
-function applyPendingGates(state: GameState): void {
+function applyPendingTerrain(state: GameState): void {
   // 正式攻击的整段预警与冲刺共享同一地形，不让机关偷偷改变已展示路径。
   if (
     state.snakes.some(
@@ -129,6 +142,13 @@ function applyPendingGates(state: GameState): void {
     )
   )
     return;
+  for (const wreck of state.wrecks) {
+    if (!wreck.active && !same(state.apple, wreck) && !headAt(state, wreck)) {
+      wreck.active = true;
+      // 信标若被新残骸覆盖，不能继续产生不可达目标。
+      if (state.beacon && same(state.beacon, wreck)) state.beacon = null;
+    }
+  }
   for (const gate of state.level.gates ?? []) {
     const current = state.gates.find((g) => g.id === gate.id);
     if (!current || current.pending === null) continue;
@@ -153,7 +173,7 @@ function enterSwitches(state: GameState, previous: Point, next: Point): void {
       current.pending = desired === current.closed ? null : desired;
     }
   }
-  applyPendingGates(state);
+  applyPendingTerrain(state);
 }
 function moveApple(state: GameState, direction: Direction): boolean {
   const next = ahead(state.apple, direction);
@@ -267,7 +287,7 @@ export function step(state: GameState, command: Command): void {
     state.beacon.remainingMs -= TICK_MS;
     if (state.beacon.remainingMs <= 0) state.beacon = null;
   }
-  applyPendingGates(state);
+  applyPendingTerrain(state);
   if (command.direction) state.facing = command.direction;
   const head = headAt(state, state.apple);
   if (head) {
@@ -305,7 +325,7 @@ export function step(state: GameState, command: Command): void {
   ) {
     state.energy--;
     state.beacons++;
-    state.beacon = { ...state.apple, remainingMs: BEACON_MS };
+    state.beacon = { ...beaconLanding(state), remainingMs: BEACON_MS };
   }
   if (command.direction && !dodged && state.moveTimer === 0) {
     moveApple(state, command.direction);
@@ -400,7 +420,16 @@ export function step(state: GameState, command: Command): void {
         const next = ahead(snake, snake.locked);
         if (blocked(state, next)) {
           snake.alive = false;
-          state.events.push({ type: 'wall', snake: snake.id, ...next });
+          state.events.push({
+            type: 'wall',
+            snake: snake.id,
+            ...next,
+            obstacle: state.wrecks.some((w) => w.active && same(w, next))
+              ? 'wreck'
+              : 'wall',
+          });
+          if (!state.wrecks.some((w) => same(w, snake)))
+            state.wrecks.push({ x: snake.x, y: snake.y, active: false });
           break;
         }
         moveSnake(snake, next);
@@ -434,8 +463,10 @@ export function step(state: GameState, command: Command): void {
       collision.kind,
       collision.path,
     );
-  else if (state.snakes.every((s) => !s.alive)) finish(state, 'won');
-  if (state.status === 'playing') applyPendingGates(state);
+  if (state.status === 'playing') {
+    applyPendingTerrain(state);
+    if (state.snakes.every((s) => !s.alive)) finish(state, 'won');
+  }
 }
 
 export function stars(

@@ -60,7 +60,14 @@ export interface Snake extends Point {
   attackPath: Point[];
 }
 export type GameEvent =
-  | { type: 'charge' | 'dash' | 'wall'; snake: number; x: number; y: number }
+  | { type: 'charge' | 'dash'; snake: number; x: number; y: number }
+  | {
+      type: 'wall';
+      snake: number;
+      x: number;
+      y: number;
+      obstacle: 'wall' | 'wreck';
+    }
   | { type: 'dodge' | 'won' | 'lost'; x: number; y: number };
 export interface LossDetails {
   enemy: number;
@@ -82,6 +89,7 @@ export interface GameState {
   beacon: (Point & { remainingMs: number }) | null;
   beacons: number;
   gates: { id: string; closed: boolean; pending: boolean | null }[];
+  wrecks: (Point & { active: boolean })[];
   lossReason: string | null;
   loss: LossDetails | null;
   dodges: number;

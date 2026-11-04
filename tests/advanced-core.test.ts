@@ -44,11 +44,11 @@ function advance(
 }
 
 describe('共享电量与信标', () => {
-  it('两技能各耗一格，同步命令先闪避并在落点放信标', () => {
+  it('两技能各耗一格，同步命令先闪避再从落点投掷信标', () => {
     const s = arena();
     step(s, { direction: 'right', dodge: true, beacon: true });
     expect(s.apple).toEqual({ x: 8, y: 10 });
-    expect(s.beacon).toEqual({ x: 8, y: 10, remainingMs: BEACON_MS });
+    expect(s.beacon).toEqual({ x: 10, y: 10, remainingMs: BEACON_MS });
     expect(s.energy).toBe(0);
     expect(s.dodges).toBe(1);
     expect(s.beacons).toBe(1);
@@ -115,6 +115,7 @@ describe('三种策略与不可变正式预警', () => {
   it('谨慎者拒绝真人的撞墙线路，但会被信标引诱', () => {
     const s = arena({
       apple: { x: 9, y: 7 },
+      facing: 'right',
       snakes: [{ x: 7, y: 7, kind: 'cautious', delayMs: 100000 }],
     });
     expect(aimDirection(s, s.snakes[0]!)).toBeNull();
@@ -143,6 +144,7 @@ describe('三种策略与不可变正式预警', () => {
   it('玩家改变方向且信标到期，都不改变已展示的锁定路径', () => {
     const s = arena({
       apple: { x: 8, y: 7 },
+      facing: 'right',
       snakes: [{ x: 5, y: 7, kind: 'swift' }],
     });
     step(s, { direction: null, beacon: true });

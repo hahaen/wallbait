@@ -27,6 +27,7 @@ function clone(s: GameState): GameState {
     events: [],
     beacon: s.beacon ? { ...s.beacon } : null,
     gates: s.gates.map((g) => ({ ...g })),
+    wrecks: s.wrecks.map((w) => ({ ...w })),
     snakes: s.snakes.map((v) => ({ ...v, body: [...v.body] })),
   };
 }
@@ -122,7 +123,7 @@ function score(s: GameState): number {
   return value;
 }
 function fingerprint(s: GameState): string {
-  return `${s.apple.x},${s.apple.y},${s.facing},${s.energy},${Math.ceil(s.rechargeMs / 240)},${s.cooldownMs},${s.moveTimer};${s.beacon ? `${s.beacon.x},${s.beacon.y},${Math.ceil(s.beacon.remainingMs / 120)}` : '-'};${s.gates.map((g) => `${g.closed},${g.pending}`).join(';')};${s.snakes.map((v) => (v.alive ? `${v.x},${v.y},${v.phase},${v.locked},${Math.ceil(v.timer / 120)},${v.aimDirection},${v.aim},${v.remaining}` : 'x')).join(';')}`;
+  return `${s.apple.x},${s.apple.y},${s.facing},${s.energy},${Math.ceil(s.rechargeMs / 240)},${s.cooldownMs},${s.moveTimer};${s.beacon ? `${s.beacon.x},${s.beacon.y},${Math.ceil(s.beacon.remainingMs / 120)}` : '-'};${s.gates.map((g) => `${g.closed},${g.pending}`).join(';')};${s.wrecks.map((w) => `${w.x},${w.y},${w.active}`).join(';')};${s.snakes.map((v) => (v.alive ? `${v.x},${v.y},${v.phase},${v.locked},${Math.ceil(v.timer / 120)},${v.aimDirection},${v.aim},${v.remaining}` : 'x')).join(';')}`;
 }
 /** 测试工具：120ms决策，只通过正常命令推进，生成文件不赋值游戏坐标/状态。 */
 export function findReplay(level: Level): Replay {

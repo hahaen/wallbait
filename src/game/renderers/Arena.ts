@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { solid, warningPath } from '../../core/engine';
+import { beaconLanding, solid, warningPath } from '../../core/engine';
 import { BEACON_MS, RECHARGE_MS, VECTOR } from '../../core/config';
 import type {
   Direction,
@@ -304,6 +304,40 @@ export class Arena {
           g.fillStyle(0xffd486);
           g.fillCircle(c.x + 9, c.y - 9, 3);
         }
+      }
+    }
+    for (const wreck of this.state.wrecks) {
+      const c = center(wreck);
+      if (wreck.active) {
+        g.fillStyle(0x0b202b);
+        g.fillRoundedRect(c.x - 15, c.y - 14, 30, 29, 4);
+        g.fillStyle(0x806b4f);
+        g.fillRoundedRect(c.x - 13, c.y - 12, 26, 24, 3);
+      }
+      g.lineStyle(wreck.active ? 3 : 1, 0xffd486, wreck.active ? 1 : 0.75);
+      g.strokeRoundedRect(c.x - 13, c.y - 12, 26, 24, 3);
+      g.lineBetween(c.x - 8, c.y - 7, c.x + 8, c.y + 7);
+      g.lineBetween(c.x + 8, c.y - 7, c.x - 8, c.y + 7);
+      if (!wreck.active) {
+        // 空心框与四角缺口表示仍可通过，不只靠颜色区分。
+        g.fillStyle(0x193440);
+        for (const x of [-13, 13])
+          for (const y of [-12, 12]) g.fillRect(c.x + x - 3, c.y + y - 3, 6, 6);
+      }
+    }
+    if (
+      this.state.level.beaconEnabled &&
+      !this.state.beacon &&
+      this.state.energy > 0 &&
+      this.state.status === 'playing'
+    ) {
+      const landing = beaconLanding(this.state),
+        c = center(landing);
+      g.lineStyle(1, 0xd4b4ff, 0.8);
+      g.strokeCircle(c.x, c.y, 7);
+      for (const sign of [-1, 1]) {
+        g.lineBetween(c.x + sign * 5, c.y, c.x + sign * 11, c.y);
+        g.lineBetween(c.x, c.y + sign * 5, c.x, c.y + sign * 11);
       }
     }
     if (this.state.beacon) {
