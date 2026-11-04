@@ -9,11 +9,25 @@ import type { Replay } from './replay-search';
 const file = new URL('./fixtures/skill-solutions.json', import.meta.url);
 if (process.env.GENERATE_SKILLS === '1') {
   it('为每种开放搭配与20关战术星生成正常命令方案', () => {
-    const replays: (Replay & { goal: 'loadout' | 'tactic' })[] = [];
+    const selected = process.env.REPLAY_LEVEL
+      ? Number(process.env.REPLAY_LEVEL)
+      : undefined;
+    const replays: (Replay & { goal: 'loadout' | 'tactic' })[] = selected
+      ? (
+          JSON.parse(readFileSync(file, 'utf8')) as (Replay & {
+            goal: 'loadout' | 'tactic';
+          })[]
+        ).filter((r) => r.level !== selected)
+      : [];
     const save = (): void => {
+      replays.sort(
+        (a, b) =>
+          a.level - b.level ||
+          (a.goal === b.goal ? 0 : a.goal === 'tactic' ? 1 : -1),
+      );
       writeFileSync(file, JSON.stringify(replays, null, 2) + '\n');
     };
-    for (const level of LEVELS) {
+    for (const level of LEVELS.filter((l) => !selected || l.id === selected)) {
       for (const utility of availableSkills(level).filter(
         (u) => u !== 'dodge',
       )) {

@@ -64,7 +64,7 @@ export function createState(
   level: Level,
   utility: UtilitySkill = 'dodge',
 ): GameState {
-  return {
+  const state: GameState = {
     level,
     status: 'playing',
     paused: false,
@@ -124,6 +124,39 @@ export function createState(
       abilityTarget: null,
     })),
   };
+  // 蛇身只作表现；从出生格向后铺开，避开墙、门和其他角色。
+  for (const snake of state.snakes) {
+    const target = state.apple;
+    const dx = target.x - snake.x,
+      dy = target.y - snake.y;
+    snake.facing =
+      Math.abs(dx) > Math.abs(dy)
+        ? dx > 0
+          ? 'right'
+          : 'left'
+        : dy > 0
+          ? 'down'
+          : 'up';
+    const reverse: Record<Direction, Direction> = {
+      up: 'down',
+      down: 'up',
+      left: 'right',
+      right: 'left',
+    };
+    let point: Point = snake;
+    for (let i = 0; i < 3; i++) {
+      const next = ahead(point, reverse[snake.facing]);
+      if (
+        blocked(state, next) ||
+        same(next, state.apple) ||
+        headAt(state, next)
+      )
+        break;
+      snake.body.push(next);
+      point = next;
+    }
+  }
+  return state;
 }
 export function setPaused(state: GameState, paused: boolean): void {
   if (state.status !== 'playing') return;
@@ -144,7 +177,7 @@ function hitPlayer(
   reason: string,
   snake: Snake,
   kind: LossDetails['kind'],
-  path = snake.phase === 'charging' || snake.phase === 'dashing'
+  path = snake.phase === 'dashing'
     ? snake.attackPath.length
       ? snake.attackPath
       : [{ x: snake.x, y: snake.y }, ...warningPath(state, snake)]
@@ -161,13 +194,8 @@ function hitPlayer(
   finish(state, 'lost');
 }
 function applyPendingTerrain(state: GameState): void {
-  // 正式攻击的整段预警与冲刺共享同一地形，不让机关偷偷改变已展示路径。
-  if (
-    state.snakes.some(
-      (s) => s.alive && (s.phase === 'charging' || s.phase === 'dashing'),
-    )
-  )
-    return;
+  // 直冲期间冻结地形，机关与残骸在攻击结束后安全生效。
+  if (state.snakes.some((s) => s.alive && s.phase === 'dashing')) return;
   for (const wreck of state.wrecks) {
     if (!wreck.active && !same(state.apple, wreck) && !headAt(state, wreck)) {
       wreck.active = true;
@@ -222,7 +250,11 @@ function moveApple(state: GameState, direction: Direction): boolean {
       const wasInside = snake.attackPath.some((p) => same(p, previous));
       const inside = snake.attackPath.some((p) => same(p, next));
       if (inside) snake.closeEscape = false;
-      else if (snake.phase === 'charging' && snake.timer <= 160 && wasInside)
+      else if (
+        snake.phase === 'dashing' &&
+        wasInside &&
+        Math.abs(previous.x - snake.x) + Math.abs(previous.y - snake.y) <= 2
+      )
         snake.closeEscape = true;
     }
     if (
@@ -237,7 +269,7 @@ function moveApple(state: GameState, direction: Direction): boolean {
   }
   return true;
 }
-/** 追踪目标可以变化；正式锁向后只使用 snake.locked，不再取本目标。 */
+/** 追踪目标可以变化；冲刺开始后只使用 snake.locked，不再取本目标。 */
 export function targetFor(state: GameState, snake: Snake): Point {
   if (state.beacon) return { x: state.beacon.x, y: state.beacon.y };
   let target = { ...state.apple };
@@ -251,12 +283,10 @@ export function targetFor(state: GameState, snake: Snake): Point {
   return target;
 }
 export function warningPath(state: GameState, snake: Snake): Point[] {
-  if (!snake.alive || (snake.phase !== 'charging' && snake.phase !== 'dashing'))
-    return [];
+  if (!snake.alive || snake.phase !== 'dashing') return [];
   const result: Point[] = [];
   let p: Point = snake;
-  const count =
-    snake.phase === 'charging' ? snake.rules.dashCells : snake.remaining;
+  const count = snake.remaining;
   for (let i = 0; i < count; i++) {
     p = ahead(p, snake.locked);
     if (blocked(state, p)) break;
@@ -335,11 +365,7 @@ type MagnetPreview =
   | { move: null; reason: 'attacking' | 'no-wreck' | 'occupied' | 'reserved' };
 /** 提示、预览和执行共用校验；攻击期间不改变地形。 */
 export function magnetPreview(state: GameState): MagnetPreview {
-  if (
-    state.snakes.some(
-      (s) => s.alive && (s.phase === 'charging' || s.phase === 'dashing'),
-    )
-  )
+  if (state.snakes.some((s) => s.alive && s.phase === 'dashing'))
     return { move: null, reason: 'attacking' };
   const from = ahead(state.apple, state.facing),
     to = ahead(from, state.facing);
@@ -371,28 +397,25 @@ export const inInterference = (state: GameState): boolean =>
     (f) => Math.abs(f.x - state.apple.x) + Math.abs(f.y - state.apple.y) <= 1,
   );
 
-function beginCharge(
-  state: GameState,
-  snake: Snake,
-  direction: Direction,
-): void {
-  snake.phase = 'charging';
+function beginDash(state: GameState, snake: Snake, direction: Direction): void {
+  snake.phase = 'dashing';
   snake.attackBeacon = state.beacon ? state.beacons : null;
   snake.closeEscape = false;
   snake.locked = direction;
   snake.facing = direction;
-  snake.timer = snake.rules.chargeMs;
+  snake.timer = snake.rules.dashMs;
+  snake.remaining = snake.rules.dashCells;
   snake.attackPath = [{ x: snake.x, y: snake.y }, ...warningPath(state, snake)];
   snake.aim = 0;
   state.charges++;
   state.events.push({
-    type: 'charge',
+    type: 'dash',
     snake: snake.id,
     x: snake.x,
     y: snake.y,
   });
 }
-/** 侧切只在正式锁向前选择，落点先预告，执行时重新检查阻挡与占格。 */
+/** 侧切只在冲刺开始前选择，落点先预告，执行时重新检查阻挡与占格。 */
 function sidestepTarget(state: GameState, snake: Snake): Point | null {
   const target = targetFor(state, snake);
   for (const direction of DIRECTIONS) {
@@ -554,27 +577,15 @@ export function step(state: GameState, command: Command): void {
       snake.timer = snake.rules.trackMs;
       continue;
     }
-    if (snake.phase === 'charging' || snake.phase === 'recovering') {
+    if (snake.phase === 'recovering') {
       snake.timer -= TICK_MS;
       if (snake.timer > 0) continue;
-      if (snake.phase === 'charging') {
-        snake.phase = 'dashing';
-        snake.timer = snake.rules.dashMs;
-        snake.remaining = snake.rules.dashCells;
-        state.events.push({
-          type: 'dash',
-          snake: snake.id,
-          x: snake.x,
-          y: snake.y,
-        });
-      } else {
-        snake.phase = 'tracking';
-        snake.timer = snake.rules.trackMs;
-        if (snake.followup) {
-          const aim = aimDirection(state, snake);
-          if (aim) beginCharge(state, snake, aim);
-          else snake.followup = false;
-        }
+      snake.phase = 'tracking';
+      snake.timer = snake.rules.trackMs;
+      if (snake.followup) {
+        const aim = aimDirection(state, snake);
+        if (aim) beginDash(state, snake, aim);
+        else snake.followup = false;
       }
       continue;
     }
@@ -602,7 +613,7 @@ export function step(state: GameState, command: Command): void {
       snake.aim = aim && aim === snake.aimDirection ? snake.aim + TICK_MS : 0;
       snake.aimDirection = aim;
       if (aim && snake.aim >= snake.rules.aimMs) {
-        beginCharge(state, snake, aim);
+        beginDash(state, snake, aim);
         continue;
       }
       snake.timer -= TICK_MS;
@@ -705,7 +716,7 @@ export function step(state: GameState, command: Command): void {
     hitPlayer(
       state,
       collision.kind === 'dash'
-        ? '仍在锁定的冲刺通道内。看准箭头，横向离开危险格。'
+        ? '被直冲的蛇追上了。留好侧路，靠墙时横向闪开。'
         : '被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。',
       collision.snake,
       collision.kind,

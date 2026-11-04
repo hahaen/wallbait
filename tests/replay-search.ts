@@ -28,6 +28,7 @@ interface Node {
   commands: Command[];
   score: number;
   wreckHit: boolean;
+  abilitySeen: boolean;
 }
 function clone(s: GameState): GameState {
   return {
@@ -88,13 +89,12 @@ function score(s: GameState, seekWreck = false, wreckAt?: Point): number {
     const dx = Math.abs(s.apple.x - snake.x),
       dy = Math.abs(s.apple.y - snake.y),
       distance = dx + dy;
-    if (snake.phase === 'charging' || snake.phase === 'dashing') {
+    if (snake.phase === 'dashing') {
       let p: Point = snake,
         willHitWall = false,
         willHitWreck = false,
         danger = false;
-      const steps =
-        snake.phase === 'charging' ? snake.rules.dashCells : snake.remaining;
+      const steps = snake.remaining;
       for (let i = 0; i < steps; i++) {
         p = ahead(p, snake.locked);
         if (blocked(s, p)) {
@@ -113,7 +113,7 @@ function score(s: GameState, seekWreck = false, wreckAt?: Point): number {
       value += willHitWall ? 800 : 15;
       if (seekWreck && willHitWreck) value += 1500;
       value -= danger ? 250 : 0;
-      if (willHitWall) value += (snake.rules.chargeMs - snake.timer) / 20;
+      if (willHitWall) value += (snake.rules.dashMs - snake.timer) / 20;
     } else {
       // 找到同轴且终点能撞墙的布点位置，鼓励真实走位而非修改状态。
       let setup = 30;
@@ -172,6 +172,7 @@ export function findReplay(
     utility?: UtilitySkill;
     useUtility?: boolean;
     tactic?: boolean;
+    ability?: 'sidestepping' | 'interfering';
   } = {},
   prefix: Command[] = [],
 ): Replay {
@@ -186,7 +187,13 @@ export function findReplay(
         beacon: i === 0 && c.beacon,
       });
   let beam: Node[] = [
-    { state: initial, commands: [...prefix], score: 0, wreckHit: false },
+    {
+      state: initial,
+      commands: [...prefix],
+      score: 0,
+      wreckHit: false,
+      abilitySeen: false,
+    },
   ];
   const actions: Command[] = [
     { direction: null },
@@ -253,16 +260,10 @@ export function findReplay(
             )
           )
             continue;
-          if (
-            snake.alive &&
-            (snake.phase === 'charging' || snake.phase === 'dashing')
-          ) {
+          if (snake.alive && snake.phase === 'dashing') {
             let p: Point = snake;
             let wrongWall = false;
-            const count =
-              snake.phase === 'charging'
-                ? snake.rules.dashCells
-                : snake.remaining;
+            const count = snake.remaining;
             for (let i = 0; i < count; i++) {
               const next = ahead(p, snake.locked);
               if (blocked(state, next)) {
@@ -274,6 +275,9 @@ export function findReplay(
             if (wrongWall) continue;
           }
         }
+        const abilitySeen =
+          node.abilitySeen ||
+          state.snakes.some((s) => s.phase === goal.ability);
         if (state.status === 'lost') continue;
         if (
           goal.tactic &&
@@ -287,7 +291,8 @@ export function findReplay(
           (!goal.chip || state.chipCollected) &&
           (!goal.wreck || wreckHit) &&
           (!goal.useUtility || state.pulses + state.pushes > 0) &&
-          (!goal.tactic || tacticComplete(state))
+          (!goal.tactic || tacticComplete(state)) &&
+          (!goal.ability || abilitySeen)
         )
           return {
             level: level.id,
@@ -318,9 +323,10 @@ export function findReplay(
               utilityScore = 500 - nearest * 30 + (magnetMove(state) ? 100 : 0);
           }
         }
-        const k = `${wreckHit}:${fingerprint(state)}`,
+        const k = `${abilitySeen}:${wreckHit}:${fingerprint(state)}`,
           value =
             score(state, goal.wreck, goal.wreckAt) +
+            (goal.ability && abilitySeen ? 1600 : 0) +
             utilityScore +
             (goal.tactic && level.tactic === 'split'
               ? new Set(state.eliminations.map(key)).size * 300
@@ -334,7 +340,13 @@ export function findReplay(
               : 0),
           old = candidates.get(k);
         if (!old || value > old.score)
-          candidates.set(k, { state, commands, score: value, wreckHit });
+          candidates.set(k, {
+            state,
+            commands,
+            score: value,
+            wreckHit,
+            abilitySeen,
+          });
       }
     beam = [...candidates.values()]
       .sort((a, b) => b.score - a.score)

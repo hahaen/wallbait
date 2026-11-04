@@ -78,7 +78,7 @@ describe('投掷信标', () => {
     step(edge, { direction: null, beacon: true });
     expect(edge.beacon).toMatchObject({ x: 6, y: 1 });
   });
-  it('信标投过敌人头部仍能诱导侦察者，已锁向的攻击不改向', () => {
+  it('信标投过敌人头部仍能诱导侦察蛇，已锁向的攻击不改向', () => {
     const s = arena({
       apple: { x: 9, y: 7 },
       facing: 'right',
@@ -89,7 +89,8 @@ describe('投掷信标', () => {
     expect(s.status).toBe('playing');
     expect(aimDirection(s, s.snakes[0]!)).toBe('right');
     Object.assign(s.snakes[0]!, {
-      phase: 'charging',
+      phase: 'dashing',
+      remaining: 4,
       locked: 'left',
       timer: 1000,
     });
@@ -116,7 +117,8 @@ describe('残骸与公平的地形生效', () => {
       timer: 1,
     });
     Object.assign(s.snakes[1]!, {
-      phase: 'charging',
+      phase: 'dashing',
+      remaining: 4,
       locked: 'right',
       timer: 700,
     });
@@ -125,7 +127,7 @@ describe('残骸与公平的地形生效', () => {
     expect(s.wrecks).toEqual([{ x: 5, y: 6, active: false }]);
     expect(blocked(s, { x: 5, y: 6 })).toBe(false);
     expect(warningPath(s, s.snakes[1]!)).toEqual(path);
-    advance(s, 800);
+    advance(s, 880);
     expect(s.snakes[1]!.alive).toBe(true);
     expect(s.snakes[1]!.x).toBe(5);
     expect(s.wrecks[0]!.active).toBe(false);

@@ -3,6 +3,7 @@ import { stars } from '../core/engine';
 import { HIGHLIGHTS } from '../core/highlights';
 import type { GameState, HighlightId, UtilitySkill } from '../core/types';
 
+export const CURRENT_SCORING = 'chase-v2';
 export const SAVE_KEY = 'wallbait.save.v2';
 export const LEGACY_SAVE_KEY = 'wallbait.save.v1';
 export const CAMPAIGN = 'foundry-v2';
@@ -11,7 +12,7 @@ export interface Best {
   dodges: number;
   beacons: number;
   stars: number;
-  scoring?: 'tactics-v1';
+  scoring?: 'tactics-v1' | typeof CURRENT_SCORING;
   legacyStars?: number;
 }
 export interface Save {
@@ -100,8 +101,9 @@ export function readSave(storage: StoragePort): Save {
             dodges: best.dodges,
             beacons: best.beacons,
             stars: best.stars,
-            ...(best.scoring === 'tactics-v1'
-              ? { scoring: 'tactics-v1' as const }
+            ...(best.scoring === 'tactics-v1' ||
+            best.scoring === CURRENT_SCORING
+              ? { scoring: best.scoring }
               : {}),
             ...(integer(best.legacyStars, 1, 3)
               ? { legacyStars: best.legacyStars }
@@ -141,16 +143,18 @@ export function recordWin(save: Save, state: GameState): void {
   if (state.status !== 'won') return;
   const key = String(state.level.id),
     old = save.best[key],
-    previous = old?.scoring === 'tactics-v1' ? old : undefined;
+    previous = old?.scoring === CURRENT_SCORING ? old : undefined,
+    historicalStars = Math.max(
+      old?.legacyStars ?? 0,
+      old?.scoring === CURRENT_SCORING ? 0 : (old?.stars ?? 0),
+    );
   save.best[key] = {
     timeMs: Math.min(previous?.timeMs ?? Infinity, state.elapsedMs),
     dodges: Math.min(previous?.dodges ?? Infinity, state.dodges),
     beacons: Math.min(previous?.beacons ?? Infinity, state.beacons),
     stars: Math.max(previous?.stars ?? 0, stars(state)),
-    scoring: 'tactics-v1',
-    ...((old?.legacyStars ?? (old?.scoring ? undefined : old?.stars))
-      ? { legacyStars: old?.legacyStars ?? old?.stars }
-      : {}),
+    scoring: CURRENT_SCORING,
+    ...(historicalStars ? { legacyStars: historicalStars } : {}),
   };
   const collected = save.collections[key];
   const highlights = [

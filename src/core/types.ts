@@ -4,19 +4,13 @@ export type UtilitySkill = 'dodge' | 'pulse' | 'magnet';
 export type Tactic =
   'first-lure' | 'beacon' | 'wreck' | 'chip' | 'split' | 'gate';
 export type Phase =
-  | 'tracking'
-  | 'charging'
-  | 'dashing'
-  | 'recovering'
-  | 'sidestepping'
-  | 'interfering';
+  'tracking' | 'dashing' | 'recovering' | 'sidestepping' | 'interfering';
 export interface Point {
   x: number;
   y: number;
 }
 export interface SnakeRules {
   trackMs: number;
-  chargeMs: number;
   dashMs: number;
   dashCells: number;
   recoverMs: number;
@@ -90,7 +84,7 @@ export interface Snake extends Point {
   abilityTarget: Point | null;
 }
 export type GameEvent =
-  | { type: 'charge' | 'dash'; snake: number; x: number; y: number }
+  | { type: 'dash'; snake: number; x: number; y: number }
   | {
       type: 'wall';
       snake: number;

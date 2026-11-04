@@ -13,24 +13,24 @@
         {
           "level": 1,
           "status": "lost",
-          "elapsedMs": 980,
+          "elapsedMs": 1140,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 2,
           "status": "lost",
-          "elapsedMs": 1880,
+          "elapsedMs": 2240,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 3,
@@ -57,13 +57,13 @@
         {
           "level": 5,
           "status": "lost",
-          "elapsedMs": 2800,
+          "elapsedMs": 3260,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 6,
@@ -90,24 +90,24 @@
         {
           "level": 8,
           "status": "lost",
-          "elapsedMs": 1280,
+          "elapsedMs": 1640,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 9,
           "status": "lost",
-          "elapsedMs": 3160,
+          "elapsedMs": 3620,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 10,
@@ -123,13 +123,13 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 3120,
+          "elapsedMs": 3240,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 12,
@@ -145,79 +145,79 @@
         {
           "level": 13,
           "status": "lost",
-          "elapsedMs": 4060,
+          "elapsedMs": 4160,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 14,
           "status": "lost",
-          "elapsedMs": 5360,
+          "elapsedMs": 5840,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 15,
           "status": "lost",
-          "elapsedMs": 3900,
+          "elapsedMs": 4000,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 16,
           "status": "lost",
-          "elapsedMs": 2480,
+          "elapsedMs": 2840,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 17,
           "status": "lost",
-          "elapsedMs": 3720,
+          "elapsedMs": 3200,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 3080,
+          "elapsedMs": 3140,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 19,
           "status": "lost",
-          "elapsedMs": 4120,
+          "elapsedMs": 4160,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
           "movedCells": 0,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 20,
@@ -242,35 +242,35 @@
         {
           "level": 1,
           "status": "lost",
-          "elapsedMs": 14420,
+          "elapsedMs": 14520,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 121,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 2,
           "status": "lost",
-          "elapsedMs": 13260,
+          "elapsedMs": 7700,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 111,
+          "movedCells": 65,
           "gateChanges": 0,
-          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 3,
           "status": "lost",
-          "elapsedMs": 14060,
+          "elapsedMs": 1440,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 118,
+          "movedCells": 12,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 4,
@@ -308,33 +308,33 @@
         {
           "level": 7,
           "status": "lost",
-          "elapsedMs": 4580,
+          "elapsedMs": 4820,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 39,
+          "movedCells": 41,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 8,
           "status": "lost",
-          "elapsedMs": 13100,
+          "elapsedMs": 7900,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 110,
+          "movedCells": 66,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
         },
         {
           "level": 9,
           "status": "lost",
-          "elapsedMs": 8300,
+          "elapsedMs": 2780,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 70,
+          "movedCells": 24,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
@@ -352,13 +352,13 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 1940,
+          "elapsedMs": 9240,
           "dodges": 0,
           "beacons": 0,
-          "remaining": 2,
-          "movedCells": 17,
+          "remaining": 1,
+          "movedCells": 77,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 12,
@@ -374,27 +374,38 @@
         {
           "level": 13,
           "status": "lost",
-          "elapsedMs": 2780,
+          "elapsedMs": 2320,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 24,
+          "movedCells": 20,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 14,
           "status": "lost",
-          "elapsedMs": 2900,
+          "elapsedMs": 2660,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 25,
+          "movedCells": 23,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 15,
+          "status": "lost",
+          "elapsedMs": 1420,
+          "dodges": 0,
+          "beacons": 0,
+          "remaining": 3,
+          "movedCells": 12,
+          "gateChanges": 0,
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
+        },
+        {
+          "level": 16,
           "status": "lost",
           "elapsedMs": 1340,
           "dodges": 0,
@@ -405,59 +416,48 @@
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
-          "level": 16,
-          "status": "lost",
-          "elapsedMs": 1580,
-          "dodges": 0,
-          "beacons": 0,
-          "remaining": 3,
-          "movedCells": 14,
-          "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
-        },
-        {
           "level": 17,
           "status": "lost",
-          "elapsedMs": 2900,
+          "elapsedMs": 2420,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 25,
+          "movedCells": 21,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 1820,
+          "elapsedMs": 4300,
           "dodges": 0,
           "beacons": 0,
-          "remaining": 3,
-          "movedCells": 16,
+          "remaining": 2,
+          "movedCells": 36,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 19,
           "status": "lost",
-          "elapsedMs": 2540,
+          "elapsedMs": 4560,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 22,
+          "movedCells": 38,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 20,
           "status": "lost",
-          "elapsedMs": 500,
+          "elapsedMs": 3120,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 5,
+          "movedCells": 26,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         }
       ]
     },
@@ -465,41 +465,41 @@
       "id": "right-wall",
       "title": "右手贴墙",
       "algorithm": "先向右直到遇到墙或关闭门，再朝上沿右手墙行走。每到新格按右转、直行、左转、掉头顺序选可行方向；不读取敌人，不用技能。",
-      "wins": [3],
+      "wins": [2],
       "advancedWins": [],
       "runs": [
         {
           "level": 1,
           "status": "lost",
-          "elapsedMs": 620,
+          "elapsedMs": 6100,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 6,
+          "movedCells": 51,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
         },
         {
           "level": 2,
-          "status": "lost",
-          "elapsedMs": 6380,
-          "dodges": 0,
-          "beacons": 0,
-          "remaining": 1,
-          "movedCells": 54,
-          "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
-        },
-        {
-          "level": 3,
           "status": "won",
-          "elapsedMs": 5560,
+          "elapsedMs": 2740,
           "dodges": 0,
           "beacons": 0,
           "remaining": 0,
-          "movedCells": 47,
+          "movedCells": 23,
           "gateChanges": 0,
           "reason": null
+        },
+        {
+          "level": 3,
+          "status": "lost",
+          "elapsedMs": 2180,
+          "dodges": 0,
+          "beacons": 0,
+          "remaining": 1,
+          "movedCells": 19,
+          "gateChanges": 0,
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 4,
@@ -537,33 +537,33 @@
         {
           "level": 7,
           "status": "lost",
-          "elapsedMs": 1940,
+          "elapsedMs": 2180,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 17,
+          "movedCells": 19,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 8,
           "status": "lost",
-          "elapsedMs": 10700,
+          "elapsedMs": 10600,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 90,
+          "movedCells": 89,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
         },
         {
           "level": 9,
           "status": "lost",
-          "elapsedMs": 1220,
+          "elapsedMs": 2420,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 11,
+          "movedCells": 21,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
@@ -581,13 +581,13 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 2780,
+          "elapsedMs": 3940,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 24,
+          "movedCells": 33,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 12,
@@ -603,61 +603,6 @@
         {
           "level": 13,
           "status": "lost",
-          "elapsedMs": 1440,
-          "dodges": 0,
-          "beacons": 0,
-          "remaining": 3,
-          "movedCells": 12,
-          "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
-        },
-        {
-          "level": 14,
-          "status": "lost",
-          "elapsedMs": 1100,
-          "dodges": 0,
-          "beacons": 0,
-          "remaining": 2,
-          "movedCells": 10,
-          "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
-        },
-        {
-          "level": 15,
-          "status": "lost",
-          "elapsedMs": 1340,
-          "dodges": 0,
-          "beacons": 0,
-          "remaining": 3,
-          "movedCells": 12,
-          "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
-        },
-        {
-          "level": 16,
-          "status": "lost",
-          "elapsedMs": 980,
-          "dodges": 0,
-          "beacons": 0,
-          "remaining": 3,
-          "movedCells": 9,
-          "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
-        },
-        {
-          "level": 17,
-          "status": "lost",
-          "elapsedMs": 1700,
-          "dodges": 0,
-          "beacons": 0,
-          "remaining": 3,
-          "movedCells": 15,
-          "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
-        },
-        {
-          "level": 18,
-          "status": "lost",
           "elapsedMs": 1460,
           "dodges": 0,
           "beacons": 0,
@@ -667,24 +612,79 @@
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
-          "level": 19,
+          "level": 14,
           "status": "lost",
-          "elapsedMs": 1580,
+          "elapsedMs": 26040,
+          "dodges": 0,
+          "beacons": 0,
+          "remaining": 2,
+          "movedCells": 217,
+          "gateChanges": 0,
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
+        },
+        {
+          "level": 15,
+          "status": "lost",
+          "elapsedMs": 2060,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 14,
+          "movedCells": 18,
+          "gateChanges": 0,
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
+        },
+        {
+          "level": 16,
+          "status": "lost",
+          "elapsedMs": 1100,
+          "dodges": 0,
+          "beacons": 0,
+          "remaining": 3,
+          "movedCells": 10,
+          "gateChanges": 0,
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+        },
+        {
+          "level": 17,
+          "status": "lost",
+          "elapsedMs": 2260,
+          "dodges": 0,
+          "beacons": 0,
+          "remaining": 3,
+          "movedCells": 19,
+          "gateChanges": 0,
+          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
+        },
+        {
+          "level": 18,
+          "status": "lost",
+          "elapsedMs": 3980,
+          "dodges": 0,
+          "beacons": 0,
+          "remaining": 3,
+          "movedCells": 34,
+          "gateChanges": 0,
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+        },
+        {
+          "level": 19,
+          "status": "lost",
+          "elapsedMs": 2660,
+          "dodges": 0,
+          "beacons": 0,
+          "remaining": 3,
+          "movedCells": 23,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 20,
           "status": "lost",
-          "elapsedMs": 1340,
+          "elapsedMs": 1580,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 12,
+          "movedCells": 14,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         }
@@ -700,55 +700,55 @@
         {
           "level": 1,
           "status": "lost",
-          "elapsedMs": 140,
+          "elapsedMs": 260,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 2,
+          "movedCells": 3,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 2,
           "status": "lost",
-          "elapsedMs": 7680,
+          "elapsedMs": 7440,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 38,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 3,
           "status": "lost",
-          "elapsedMs": 1080,
+          "elapsedMs": 1060,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 5,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 4,
           "status": "lost",
-          "elapsedMs": 6140,
+          "elapsedMs": 5660,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 30,
+          "movedCells": 26,
           "gateChanges": 1,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 5,
           "status": "lost",
-          "elapsedMs": 6380,
+          "elapsedMs": 10940,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 47,
+          "movedCells": 85,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
@@ -766,90 +766,90 @@
         {
           "level": 7,
           "status": "lost",
-          "elapsedMs": 6020,
+          "elapsedMs": 5220,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 22,
+          "movedCells": 17,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 8,
           "status": "lost",
-          "elapsedMs": 6500,
+          "elapsedMs": 15260,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 46,
+          "movedCells": 119,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 9,
           "status": "lost",
-          "elapsedMs": 860,
+          "elapsedMs": 6740,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 8,
+          "movedCells": 54,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 10,
           "status": "lost",
-          "elapsedMs": 5820,
+          "elapsedMs": 5540,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 26,
+          "movedCells": 24,
           "gateChanges": 1,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 6380,
+          "elapsedMs": 6140,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 32,
+          "movedCells": 30,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 12,
           "status": "lost",
-          "elapsedMs": 10100,
+          "elapsedMs": 9620,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 56,
+          "movedCells": 53,
           "gateChanges": 2,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 13,
           "status": "lost",
-          "elapsedMs": 980,
+          "elapsedMs": 1100,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 9,
+          "movedCells": 10,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 14,
           "status": "lost",
-          "elapsedMs": 1220,
+          "elapsedMs": 1840,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 7,
+          "movedCells": 8,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 15,
@@ -865,13 +865,13 @@
         {
           "level": 16,
           "status": "lost",
-          "elapsedMs": 6020,
+          "elapsedMs": 2140,
           "dodges": 0,
           "beacons": 0,
-          "remaining": 2,
-          "movedCells": 23,
+          "remaining": 3,
+          "movedCells": 4,
           "gateChanges": 1,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 17,
@@ -887,33 +887,33 @@
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 6140,
+          "elapsedMs": 5780,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 27,
+          "movedCells": 24,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 19,
           "status": "lost",
-          "elapsedMs": 6020,
+          "elapsedMs": 5760,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 32,
+          "movedCells": 29,
           "gateChanges": 2,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 20,
           "status": "lost",
-          "elapsedMs": 6020,
+          "elapsedMs": 5660,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 24,
+          "movedCells": 21,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         }
@@ -929,55 +929,55 @@
         {
           "level": 1,
           "status": "lost",
-          "elapsedMs": 20,
+          "elapsedMs": 140,
           "dodges": 1,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 2,
+          "movedCells": 3,
           "gateChanges": 0,
-          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 2,
           "status": "lost",
-          "elapsedMs": 7420,
+          "elapsedMs": 7240,
           "dodges": 4,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 40,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 3,
           "status": "lost",
-          "elapsedMs": 980,
+          "elapsedMs": 1060,
           "dodges": 2,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 5,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 4,
           "status": "lost",
-          "elapsedMs": 6140,
-          "dodges": 4,
+          "elapsedMs": 5840,
+          "dodges": 3,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 32,
+          "movedCells": 28,
           "gateChanges": 1,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 5,
           "status": "lost",
-          "elapsedMs": 5180,
+          "elapsedMs": 5300,
           "dodges": 3,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 30,
+          "movedCells": 31,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
@@ -988,75 +988,75 @@
           "dodges": 21,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 342,
+          "movedCells": 341,
           "gateChanges": 1,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 7,
           "status": "lost",
-          "elapsedMs": 5900,
+          "elapsedMs": 5320,
           "dodges": 3,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 22,
+          "movedCells": 18,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 8,
           "status": "lost",
-          "elapsedMs": 6300,
-          "dodges": 4,
+          "elapsedMs": 10920,
+          "dodges": 5,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 46,
+          "movedCells": 84,
           "gateChanges": 0,
-          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 9,
+          "status": "lost",
+          "elapsedMs": 6700,
+          "dodges": 4,
+          "beacons": 0,
+          "remaining": 2,
+          "movedCells": 54,
+          "gateChanges": 0,
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
+        },
+        {
+          "level": 10,
+          "status": "lost",
+          "elapsedMs": 5580,
+          "dodges": 3,
+          "beacons": 0,
+          "remaining": 2,
+          "movedCells": 25,
+          "gateChanges": 1,
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
+        },
+        {
+          "level": 11,
           "status": "lost",
           "elapsedMs": 6140,
           "dodges": 4,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 51,
-          "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
-        },
-        {
-          "level": 10,
-          "status": "lost",
-          "elapsedMs": 6020,
-          "dodges": 4,
-          "beacons": 0,
-          "remaining": 2,
-          "movedCells": 29,
-          "gateChanges": 1,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
-        },
-        {
-          "level": 11,
-          "status": "lost",
-          "elapsedMs": 6380,
-          "dodges": 4,
-          "beacons": 0,
-          "remaining": 2,
-          "movedCells": 34,
+          "movedCells": 32,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 12,
           "status": "lost",
-          "elapsedMs": 14360,
+          "elapsedMs": 13440,
           "dodges": 6,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 84,
+          "movedCells": 81,
           "gateChanges": 1,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 13,
@@ -1072,13 +1072,13 @@
         {
           "level": 14,
           "status": "lost",
-          "elapsedMs": 1220,
+          "elapsedMs": 1840,
           "dodges": 2,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 7,
+          "movedCells": 8,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 15,
@@ -1094,13 +1094,13 @@
         {
           "level": 16,
           "status": "lost",
-          "elapsedMs": 6020,
-          "dodges": 4,
+          "elapsedMs": 2140,
+          "dodges": 2,
           "beacons": 0,
-          "remaining": 2,
-          "movedCells": 24,
+          "remaining": 3,
+          "movedCells": 4,
           "gateChanges": 1,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 17,
@@ -1116,49 +1116,49 @@
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 5900,
+          "elapsedMs": 5880,
           "dodges": 3,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 26,
+          "movedCells": 25,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 19,
           "status": "lost",
-          "elapsedMs": 6020,
+          "elapsedMs": 5780,
           "dodges": 3,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 33,
+          "movedCells": 31,
           "gateChanges": 1,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 20,
           "status": "lost",
-          "elapsedMs": 6140,
+          "elapsedMs": 5700,
           "dodges": 3,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 26,
+          "movedCells": 22,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         }
       ]
     },
     {
       "id": "one-sidestep",
-      "title": "首次预警只横移一次",
-      "algorithm": "原地等第一条正式预警，优先沿锁向顺时针垂直方向侧移一格；被墙挡则选反方向，两个方向都被挡则继续尝试。成功移动后一直不动。",
+      "title": "首次直冲只横移一次",
+      "algorithm": "原地等第一条蛇开始直冲，优先沿冲刺方向顺时针垂直侧移一格；被墙挡则选反方向，两个方向都被挡则继续尝试。成功移动后一直不动。",
       "wins": [1],
       "advancedWins": [],
       "runs": [
         {
           "level": 1,
           "status": "won",
-          "elapsedMs": 1020,
+          "elapsedMs": 1240,
           "dodges": 0,
           "beacons": 0,
           "remaining": 0,
@@ -1169,24 +1169,24 @@
         {
           "level": 2,
           "status": "lost",
-          "elapsedMs": 4300,
+          "elapsedMs": 4080,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 3,
           "status": "lost",
-          "elapsedMs": 3760,
+          "elapsedMs": 3560,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 4,
@@ -1202,13 +1202,13 @@
         {
           "level": 5,
           "status": "lost",
-          "elapsedMs": 4600,
+          "elapsedMs": 4220,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 6,
@@ -1235,24 +1235,24 @@
         {
           "level": 8,
           "status": "lost",
-          "elapsedMs": 3440,
+          "elapsedMs": 3280,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 9,
           "status": "lost",
-          "elapsedMs": 4960,
+          "elapsedMs": 4580,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 10,
@@ -1268,13 +1268,13 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 4700,
+          "elapsedMs": 4180,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 12,
@@ -1290,35 +1290,35 @@
         {
           "level": 13,
           "status": "lost",
-          "elapsedMs": 3960,
+          "elapsedMs": 4080,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 14,
           "status": "lost",
-          "elapsedMs": 5000,
+          "elapsedMs": 5480,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 15,
           "status": "lost",
-          "elapsedMs": 3760,
+          "elapsedMs": 3940,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 16,
@@ -1334,46 +1334,46 @@
         {
           "level": 17,
           "status": "lost",
-          "elapsedMs": 4160,
+          "elapsedMs": 3640,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 4280,
+          "elapsedMs": 4400,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 19,
           "status": "lost",
-          "elapsedMs": 5720,
+          "elapsedMs": 5840,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 20,
           "status": "lost",
-          "elapsedMs": 3700,
+          "elapsedMs": 3360,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
           "movedCells": 1,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         }
       ]
     },
@@ -1381,63 +1381,63 @@
       "id": "blind-beacon",
       "title": "盲放信标加绕圈",
       "algorithm": "沿固定矩形的时间表移动，每 240ms 尝试向当前朝向投信标，不看敌人、墙距、资源或已有信标；禁用和费用限制由正常规则决定。",
-      "wins": [7],
-      "advancedWins": [7],
+      "wins": [5, 8],
+      "advancedWins": [8],
       "runs": [
         {
           "level": 1,
           "status": "lost",
-          "elapsedMs": 140,
+          "elapsedMs": 260,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 2,
+          "movedCells": 3,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 2,
           "status": "lost",
-          "elapsedMs": 7680,
+          "elapsedMs": 7440,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 38,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 3,
           "status": "lost",
-          "elapsedMs": 1080,
+          "elapsedMs": 1060,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
           "movedCells": 5,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 4,
           "status": "lost",
-          "elapsedMs": 6140,
+          "elapsedMs": 5660,
           "dodges": 0,
           "beacons": 0,
           "remaining": 1,
-          "movedCells": 30,
+          "movedCells": 26,
           "gateChanges": 1,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 5,
-          "status": "lost",
-          "elapsedMs": 14540,
+          "status": "won",
+          "elapsedMs": 2960,
           "dodges": 0,
-          "beacons": 6,
-          "remaining": 1,
-          "movedCells": 115,
+          "beacons": 2,
+          "remaining": 0,
+          "movedCells": 18,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": null
         },
         {
           "level": 6,
@@ -1452,91 +1452,91 @@
         },
         {
           "level": 7,
-          "status": "won",
-          "elapsedMs": 5680,
+          "status": "lost",
+          "elapsedMs": 5840,
           "dodges": 0,
           "beacons": 3,
+          "remaining": 1,
+          "movedCells": 20,
+          "gateChanges": 0,
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
+        },
+        {
+          "level": 8,
+          "status": "won",
+          "elapsedMs": 6560,
+          "dodges": 0,
+          "beacons": 4,
           "remaining": 0,
-          "movedCells": 19,
+          "movedCells": 46,
           "gateChanges": 0,
           "reason": null
         },
         {
-          "level": 8,
-          "status": "lost",
-          "elapsedMs": 2540,
-          "dodges": 0,
-          "beacons": 2,
-          "remaining": 2,
-          "movedCells": 13,
-          "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
-        },
-        {
           "level": 9,
           "status": "lost",
-          "elapsedMs": 860,
+          "elapsedMs": 10460,
           "dodges": 0,
-          "beacons": 1,
-          "remaining": 2,
-          "movedCells": 8,
+          "beacons": 5,
+          "remaining": 1,
+          "movedCells": 71,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 10,
           "status": "lost",
-          "elapsedMs": 6580,
+          "elapsedMs": 5660,
           "dodges": 0,
           "beacons": 3,
           "remaining": 2,
-          "movedCells": 32,
+          "movedCells": 25,
           "gateChanges": 1,
-          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 6380,
+          "elapsedMs": 6260,
           "dodges": 0,
           "beacons": 3,
           "remaining": 2,
-          "movedCells": 32,
+          "movedCells": 31,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 12,
           "status": "lost",
-          "elapsedMs": 10340,
+          "elapsedMs": 10420,
           "dodges": 0,
           "beacons": 5,
           "remaining": 2,
           "movedCells": 58,
           "gateChanges": 2,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
         },
         {
           "level": 13,
           "status": "lost",
-          "elapsedMs": 980,
+          "elapsedMs": 1100,
           "dodges": 0,
           "beacons": 1,
           "remaining": 3,
-          "movedCells": 9,
+          "movedCells": 10,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 14,
           "status": "lost",
-          "elapsedMs": 1220,
+          "elapsedMs": 5980,
           "dodges": 0,
-          "beacons": 1,
+          "beacons": 3,
           "remaining": 2,
-          "movedCells": 7,
+          "movedCells": 30,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 15,
@@ -1551,56 +1551,56 @@
         },
         {
           "level": 16,
-          "status": "timeout",
-          "elapsedMs": 60000,
+          "status": "lost",
+          "elapsedMs": 2140,
           "dodges": 0,
-          "beacons": 21,
-          "remaining": 1,
-          "movedCells": 296,
+          "beacons": 1,
+          "remaining": 3,
+          "movedCells": 4,
           "gateChanges": 1,
-          "reason": null
+          "reason": "被直冲的蛇追上了。留好侧路，靠墙时横向闪开。"
         },
         {
           "level": 17,
           "status": "lost",
-          "elapsedMs": 860,
+          "elapsedMs": 980,
           "dodges": 0,
           "beacons": 1,
           "remaining": 3,
-          "movedCells": 8,
+          "movedCells": 9,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 6140,
+          "elapsedMs": 10340,
           "dodges": 0,
-          "beacons": 3,
-          "remaining": 2,
-          "movedCells": 27,
+          "beacons": 5,
+          "remaining": 1,
+          "movedCells": 48,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 19,
           "status": "lost",
-          "elapsedMs": 6920,
+          "elapsedMs": 6020,
           "dodges": 0,
           "beacons": 3,
           "remaining": 3,
-          "movedCells": 39,
+          "movedCells": 32,
           "gateChanges": 2,
-          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
+          "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         },
         {
           "level": 20,
           "status": "lost",
-          "elapsedMs": 6380,
+          "elapsedMs": 6260,
           "dodges": 0,
           "beacons": 3,
           "remaining": 3,
-          "movedCells": 27,
+          "movedCells": 26,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。工具不能穿过敌人，闪避与脉冲都没有无敌时间。"
         }

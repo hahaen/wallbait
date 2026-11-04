@@ -89,7 +89,7 @@ describe('移动与闪避', () => {
 });
 describe('状态机与碰撞', () => {
   it.each(['normal', 'swift', 'cautious'] as const)(
-    '%s 蓄力起锁向，苹果改行后实际冲刺仍一致',
+    '%s 对齐后直接冲刺，苹果改行后仍保持原方向',
     (kind) => {
       const s = createState({
         ...LEVELS[1]!,
@@ -99,11 +99,9 @@ describe('状态机与碰撞', () => {
       });
       ticks(s, 15);
       const snake = s.snakes[0]!;
-      expect(snake.phase).toBe('charging');
+      expect(snake.phase).toBe('dashing');
       expect(snake.locked).toBe('right');
       ticks(s, 12, { direction: 'up' });
-      for (let i = 0; i < 70 && snake.phase !== 'dashing'; i++)
-        step(s, { direction: null });
       const y = snake.y;
       ticks(s, 2);
       expect(snake.y).toBe(y);
@@ -303,4 +301,29 @@ describe('生命周期与关卡', () => {
     ticks(s, 3000);
     expect(s.status).not.toBe('won');
   });
+});
+
+it('对齐后直接冲刺，不经过蓄力或预警阶段；途中走位不能改变冲刺方向', () => {
+  const s = createState({
+    ...LEVELS[1]!,
+    walls: [],
+    apple: { x: 8, y: 8 },
+    snakes: [{ x: 4, y: 8, kind: 'normal' }],
+  });
+  const phases = new Set<string>();
+  let launched = false;
+  for (let i = 0; i < 30 && !launched; i++) {
+    step(s, { direction: null });
+    phases.add(s.snakes[0]!.phase);
+    launched = s.events.some((e) => e.type === 'dash');
+  }
+  expect(launched).toBe(true);
+  expect([...phases]).toEqual(['tracking', 'dashing']);
+  const enemy = s.snakes[0]!;
+  const before = { x: enemy.x, y: enemy.y };
+  for (let i = 0; i < enemy.rules.dashMs / TICK_MS; i++)
+    step(s, { direction: 'up' });
+  expect(enemy.x).toBe(before.x + 1);
+  expect(enemy.y).toBe(before.y);
+  expect(enemy.locked).toBe('right');
 });

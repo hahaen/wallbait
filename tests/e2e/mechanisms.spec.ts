@@ -28,7 +28,7 @@ test('合法闯到信标教学：踏板开门、双技能触控、电量与暂�
   await page.clock.pauseAt(new Date('2026-11-04T04:00:01Z'));
   await page.goto('/');
   await page.screenshot({
-    path: `docs/testing/evidence/advanced-home-${info.project.name}.png`,
+    path: `test-results/cartoon-home-${info.project.name}.png`,
   });
   await page
     .getByRole('button', { name: '开始游戏', exact: true })
@@ -53,11 +53,11 @@ test('合法闯到信标教学：踏板开门、双技能触控、电量与暂�
       ) {
         sawOpenGate = true;
         await page.screenshot({
-          path: `docs/testing/evidence/advanced-gate-${info.project.name}.png`,
+          path: `test-results/cartoon-gate-${info.project.name}.png`,
         });
       }
     }
-    await page.clock.runFor(120);
+    await page.clock.runFor(1400);
     await expect(
       page.getByRole('heading', { name: '撞墙了吧！' }),
     ).toBeVisible();
@@ -67,9 +67,7 @@ test('合法闯到信标教学：踏板开门、双技能触控、电量与暂�
   }
   expect(sawOpenGate).toBe(true);
   // 第五关由真实前四关通关解锁。未改存档、坐标、敌人或胜负。
-  await expect(
-    page.getByRole('heading', { name: '送它一个信号' }),
-  ).toBeVisible();
+  await expect(page.locator('.level-name')).toHaveText('送它一个信号');
   await expect(page.locator('canvas')).toBeVisible();
   await page
     .getByRole('button', { name: '进入试验', exact: true })
@@ -111,7 +109,7 @@ test('合法闯到信标教学：踏板开门、双技能触控、电量与暂�
   });
   await expect(page.locator('.pressed')).toHaveCount(0);
   await page.screenshot({
-    path: `docs/testing/evidence/advanced-skills-${info.project.name}.png`,
+    path: `test-results/cartoon-skills-${info.project.name}.png`,
   });
   await page.keyboard.press('p');
   const clock = await page.locator('#clock').textContent();
@@ -128,8 +126,6 @@ test('合法闯到信标教学：踏板开门、双技能触控、电量与暂�
   await page.getByRole('button', { name: '重新挑战' }).click({ force: true });
   await page.clock.runFor(16);
   await expect(page.locator('#cooldown')).toContainText('▰▰');
-  await expect(page.locator('#mechanisms')).toHaveText(
-    '前投≤2格 · 闪避 / 信标共用电量',
-  );
+  await expect(page.locator('#mechanisms')).toHaveText('');
   await expect(page.getByRole('heading', { name: '试验准备' })).toHaveCount(0);
 });

@@ -12,19 +12,19 @@ async function startFrozen(page: Page): Promise<void> {
     .click({ force: true });
   await expect(page.locator('canvas')).toBeVisible();
   await page.getByRole('button', { name: '进入试验' }).click({ force: true });
-  await page.clock.runFor(216);
+  await page.clock.runFor(916);
 }
 
 for (const mode of ['keyboard', 'pointer'] as const) {
   test(`${mode} 快速点按在下一规则步移动一格并完成侧撤`, async ({ page }) => {
     await startFrozen(page);
-    await expect(page.locator('#play-status')).toContainText('1号冲锋者蓄力');
+    await expect(page.locator('#play-status')).toContainText('1号冲锋蛇直冲');
     if (mode === 'keyboard') await page.keyboard.press('ArrowRight');
     else
       await page
         .getByRole('button', { name: '向右移动' })
         .click({ force: true });
-    await page.clock.runFor(1200);
+    await page.clock.runFor(2000);
     await expect(
       page.getByRole('heading', { name: '撞墙了吧！' }),
     ).toBeVisible();
@@ -34,8 +34,8 @@ for (const mode of ['keyboard', 'pointer'] as const) {
 
 test('失败现场可查看、冻结、返回结算和快速重试', async ({ page }, info) => {
   await startFrozen(page);
-  await page.clock.runFor(1400);
-  await expect(page.locator('.loss-cause')).toHaveText('1号冲锋者 · 冲刺命中');
+  await page.clock.runFor(2200);
+  await expect(page.locator('.loss-cause')).toHaveText('1号冲锋蛇 · 冲刺命中');
   await page
     .getByRole('button', { name: '查看失败现场' })
     .click({ force: true });

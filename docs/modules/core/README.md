@@ -1,27 +1,12 @@
 # 核心规则
 
-实现于 `src/core/`：类型、参数、20 关配置、固定步状态机、三类目标策略、BFS 追踪、门与信标、共享电量和逐格碰撞。规则不依赖浏览器、Phaser 或存储。
+`engine.ts`是纯TypeScript规则入口，固定20ms、整数格，不依赖Phaser、DOM或存储。
 
-- `createState(level, utility)` 创建独立对局，包括各门状态、电量、信标和独立残骸数组；重开使用新状态。
-- `step(state, command)` 推进 20ms，命令包含四向/停止、所选工具和信标意图。只有这个入口推进对局。
-- `solid(level, point)` 检查静态墙；`blocked(state, point)` 加上当前关闭门与实心残骸。待生效地形不改变碰撞。
-- `targetFor(state, snake)` 给出追踪目标；正式锁向后使用 `locked`。`warningPath` 提供真实危险格，供渲染显示。
-- `setPaused(state, paused)` 冻结或恢复，不重置普通移动间隔。电量回充与信标寿命属于规则时间。
-- `state.events` 是本步一次性事件；结束后不再产生结算。失败原因保存在 `lossReason`。
-- `validateLevel` 检查静态墙、连通性、出生与参数、门和踏板配置、门状态下的区域可达性；合法配置不能代替含敌人时序的可解性回放。
+- `createState`创建关卡、工具、蛇与本局状态。蛇出生时铺开避障的表现蛇身，蛇身不参与碰撞。
+- `step`处理命令、资源、地形、追踪与直冲；同刻命中优先判负，胜负一次触发。
+- `targetFor`负责真人/预测/信标目标；`aimDirection`检查同轴、距离和视线。观察期间继续追踪，满足后直接`dashing`，无蓄力状态。
+- `warningPath`计算内部剩余路线，`attackPath`保存完整实际攻击快照，仅失败现场显示；正常对局不预告。
+- `beaconLanding`、`pulseTargets`、`magnetPreview`/`magnetMove`供预览和执行共用；门和残骸在直冲期间冻结，结束且无人占格后安全应用。
+- `setPaused`冻结所有规则时间；重开创建新状态。`tacticComplete`与`stars`统一评分；芯片和称号由真实操作产生。
 
-门切换在正式预警/冲刺期间等待，关门遇角色占用也等待。玩家踩入踏板时触发，站住不重复触发。敌人之间及履带不参与碰撞。
-
-参数与完整规则见[玩法设计](../../game-design.md)，顺序与边界见[架构](../../architecture.md)。验证入口：[基础规则](../../../tests/core.test.ts)、[进阶规则](../../../tests/advanced-core.test.ts)、[关卡命令回放](../../../tests/solutions.test.ts)。执行结果统一记录在[验收文档](../../testing/README.md)。
-
-投掷落点由 `beaconLanding(state)` 计算，规则放置与画面预览共用。残骸在最后头部格生成；与门一样等待所有正式攻击结束，并等待占格角色离开后生效。冲刺撞残骸继续产生撞毁事件，以 `obstacle` 区分墙/门和残骸。新增边界与第八关正常命令接力见[机制测试](../../../tests/wrecks-and-throw.test.ts)。
-
-新增 `chipCollected`、`highlights`、`lureKills`；正式锁向时记录信标序号，位移离开预警通道时记录最后窗口资格，冲刺结束后判定反馈。`highlights.ts` 保持纯规则。芯片只由玩家成功位移拾取，暂停与重开边界同其他规则。
-
-## 技能版
-
-`loadout.ts` 定义工具元数据、关卡开放列表与战术目标文案。`createState(level, utility)` 校验装备并默认回退闪避。`Command.utility` 与旧 `dodge` 命令均触发已装备工具；旧命令兼容既有回放，实际闪避次数只计位移技能。脉冲与磁推规则由 `pulseTargets` / `magnetMove` 同时供预览与执行使用；正式攻击地形冻结、逐格碰撞顺序不变。
-
-强化型复用三类敌人，增加控场剩余、能力冷却、二段标志、预告落点与两个明确阶段。干扰场由来源编号关联，暂停冻结、死亡清理；回充只暂停进度，不重置或扣电。`tacticComplete` 与 `stars` 统一结算战术评分。完整边界见[技能规格](../../design/skills.md)。
-
-`magnetPreview` 返回合法移动或拒绝原因（攻击中、无实心残骸、落点占用、保留格）；`magnetMove` 从同一结果取移动，避免提示与规则各自判断。核心只返回原因枚举，显示文案留在游戏边界。
+当前参数、敌人差异、强化能力和收藏条件见[玩法设计](../../game-design.md)。正常命令回放与逐格边界测试随规则维护；测试搜索器不能改角色坐标或胜负。

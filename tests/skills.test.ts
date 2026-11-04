@@ -40,7 +40,7 @@ function wait(s: GameState, ms: number): void {
 it('脉冲按共享电量释放，暂停已锁向攻击600ms，保持路线后继续完整倒计时', () => {
   const s = arena('pulse'),
     enemy = s.snakes[0]!;
-  enemy.phase = 'charging';
+  enemy.phase = 'dashing';
   enemy.locked = 'down';
   enemy.timer = 760;
   enemy.attackPath = [{ x: enemy.x, y: enemy.y }, ...warningPath(s, enemy)];
@@ -94,7 +94,7 @@ it('磁推共用预览落点，只移动面前实心残骸，不能在正式攻�
   expect(s.energy).toBe(1);
   expect(s.pushes).toBe(1);
   s.wrecks[0]!.y = 8;
-  s.snakes[0]!.phase = 'charging';
+  s.snakes[0]!.phase = 'dashing';
   s.snakes[0]!.timer = 900;
   expect(magnetMove(s)).toBeNull();
   wait(s, 240);
@@ -118,7 +118,7 @@ it('磁推拒绝原因与实际执行一致，无效尝试不消耗电量', () =
     chip: { x: 6, y: 7, title: '芯片', memory: '记忆' },
   };
   expect(magnetPreview(s).reason).toBe('reserved');
-  s.snakes[0]!.phase = 'charging';
+  s.snakes[0]!.phase = 'dashing';
   expect(magnetPreview(s).reason).toBe('attacking');
   step(s, { direction: null, utility: true });
   expect(s.energy).toBe(2);
@@ -173,7 +173,7 @@ it('双技能按工具、信标顺序消费；一格电时工具优先，失败�
   expect(empty.pushes).toBe(0);
   expect(empty.beacons).toBe(1);
 });
-it('强化冲锋者冲空后300ms调整，再进行完整预警；第二段冲空正常恢复', () => {
+it('强化冲锋蛇冲空后300ms调整，再进行完整预警；第二段冲空正常恢复', () => {
   const s = arena('dodge', 'normal', true),
     enemy = s.snakes[0]!;
   Object.assign(enemy, {
@@ -187,9 +187,9 @@ it('强化冲锋者冲空后300ms调整，再进行完整预警；第二段冲�
   expect(enemy.followup).toBe(true);
   expect(enemy.timer).toBe(300);
   wait(s, 300);
-  expect(enemy.phase).toBe('charging');
-  expect(enemy.timer).toBe(enemy.rules.chargeMs);
-  expect(s.events.some((e) => e.type === 'charge')).toBe(true);
+  expect(enemy.phase).toBe('dashing');
+  expect(enemy.timer).toBe(enemy.rules.dashMs);
+  expect(s.events.some((e) => e.type === 'dash')).toBe(true);
   Object.assign(enemy, {
     phase: 'dashing',
     locked: 'left',
@@ -201,7 +201,7 @@ it('强化冲锋者冲空后300ms调整，再进行完整预警；第二段冲�
   expect(enemy.followup).toBe(false);
   expect(enemy.timer).toBe(enemy.rules.recoverMs);
 });
-it('强化冲锋者第一段撞墙即淘汰，不增加血量或产生第二段', () => {
+it('强化冲锋蛇第一段撞墙即淘汰，不增加血量或产生第二段', () => {
   const s = arena('dodge', 'normal', true),
     enemy = s.snakes[0]!;
   Object.assign(enemy, {
@@ -238,8 +238,8 @@ it('侧切提前400ms展示落点，结束后仍需完整正式预警；占格�
     );
     if (!occupied) {
       wait(s, 120);
-      expect(enemy.phase).toBe('charging');
-      expect(enemy.timer).toBe(enemy.rules.chargeMs);
+      expect(enemy.phase).toBe('dashing');
+      expect(enemy.timer).toBe(enemy.rules.dashMs);
     }
   }
 });

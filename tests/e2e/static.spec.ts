@@ -20,7 +20,7 @@ test('生产包在 /wallbait/ 加载全部资源并完成一局，保存实际�
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
   await expect(page.getByRole('heading', { name: '试验准备' })).toBeVisible();
   await page.getByRole('button', { name: '进入试验' }).click();
-  await expect(page.locator('#play-status')).toContainText('蓄力', {
+  await expect(page.locator('#play-status')).toContainText('直冲', {
     timeout: 10000,
   });
   await page.screenshot({ path: 'test-results/mobile-warning.png' });

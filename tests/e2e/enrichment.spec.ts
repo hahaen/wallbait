@@ -103,12 +103,12 @@ for (const id of [7, 11, 18]) {
     await page.clock.runFor(16);
     await expect(page.locator('#field-notes')).toContainText('待回收');
     for (const c of replay.commands) await send(c);
-    await page.clock.runFor(120);
+    await page.clock.runFor(1400);
     await expect(
       page.getByRole('heading', { name: '撞墙了吧！' }),
     ).toBeVisible();
     await expect(page.locator('.chip-note')).toContainText('芯片已归档');
-    if (id !== 7)
+    if (id === 18)
       await expect(page.locator('.result-highlights')).toContainText(
         '借尸筑墙',
       );
@@ -136,6 +136,7 @@ for (const id of [7, 11, 18]) {
     await expect(
       restored.locator(`[data-action="level:${id}"] .chip-label`),
     ).toHaveText('芯片 ✓');
+    await restored.locator('.archive-details summary').click();
     await expect(
       restored.getByRole('region', { name: '试验档案' }),
     ).toContainText('芯片 1 / 3');

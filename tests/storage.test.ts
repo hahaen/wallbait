@@ -70,7 +70,7 @@ it('新版恢复进度与设置，重玩独立提升用时、两类技能次数�
     dodges: 1,
     beacons: 1,
     stars: Math.max(firstStars, secondStars),
-    scoring: 'tactics-v1',
+    scoring: 'chase-v2',
   });
   state.status = 'lost';
   recordWin(save, state);
@@ -178,9 +178,50 @@ it('技能偏好校验、历史星级封存与新战术计分独立保存', () =
     timeMs: 20000,
     stars: 1,
     legacyStars: 3,
-    scoring: 'tactics-v1',
+    scoring: 'chase-v2',
   });
   save.utility = 'magnet';
   writeSave(storage, save);
   expect(readSave(storage)).toEqual(save);
+});
+
+it('无蓄力版保留旧战术版解锁与收藏，重玩时独立记录新规则成绩', () => {
+  const storage = {
+    getItem: (key: string) =>
+      key === SAVE_KEY
+        ? JSON.stringify({
+            version: 2,
+            campaign: 'foundry-v2',
+            muted: true,
+            reducedMotion: true,
+            best: {
+              '1': {
+                timeMs: 1000,
+                dodges: 0,
+                beacons: 0,
+                stars: 3,
+                scoring: 'tactics-v1',
+                legacyStars: 1,
+              },
+            },
+            collections: { '1': { chip: false, highlights: ['no-dodge'] } },
+          })
+        : null,
+    setItem: () => {},
+  };
+  const save = readSave(storage);
+  expect(save.unlocked).toBe(2);
+  expect(save.best['1']!.scoring).toBe('tactics-v1');
+  const state = createState(LEVELS[0]!);
+  state.status = 'won';
+  state.elapsedMs = 5000;
+  state.dodges = 2;
+  recordWin(save, state);
+  expect(save.best['1']).toMatchObject({
+    timeMs: 5000,
+    dodges: 2,
+    scoring: 'chase-v2',
+    legacyStars: 3,
+  });
+  expect(save.collections['1']!.highlights).toContain('no-dodge');
 });

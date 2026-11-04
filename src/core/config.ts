@@ -18,8 +18,7 @@ export const VECTOR: Record<Direction, Point> = {
 export const SNAKE_RULES: Record<SnakeKind, SnakeRules> = {
   normal: {
     trackMs: 300,
-    chargeMs: 760,
-    dashMs: 40,
+    dashMs: 100,
     dashCells: 4,
     recoverMs: 800,
     range: 5,
@@ -27,8 +26,7 @@ export const SNAKE_RULES: Record<SnakeKind, SnakeRules> = {
   },
   swift: {
     trackMs: 260,
-    chargeMs: 700,
-    dashMs: 20,
+    dashMs: 80,
     dashCells: 3,
     recoverMs: 1000,
     range: 5,
@@ -36,8 +34,7 @@ export const SNAKE_RULES: Record<SnakeKind, SnakeRules> = {
   },
   cautious: {
     trackMs: 360,
-    chargeMs: 900,
-    dashMs: 40,
+    dashMs: 100,
     dashCells: 5,
     recoverMs: 600,
     range: 5,

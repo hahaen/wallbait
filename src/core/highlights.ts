@@ -15,7 +15,7 @@ export const HIGHLIGHTS: Record<
   'no-dodge': { title: '脚下留电', description: '未使用闪避完成一关。' },
   'close-call': {
     title: '擦肩而过',
-    description: '蓄力最后 160ms 内离开危险通道，并安全避过这次冲刺。',
+    description: '蛇冲到两格内时横向脱身，并安全避过这次冲刺。',
   },
 };
 

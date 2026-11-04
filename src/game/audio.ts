@@ -17,7 +17,6 @@ export class Sound {
   play(type: GameEvent['type']): void {
     if (this.muted || !this.context || this.context.state !== 'running') return;
     const notes: Record<GameEvent['type'], [number, number]> = {
-      charge: [300, 420],
       dash: [240, 100],
       dodge: [600, 1000],
       wall: [100, 45],

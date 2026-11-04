@@ -102,7 +102,7 @@ for (const example of [
         });
       }
     }
-    await page.clock.runFor(120);
+    await page.clock.runFor(1400);
     await expect(
       page.getByRole('heading', { name: '撞墙了吧！' }),
     ).toBeVisible();
@@ -113,7 +113,8 @@ for (const example of [
       JSON.parse(localStorage.getItem('wallbait.save.v2')!),
     );
     expect(saved.utility).toBe(example.utility);
-    expect(saved.best[String(example.id)].scoring).toBe('tactics-v1');
+    expect(saved.best[String(example.id)].scoring).toBe('chase-v2');
+    await page.locator('.result-options summary').click({ force: true });
     await page
       .getByRole('button', { name: '更换装备', exact: true })
       .click({ force: true });
@@ -155,7 +156,7 @@ test('早期关卡保留基础装备，旧星级标历史且不计入新战术�
     '历史 ★★★',
   );
   await page.locator('[data-action="level:1"]').click();
-  await expect(page.locator('.loadout-options button')).toHaveCount(1);
+  await expect(page.locator('.loadout-options button')).toHaveCount(0);
   await expect(page.locator('[data-dodge]')).toHaveAttribute(
     'aria-label',
     '闪避',
@@ -168,8 +169,8 @@ test('早期关卡保留基础装备，旧星级标历史且不计入新战术�
 });
 
 for (const example of [
-  { id: 12, warning: '2号截击者预告侧切', kind: 'sidestep' },
-  { id: 14, warning: '1号侦察者预告干扰', kind: 'interference' },
+  { id: 12, warning: '2号截击蛇预告侧切', kind: 'sidestep' },
+  { id: 14, warning: '1号侦察蛇预告干扰', kind: 'interference' },
 ]) {
   test(`第${example.id}关强化能力先预告、正常通关与暂停冻结`, async ({
     page,
@@ -209,7 +210,7 @@ for (const example of [
     const replay = (
       JSON.parse(
         readFileSync(
-          new URL('../fixtures/solutions.json', import.meta.url),
+          new URL('../fixtures/ability-solutions.json', import.meta.url),
           'utf8',
         ),
       ) as Replay[]
@@ -229,7 +230,7 @@ for (const example of [
         });
       }
     }
-    await page.clock.runFor(120);
+    await page.clock.runFor(1400);
     await expect(
       page.getByRole('heading', { name: '撞墙了吧！' }),
     ).toBeVisible();

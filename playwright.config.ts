@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+
+// macOS 默认 SwiftShader 会让固定步回放极慢；使用实际设备同类的 Metal 渲染。
+const chromiumLaunch =
+  process.platform === 'darwin' ? { args: ['--use-angle=metal'] } : {};
 export default defineConfig({
   testDir: './tests/e2e',
   testIgnore: '**/static.spec.ts',
@@ -15,12 +19,17 @@ export default defineConfig({
       name: 'desktop',
       use: {
         ...devices['Desktop Chrome'],
+        launchOptions: chromiumLaunch,
         viewport: { width: 1280, height: 900 },
       },
     },
     {
       name: 'mobile',
-      use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' },
+      use: {
+        ...devices['iPhone 13'],
+        defaultBrowserType: 'chromium',
+        launchOptions: chromiumLaunch,
+      },
     },
     {
       name: 'webkit',

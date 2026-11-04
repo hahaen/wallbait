@@ -1,0 +1,15 @@
+{
+  "device": "Xiaomi 14",
+  "browser": "Chrome on physical Android",
+  "viewport": {
+    "width": 400,
+    "height": 789,
+    "dpr": 3
+  },
+  "firstLevelWin": true,
+  "endedClock": "1.2s",
+  "resultDelayObservedMs": 1351,
+  "multitouchAndCancel": true,
+  "pauseFreeze": true,
+  "errors": []
+}

@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import type { Replay } from '../replay-search';
 
 test('第八关双按钮投掷与残骸接力，暂停冻结并正常通关', async ({
   page,
@@ -36,35 +38,48 @@ test('第八关双按钮投掷与残骸接力，暂停冻结并正常通关', as
   await expect(page.locator('.skills button')).toHaveCount(2);
   await page.getByRole('button', { name: '进入试验' }).click({ force: true });
   await page.clock.runFor(16);
-  await page.getByRole('button', { name: '向左移动' }).click({ force: true });
-  await page
-    .getByRole('button', { name: '信标', exact: true })
-    .click({ force: true });
-  await page.clock.runFor(120);
-  await expect(page.locator('#cooldown')).toContainText('▰▱');
-  await page.clock.runFor(960);
-  await page.getByRole('button', { name: '向下移动' }).click({ force: true });
-  await page.clock.runFor(120);
-  for (let i = 0; i < 2; i++) {
-    await page.getByRole('button', { name: '向左移动' }).click({ force: true });
+  const replay = (
+    JSON.parse(
+      readFileSync(
+        new URL('../fixtures/solutions.json', import.meta.url),
+        'utf8',
+      ),
+    ) as Replay[]
+  ).find((r) => r.level === 8)!;
+  const names = {
+    up: '向上移动',
+    right: '向右移动',
+    down: '向下移动',
+    left: '向左移动',
+  };
+  let checkedPause = false;
+  for (const command of replay.commands) {
+    if (command.direction)
+      await page
+        .getByRole('button', { name: names[command.direction], exact: true })
+        .click({ force: true });
+    if (command.beacon)
+      await page
+        .getByRole('button', { name: '信标', exact: true })
+        .click({ force: true });
     await page.clock.runFor(120);
+    if (
+      !checkedPause &&
+      (await page.locator('#cooldown').textContent())?.includes('▰▱')
+    ) {
+      checkedPause = true;
+      await page
+        .getByRole('button', { name: '暂停游戏' })
+        .click({ force: true });
+      const clock = await page.locator('#clock').textContent();
+      await page.clock.runFor(1000);
+      expect(await page.locator('#clock').textContent()).toBe(clock);
+      await page
+        .getByRole('button', { name: '继续游戏' })
+        .click({ force: true });
+    }
   }
-  await page.clock.runFor(780);
-  await expect(page.locator('#mechanisms')).toContainText('残骸 1 阻挡');
-  await expect(page.locator('#beacon-text')).toHaveText('前投 ≤2格');
-  await page.getByRole('button', { name: '暂停游戏' }).click({ force: true });
-  const clock = await page.locator('#clock').textContent();
-  const hud = await page.locator('#mechanisms').textContent();
-  await page.clock.runFor(1000);
-  expect(await page.locator('#clock').textContent()).toBe(clock);
-  expect(await page.locator('#mechanisms').textContent()).toBe(hud);
-  await page.getByRole('button', { name: '继续游戏' }).click({ force: true });
-  await page.getByRole('button', { name: '向上移动' }).click({ force: true });
-  await page
-    .getByRole('button', { name: '信标', exact: true })
-    .click({ force: true });
-  await page.clock.runFor(120);
-  await expect(page.locator('#cooldown')).toContainText('▱▱');
+  expect(checkedPause).toBe(true);
   const canvas = (await page.locator('canvas').boundingBox())!;
   const controls = (await page.locator('.controls').boundingBox())!;
   expect(canvas.y + canvas.height).toBeLessThanOrEqual(controls.y);
@@ -79,5 +94,6 @@ test('第八关双按钮投掷与残骸接力，暂停冻结并正常通关', as
   await page.clock.runFor(2000);
   await expect(page.getByRole('heading', { name: '撞墙了吧！' })).toBeVisible();
   await expect(page.locator('.result-stats')).toContainText('0 / 2');
+  await expect(page.locator('.result-highlights')).toContainText('借尸筑墙');
   expect(errors).toEqual([]);
 });

@@ -40,7 +40,7 @@ test('原生键盘输入从第一关连续闯到 20 关通关，刷新后自由�
       await page.clock.runFor(120);
       if (!capturedMultiWarning && replay.level >= 6) {
         const status = await page.locator('#play-status').textContent();
-        if ((status?.match(/蓄力|冲刺/g)?.length ?? 0) >= 2) {
+        if ((status?.match(/直冲/g)?.length ?? 0) >= 2) {
           await page.screenshot({
             path: 'test-results/usability-multi-warning.png',
           });
@@ -49,7 +49,7 @@ test('原生键盘输入从第一关连续闯到 20 关通关，刷新后自由�
       }
       if (command.direction) await page.keyboard.up(keys[command.direction]);
     }
-    await page.clock.runFor(120);
+    await page.clock.runFor(1400);
     await expect(
       page.getByRole('heading', {
         name: replay.level === 20 ? '墙都记住你了！' : '撞墙了吧！',

@@ -34,7 +34,7 @@ test('加载失败保持冻结，快捷键不能关闭错误，重新加载页�
   );
   await page.goto('/');
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
-  const error = page.getByRole('heading', { name: '游戏资源还没到齐' });
+  const error = page.getByRole('heading', { name: '游戏还没准备好' });
   await expect(error).toBeVisible();
   await page.keyboard.press('p');
   await page.keyboard.press('Escape');
@@ -74,6 +74,7 @@ test('离开加载中的关卡后，迟到的资源不会复活旧场景', async
 test('后期准备页在小屏、横屏和放大文字下始终保留开始与返回入口', async ({
   page,
 }, info) => {
+  test.setTimeout(120000);
   await page.addInitScript(() =>
     localStorage.setItem(
       'wallbait.save.v2',
@@ -193,10 +194,10 @@ test('聚焦后的方向、工具与信标支持 Enter，修饰键不会误触�
     .click({ force: true });
   await expect(page.locator('[data-action="begin"]')).toBeEnabled();
   await page.locator('[data-action="begin"]').click({ force: true });
-  await page.clock.runFor(216);
+  await page.clock.runFor(916);
   await page.getByRole('button', { name: '向右移动' }).focus();
   await page.keyboard.press('Enter');
-  await page.clock.runFor(1200);
+  await page.clock.runFor(2000);
   await expect(page.getByRole('heading', { name: '撞墙了吧！' })).toBeVisible();
   await expect(page.locator('.result-stats')).toContainText('0 / 0');
 });

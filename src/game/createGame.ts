@@ -16,11 +16,13 @@ export function createGame(
   parent: HTMLElement,
   options: GameOptions,
 ): { destroy(): void; resetClock(): void } {
+  const renderScale = Math.min(window.devicePixelRatio || 1, 3);
   let accumulator = 0,
     disposed = false;
   class PlayScene extends Phaser.Scene {
     private arena?: Arena;
     create(): void {
+      this.cameras.main.setOrigin(0, 0).setZoom(renderScale);
       this.arena = new Arena(this, options.state);
       this.arena.draw(0, true);
       options.onReady();
@@ -30,6 +32,7 @@ export function createGame(
       const state = options.state;
       if (state.paused || state.status !== 'playing') {
         accumulator = 0;
+        if (!state.paused) this.arena.draw(Math.min(delta, 100), true);
         return;
       }
       accumulator += Math.min(delta, 100);
@@ -55,12 +58,13 @@ export function createGame(
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent,
-    backgroundColor: '#193440',
+    backgroundColor: '#e1e9bc',
     render: { antialias: true, pixelArt: false },
     scale: {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
-      ...VIEWPORT,
+      width: VIEWPORT.width * renderScale,
+      height: VIEWPORT.height * renderScale,
     },
     scene: [PlayScene],
     audio: { noAudio: true },

@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { LEVELS, validateLevel } from '../src/core/levels';
 
-it('拒绝门墙重叠、重复编号、出生门和禁用信标的侦察者', () => {
+it('拒绝门墙重叠、重复编号、出生门和禁用信标的侦察蛇', () => {
   const base = structuredClone(LEVELS[3]!);
   const overlap = structuredClone(base);
   overlap.gates![0]!.cells = [overlap.walls[0]!];
@@ -13,7 +13,7 @@ it('拒绝门墙重叠、重复编号、出生门和禁用信标的侦察者', (
   spawn.apple = spawn.gates![0]!.cells[0]!;
   expect(validateLevel(spawn)).toContain('出生被关闭门占用');
   expect(validateLevel({ ...LEVELS[4]!, beaconEnabled: false })).toContain(
-    '侦察者关卡必须启用信标',
+    '侦察蛇关卡必须启用信标',
   );
 });
 it('拒绝关闭门把唯一开关隔在另一侧的死锁', () => {

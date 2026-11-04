@@ -31,13 +31,14 @@ const lab = (extra: Partial<Level> = {}): GameState =>
 function advance(s: GameState, ticks: number): void {
   for (let i = 0; i < ticks; i++) step(s, { direction: null });
 }
-function charge(s: GameState, timer: number): void {
+function rush(s: GameState, distance: number): void {
   Object.assign(s.snakes[0]!, {
     x: 6,
-    y: 7,
-    phase: 'charging',
+    y: 10 - distance,
+    phase: 'dashing',
+    remaining: 4,
     locked: 'down',
-    timer,
+    timer: 160,
     attackPath: [
       { x: 6, y: 7 },
       { x: 6, y: 8 },
@@ -172,30 +173,30 @@ describe('精彩操作的实际事件归因', () => {
     });
     step(locked, { direction: null, beacon: true });
     advance(locked, 6);
-    expect(locked.snakes[0]!.phase).toBe('charging');
+    expect(locked.snakes[0]!.phase).toBe('dashing');
     expect(locked.snakes[0]!.attackBeacon).toBe(1);
     locked.beacon = null;
     advance(locked, 1);
     expect(locked.snakes[0]!.attackBeacon).toBe(1);
   });
-  it('擦肩而过只计算最后160ms内真实离开且避过冲刺，早走/从未处于通道不计', () => {
-    for (const timer of [160, 180]) {
+  it('擦肩而过只计算蛇头两格内真实离开且避过冲刺，早走/从未处于通道不计', () => {
+    for (const distance of [2, 3]) {
       const s = lab();
-      charge(s, timer);
+      rush(s, distance);
       step(s, { direction: 'right' });
       expect(s.highlights).toEqual([]);
       advance(s, 30);
       expect(s.highlights.some((h) => h.id === 'close-call')).toBe(
-        timer === 160,
+        distance === 2,
       );
     }
     const outside = lab({ apple: { x: 7, y: 10 } });
-    charge(outside, 160);
+    rush(outside, 2);
     step(outside, { direction: 'right' });
     advance(outside, 30);
     expect(outside.highlights).toEqual([]);
     const back = lab();
-    charge(back, 160);
+    rush(back, 2);
     step(back, { direction: 'right' });
     advance(back, 5);
     step(back, { direction: 'left' });
@@ -205,7 +206,7 @@ describe('精彩操作的实际事件归因', () => {
   });
   it('暂停冻结操作记录与规则时间，重开没有前局记录', () => {
     const s = lab();
-    charge(s, 160);
+    rush(s, 2);
     step(s, { direction: 'right' });
     setPaused(s, true);
     const snapshot = structuredClone(s);

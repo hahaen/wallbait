@@ -7,6 +7,8 @@ export default defineConfig({
   use: {
     ...devices['iPhone 13'],
     defaultBrowserType: 'chromium',
+    launchOptions:
+      process.platform === 'darwin' ? { args: ['--use-angle=metal'] } : {},
     baseURL: 'http://127.0.0.1:4174',
   },
   webServer: {

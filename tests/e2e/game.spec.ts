@@ -8,9 +8,11 @@ async function start(page: Page): Promise<void> {
   await page.getByRole('button', { name: '进入试验', exact: true }).click();
 }
 async function winFirst(page: Page): Promise<void> {
-  await expect(page.locator('#play-status')).toContainText('蓄力', {
-    timeout: 10000,
-  });
+  await page.waitForFunction(
+    () => document.querySelector('#play-status')?.textContent?.includes('直冲'),
+    null,
+    { polling: 'raf', timeout: 10000 },
+  );
   await page.keyboard.down('ArrowRight');
   await page.keyboard.press('Space');
   await page.keyboard.up('ArrowRight');
@@ -25,7 +27,7 @@ test('首页、说明、设置、失败重试、胜利下一关、刷新和选�
   await page.goto('/');
   await page.getByRole('button', { name: '怎么玩' }).click();
   await expect(
-    page.getByRole('heading', { name: '你是阿零，借墙脱身' }),
+    page.getByRole('heading', { name: '你是苹果，借墙脱身' }),
   ).toBeVisible();
   await page.getByRole('button', { name: '知道了' }).click();
   await page.getByRole('button', { name: '设置', exact: true }).click();
@@ -48,7 +50,7 @@ test('首页、说明、设置、失败重试、胜利下一关、刷新和选�
     '本关 3 星',
   );
   await page.getByRole('button', { name: '下一关', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '还差一步' })).toBeVisible();
+  await expect(page.locator('.level-name')).toHaveText('还差一步');
   await page.reload();
   await expect(
     page.getByRole('button', { name: '继续挑战 · 第 2 关' }),
@@ -61,7 +63,7 @@ test('首页、说明、设置、失败重试、胜利下一关、刷新和选�
   await expect(page.locator('[data-action="level:2"]')).toBeEnabled();
   await expect(page.locator('[data-action="level:3"]')).toBeDisabled();
   await page.locator('[data-action="level:1"]').click();
-  await expect(page.getByRole('heading', { name: '借墙脱身' })).toBeVisible();
+  await expect(page.locator('.level-name')).toHaveText('借墙脱身');
   expect(errors).toEqual([]);
 });
 
@@ -83,6 +85,8 @@ test('暂停冻结时间与冷却、后台暂停、连续重开无重复监听',
   await expect(page.getByRole('heading', { name: '歇一口气' })).toBeVisible();
   for (let i = 0; i < 4; i++) {
     await page.getByRole('button', { name: '重新挑战' }).click();
+    await expect(page.locator('#arena')).toHaveAttribute('aria-busy', 'false');
+    await expect(page.locator('dialog')).toHaveCount(0);
     await page.keyboard.press('Escape');
     await expect(page.locator('dialog')).toHaveCount(1);
     await expect(page.getByRole('heading', { name: '歇一口气' })).toBeVisible();
@@ -108,10 +112,11 @@ test('损坏及不可用的存储仍能正常游玩', async ({ page }) => {
   await winFirst(page);
   await expect(page.locator('.save-warning')).toBeVisible();
   await page.getByRole('button', { name: '下一关', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '还差一步' })).toBeVisible();
+  await expect(page.locator('.level-name')).toHaveText('还差一步');
 });
 
 test('地图与触控区无重叠、竖屏安全空间', async ({ page }) => {
+  test.setTimeout(120000);
   for (const size of [
     { width: 320, height: 568 },
     { width: 375, height: 667 },
@@ -131,7 +136,7 @@ test('地图与触控区无重叠、竖屏安全空间', async ({ page }) => {
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),
     ).toBeLessThanOrEqual(size.width);
-    for (const b of await page.locator('.controls button').all()) {
+    for (const b of await page.locator('.controls button:visible').all()) {
       const box = (await b.boundingBox())!;
       expect(box.width).toBeGreaterThanOrEqual(44);
       expect(box.height).toBeGreaterThanOrEqual(44);

@@ -19,7 +19,7 @@ const directionText: Record<Direction, string> = {
   down: '下',
   left: '左',
 };
-const kindText = { normal: '冲锋者', swift: '截击者', cautious: '侦察者' };
+const kindText = { normal: '冲锋蛇', swift: '截击蛇', cautious: '侦察蛇' };
 const seconds = (ms: number): string => (ms / 1000).toFixed(2);
 
 interface Metrics {
@@ -99,9 +99,7 @@ function measure(replay: Replay): Metrics {
         Math.abs(state.apple.x - before.apple.x) +
         Math.abs(state.apple.y - before.apple.y);
       if (
-        state.snakes.filter(
-          (s) => s.alive && (s.phase === 'charging' || s.phase === 'dashing'),
-        ).length >= 2
+        state.snakes.filter((s) => s.alive && s.phase === 'dashing').length >= 2
       )
         result.overlapMs += 20;
       for (const wreck of state.wrecks)
@@ -122,16 +120,16 @@ function measure(replay: Replay): Metrics {
           });
       for (const event of state.events) {
         if (
-          event.type === 'charge' &&
+          event.type === 'dash' &&
           state.snakes[event.snake]!.kind === 'normal' &&
           state.snakes[event.snake]!.followup
         )
           result.abilities.push({
             atMs: state.elapsedMs,
             enemy: event.snake + 1,
-            kind: '二段预警',
+            kind: '二段冲刺',
           });
-        if (event.type === 'charge')
+        if (event.type === 'dash')
           result.charges.push({
             atMs: state.elapsedMs,
             enemy: event.snake + 1,
@@ -199,7 +197,7 @@ function document(metrics: Metrics[]): string {
     '',
     '## 回放统计',
     '',
-    '锁向次数统计正式 `charge` 事件；门变化只计实际开闭变化，不把待执行请求算成已切门。移动格数为逐 tick 实际位移累计，包含闪避；输入转向只计相邻非空方向改变，停顿不重置计数。完整事件时间、撞击格及信标落点保存在 [JSON 报告](testing/replay-metrics.json)。多敌攻击重叠统计至少两名存活敌人同时处于正式预警或冲刺的规则时间；撞残骸按淘汰事件来源统计。这些指标描述动作结构，不能直接等同于独立策略决策次数。',
+    '锁向次数统计实际 `dash` 事件；门变化只计实际开闭变化，不把待执行请求算成已切门。移动格数为逐 tick 实际位移累计，包含闪避；输入转向只计相邻非空方向改变，停顿不重置计数。完整事件时间、撞击格及信标落点保存在 [JSON 报告](testing/replay-metrics.json)。多敌攻击重叠统计至少两名存活敌人同时处于冲刺的规则时间；撞残骸按淘汰事件来源统计。这些指标描述动作结构，不能直接等同于独立策略决策次数。',
     '',
     '| 关 | 名称 | 用时 | 闪避 / 信标 | 锁向 | 门变化 | 移动格 | 输入转向 | 多敌攻击重叠 | 撞残骸 |',
     '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',

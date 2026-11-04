@@ -1,7 +1,7 @@
 [
   {
     "level": 7,
-    "elapsedMs": 2440,
+    "elapsedMs": 1980,
     "dodges": 1,
     "beacons": 1,
     "commands": [
@@ -34,26 +34,14 @@
         "direction": "up"
       },
       {
-        "direction": "up",
+        "direction": null,
         "beacon": true
       },
       {
-        "direction": "up"
+        "direction": "right"
       },
       {
-        "direction": "up"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
+        "direction": "down"
       },
       {
         "direction": null
@@ -74,268 +62,12 @@
   },
   {
     "level": 11,
-    "elapsedMs": 9840,
-    "dodges": 1,
-    "beacons": 1,
-    "commands": [
-      {
-        "direction": "left",
-        "dodge": true
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "down"
-      },
-      {
-        "direction": "down"
-      },
-      {
-        "direction": "down"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "left",
-        "beacon": true
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "down"
-      },
-      {
-        "direction": "down"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      }
-    ]
-  },
-  {
-    "level": 18,
-    "elapsedMs": 5480,
+    "elapsedMs": 3680,
     "dodges": 1,
     "beacons": 2,
     "commands": [
       {
-        "direction": "left",
+        "direction": "up",
         "dodge": true
       },
       {
@@ -345,37 +77,7 @@
         "direction": "left"
       },
       {
-        "direction": "left"
-      },
-      {
         "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "left"
       },
       {
         "direction": "left",
@@ -385,13 +87,22 @@
         "direction": "left"
       },
       {
-        "direction": "right"
+        "direction": "up"
       },
       {
-        "direction": "right"
+        "direction": "up"
       },
       {
-        "direction": "right"
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
       },
       {
         "direction": null
@@ -424,10 +135,16 @@
         "direction": null
       },
       {
-        "direction": "up"
+        "direction": null
       },
       {
         "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
       },
       {
         "direction": null,
@@ -437,6 +154,48 @@
         "direction": null
       },
       {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 18,
+    "elapsedMs": 4280,
+    "dodges": 1,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
         "direction": null
       },
       {
@@ -450,6 +209,25 @@
       },
       {
         "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right",
+        "dodge": true
+      },
+      {
+        "direction": "up"
       },
       {
         "direction": null
@@ -458,19 +236,47 @@
         "direction": "up"
       },
       {
-        "direction": "right"
+        "direction": "left"
       },
       {
-        "direction": "right"
+        "direction": "left"
+      },
+      {
+        "direction": "up"
       },
       {
         "direction": "down"
       },
       {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down",
+        "beacon": true
+      },
+      {
         "direction": "down"
       },
       {
-        "direction": null
+        "direction": "left"
+      },
+      {
+        "direction": "left"
       },
       {
         "direction": null

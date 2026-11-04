@@ -35,9 +35,9 @@ export const STRATEGIES = [
   },
   {
     id: 'one-sidestep',
-    title: '首次预警只横移一次',
+    title: '首次直冲只横移一次',
     algorithm:
-      '原地等第一条正式预警，优先沿锁向顺时针垂直方向侧移一格；被墙挡则选反方向，两个方向都被挡则继续尝试。成功移动后一直不动。',
+      '原地等第一条蛇开始直冲，优先沿冲刺方向顺时针垂直侧移一格；被墙挡则选反方向，两个方向都被挡则继续尝试。成功移动后一直不动。',
   },
   {
     id: 'blind-beacon',
@@ -100,7 +100,7 @@ function oneSidestep(): Policy {
     if (finished) return { direction: null };
     if (!origin) {
       const warning = state.snakes.find(
-        (snake) => snake.alive && snake.phase === 'charging',
+        (snake) => snake.alive && snake.phase === 'dashing',
       );
       if (!warning) return { direction: null };
       origin = positionKey(state);

@@ -7,6 +7,14 @@ export default defineConfig({
     host: '127.0.0.1',
     port: 5173,
     strictPort: true,
+    watch: {
+      ignored: [
+        '**/playwright-report/**',
+        '**/test-results/**',
+        '**/docs/testing/evidence/**',
+        '**/dist/**',
+      ],
+    },
   },
   preview: {
     host: '127.0.0.1',

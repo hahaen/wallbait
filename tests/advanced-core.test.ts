@@ -100,7 +100,7 @@ describe('共享电量与信标', () => {
 });
 
 describe('三种策略与不可变正式预警', () => {
-  it('追逐者追实际位置，截击者预测前两格并在墙前截断', () => {
+  it('追逐者追实际位置，截击蛇预测前两格并在墙前截断', () => {
     const s = arena({ apple: { x: 6, y: 7 }, facing: 'right' });
     const normal = s.snakes[0]!;
     const swift = { ...normal, kind: 'swift' as const };
@@ -150,13 +150,13 @@ describe('三种策略与不可变正式预警', () => {
     step(s, { direction: null, beacon: true });
     advance(s, 140);
     const snake = s.snakes[0]!;
-    expect(snake.phase).toBe('charging');
-    const path = warningPath(s, snake);
+    expect(snake.phase).toBe('dashing');
+    const path = structuredClone(snake.attackPath);
     s.beacon!.remainingMs = TICK_MS;
     advance(s, 240, { direction: 'up' });
     expect(s.beacon).toBeNull();
     expect(snake.locked).toBe('right');
-    expect(warningPath(s, snake)).toEqual(path);
+    expect(snake.attackPath).toEqual(path);
   });
 });
 
@@ -206,7 +206,8 @@ describe('踏板门与攻击路径', () => {
     Object.assign(snake, {
       x: 8,
       y: 7,
-      phase: 'charging',
+      phase: 'dashing',
+      remaining: 4,
       locked: 'down',
       timer: 300,
     });
@@ -225,7 +226,8 @@ describe('踏板门与攻击路径', () => {
     Object.assign(snake, {
       x: 8,
       y: 7,
-      phase: 'charging',
+      phase: 'dashing',
+      remaining: 4,
       locked: 'down',
       timer: 2000,
     });

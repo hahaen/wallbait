@@ -53,12 +53,14 @@ describe('多敌预警与失败归因', () => {
       ],
     });
     Object.assign(s.snakes[0]!, {
-      phase: 'charging',
+      phase: 'dashing',
+      remaining: 4,
       locked: 'left',
       timer: 700,
     });
     Object.assign(s.snakes[1]!, {
-      phase: 'charging',
+      phase: 'dashing',
+      remaining: 4,
       locked: 'down',
       timer: 100,
     });
@@ -68,7 +70,7 @@ describe('多敌预警与失败归因', () => {
       timer: 200,
     });
     expect(dangerText(s)).toBe(
-      '3号截击者冲刺→ · 2号冲锋者蓄力↓ · 1号冲锋者蓄力←',
+      '2号冲锋蛇直冲↓ · 3号截击蛇直冲→ · 1号冲锋蛇直冲←',
     );
     s.snakes[2]!.alive = false;
     expect(dangerText(s)).not.toContain('3号');
@@ -90,7 +92,7 @@ describe('多敌预警与失败归因', () => {
         { x: 6, y: 6 },
       ],
     });
-    expect(lossTitle(s)).toBe('1号冲锋者 · 追踪接触');
+    expect(lossTitle(s)).toBe('1号冲锋蛇 · 追踪接触');
     expect(lossAdvice(s)).toContain('绕墙');
     const snapshot = structuredClone(s.loss);
     step(s, { direction: 'right', dodge: true });
@@ -119,7 +121,7 @@ it('技能提示区分墙、作用目标、磁推条件和干扰停充', () => {
   s.level = { ...s.level, walls: [] };
   s.wrecks.push({ x: 6, y: 8, active: true });
   expect(utilityFeedback(s).ready).toBe(true);
-  s.snakes[0]!.phase = 'charging';
+  s.snakes[0]!.phase = 'dashing';
   expect(utilityFeedback(s).text).toBe('待攻击结束');
   s.energy = 0;
   expect(utilityFeedback(s).text).toBe('充电中');
@@ -129,8 +131,18 @@ it('技能提示区分墙、作用目标、磁推条件和干扰停充', () => {
 
 it('蓄力排序计入脉冲暂停时间，优先提示实际先发动者', () => {
   const s = createState(LEVELS[12]!);
-  Object.assign(s.snakes[0]!, { phase: 'charging', timer: 100, stunMs: 600 });
-  Object.assign(s.snakes[1]!, { phase: 'charging', timer: 200, stunMs: 0 });
+  Object.assign(s.snakes[0]!, {
+    phase: 'dashing',
+    remaining: 4,
+    timer: 100,
+    stunMs: 600,
+  });
+  Object.assign(s.snakes[1]!, {
+    phase: 'dashing',
+    remaining: 4,
+    timer: 200,
+    stunMs: 0,
+  });
   const text = dangerText(s);
   expect(text.indexOf('2号')).toBeLessThan(text.indexOf('1号'));
 });

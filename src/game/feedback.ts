@@ -41,9 +41,9 @@ export function utilityFeedback(state: GameState): {
 }
 
 export const ENEMY_NAMES: Record<SnakeKind, string> = {
-  normal: '冲锋者',
-  swift: '截击者',
-  cautious: '侦察者',
+  normal: '冲锋蛇',
+  swift: '截击蛇',
+  cautious: '侦察蛇',
 };
 export const ENEMY_SYMBOLS: Record<SnakeKind, string> = {
   normal: '›',
@@ -74,7 +74,7 @@ export function groupEnemies(
 /** 冲刺优先，随后按发动时间排序；同刻按编号稳定排列。 */
 export function dangerText(state: GameState): string {
   const threats = state.snakes
-    .filter((s) => s.alive && (s.phase === 'dashing' || s.phase === 'charging'))
+    .filter((s) => s.alive && s.phase === 'dashing')
     .sort(
       (a, b) =>
         Number(b.phase === 'dashing') - Number(a.phase === 'dashing') ||
@@ -84,7 +84,7 @@ export function dangerText(state: GameState): string {
   return threats
     .map(
       (s) =>
-        `${enemyName(s)}${s.stunMs ? '暂停·' : ''}${s.phase === 'dashing' ? '冲刺' : '蓄力'}${arrows[s.locked]}${s.elite && s.kind === 'normal' && s.followup ? '·第二段' : ''}`,
+        `${enemyName(s)}${s.stunMs ? '暂停·' : ''}直冲${arrows[s.locked]}${s.elite && s.kind === 'normal' && s.followup ? '·第二段' : ''}`,
     )
     .concat(
       state.snakes
@@ -108,7 +108,7 @@ export function lossAdvice(state: GameState): string {
   return {
     contact: '任何工具都不能穿过敌人头部；先确认相邻格与工具作用范围。',
     tracking: '恢复结束后仍会追踪；绕墙拉开距离，别贴着敌头等待。',
-    dash: '橙色箭头已经锁向；横向离开整条通道，不要沿箭头逃跑。',
+    dash: '蛇直冲时不会转弯；留好侧路，横向闪开。',
   }[state.loss.kind];
 }
 
