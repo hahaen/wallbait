@@ -47,7 +47,7 @@ npm run test:static
 
 20/20 关具备正常出生到胜利的纯命令回放。七种固定简单策略中，第 11—20 关均未被通关；第 1、3、5、7 关保留教学与过渡的宽容解。自动回放只证明可解，不能当作人类难度或手感成绩。实际执行情况、交互试玩与剩余限制见 [验收记录](docs/testing/README.md)。
 
-中后期实际试玩、真机与扩大真人测试按用户调整后的范围转为[后续事项](docs/remaining-work.md)，不阻塞本轮交付。真机目前不可连接；手机尺寸 Chromium/WebKit 与 CDP 多指测试属于浏览器模拟，不能冒充 iPhone Safari / Android Chrome 真机验收。
+中后期已补第 8、10、13、15、20 关的[代理交互抽样](docs/testing/followup-2026-11-04.md)，五关均通过正常操作获胜，含失败与重试记录；使用频繁暂停和临时选关夹具，不代表真人实时或连续 20 关成绩。真机、扩大真人测试及低端设备性能继续列为[后续事项](docs/remaining-work.md)。真机目前不可连接；手机尺寸 Chromium/WebKit 与 CDP 多指测试属于浏览器模拟，不能冒充 iPhone Safari / Android Chrome 真机验收。
 
 ## 项目结构
 
