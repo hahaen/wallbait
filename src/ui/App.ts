@@ -27,6 +27,7 @@ import {
   writeSave,
 } from '../storage/save';
 import { appleArt, heroArt } from './art';
+import { utilityIcons, beaconIcon } from './icons';
 
 const ZONES = [
   ['草地热身', '先找一堵墙，再给自己留条侧路。'],
@@ -195,7 +196,7 @@ export class App {
       <div class="arena-slot"><div id="arena" role="img" aria-busy="true" aria-label="对局地图：红苹果、三种蛇、石墙、字母闸门、残骸与可选收藏"><span class="loading">正在摆好墙…</span></div></div>
       <div class="field-info"><span id="mechanisms" class="mechanisms"></span><span id="field-notes" class="field-notes" role="status" aria-live="polite"></span><span class="play-status" id="play-status" aria-live="polite"></span></div>
       <aside class="loss-inspection" hidden aria-label="失败现场说明"><b id="loss-title" tabindex="-1"></b><p id="loss-advice"></p><small>红圈 ×：碰撞格 · 金色框：致命敌人的路线</small><div>${button('result', '返回结算')}${button('retry', '再试一次', 'primary')}</div></aside>
-      <div class="controls"><div class="dpad" aria-label="四向移动"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span aria-hidden="true">✦</span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="skills"><button class="skill dodge" data-dodge aria-label="闪避"><span aria-hidden="true">↟</span><b>闪避</b><small id="dodge-text">1 格电</small></button><button class="skill beacon" data-beacon aria-label="信标" ${level.beaconEnabled ? '' : 'disabled'}><span aria-hidden="true">⌖</span><b>信标</b><small id="beacon-text">${level.beaconEnabled ? '1 格电' : '未启用'}</small></button></div></div>
+      <div class="controls"><div class="dpad joystick" data-joystick role="group" aria-label="移动摇杆"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span class="stick-knob" aria-hidden="true"></span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="skills"><button class="skill dodge" data-dodge aria-label="闪避"><span class="skill-symbol" aria-hidden="true">↟</span><b>闪避</b><small id="dodge-text">1 格电</small></button><button class="skill beacon" data-beacon aria-label="信标" ${level.beaconEnabled ? '' : 'disabled'}><span aria-hidden="true">${beaconIcon}</span><b>信标</b><small id="beacon-text">${level.beaconEnabled ? '1 格电' : '未启用'}</small></button></div></div>
       <footer class="play-footer"><span>方向键 / WASD · 空格闪避 · E 信标 · P 暂停</span></footer></section>`,
     );
     this.root
@@ -216,11 +217,24 @@ export class App {
             : this.pause(),
     );
     const arena = this.root.querySelector<HTMLElement>('#arena')!;
+    const fail = (): void => {
+      if (this.state !== state) return;
+      this.gameReady = false;
+      this.autoStart = false;
+      setPaused(state, true);
+      this.controls?.clear();
+      arena.setAttribute('aria-busy', 'false');
+      this.dialog(
+        `<h2 id="dialog-title">游戏还没准备好</h2><p>重新加载试试，已存进度会保留。</p>${button('reload', '重新加载页面', 'primary')}${button('levels', '返回选关', 'text-button')}`,
+      );
+    };
     void import('../game/createGame')
       .then(({ createGame }) => {
         if (this.state !== state) return;
         this.game = createGame(arena, {
           state,
+          onError: fail,
+          inspectingLoss: () => this.inspectingLoss,
           onReady: () => {
             if (this.state !== state) return;
             this.gameReady = true;
@@ -248,17 +262,7 @@ export class App {
           },
         });
       })
-      .catch(() => {
-        if (this.state !== state) return;
-        this.gameReady = false;
-        this.autoStart = false;
-        setPaused(state, true);
-        this.controls?.clear();
-        arena.setAttribute('aria-busy', 'false');
-        this.dialog(
-          `<h2 id="dialog-title">游戏还没准备好</h2><p>重新加载试试，已存进度会保留。</p>${button('reload', '重新加载页面', 'primary')}${button('levels', '返回选关', 'text-button')}`,
-        );
-      });
+      .catch(fail);
     this.refreshUtility();
     this.hud();
     this.dialog(
@@ -285,7 +289,7 @@ export class App {
     const name = node?.querySelector('b'),
       icon = node?.querySelector('span');
     if (name) name.textContent = skill.name;
-    if (icon) icon.textContent = skill.symbol;
+    if (icon) icon.innerHTML = utilityIcons[this.state.utility];
     const keys = this.root.querySelector('.play-footer span');
     if (keys)
       keys.textContent = `方向键 / WASD · 空格${skill.name} · E 信标 · P 暂停`;
@@ -314,6 +318,8 @@ export class App {
     const dodgeReady = utility.ready;
     const beaconReady = s.energy > 0 && !s.beacon && s.level.beaconEnabled;
     text('dodge-text', utility.text);
+    const utilityNote = this.root.querySelector<HTMLElement>('#dodge-text');
+    if (utilityNote) utilityNote.hidden = utility.ready;
     text(
       'beacon-text',
       !s.level.beaconEnabled
@@ -321,7 +327,7 @@ export class App {
         : s.beacon
           ? `${seconds(s.beacon.remainingMs)}s`
           : beaconReady
-            ? '前投 ≤2格'
+            ? ''
             : inInterference(s)
               ? '干扰停充'
               : '充电中',
@@ -376,7 +382,7 @@ export class App {
       s.status === 'won'
         ? '撞墙了！'
         : s.status === 'lost'
-          ? lossTitle(s)
+          ? '被逮住了，下次再骗它！'
           : danger,
     );
     this.root

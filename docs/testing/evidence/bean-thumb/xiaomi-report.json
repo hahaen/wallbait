@@ -1,0 +1,39 @@
+{
+  "device": "Xiaomi 14 (23127PN0CC)",
+  "browser": "Physical Android Chrome",
+  "viewport": {
+    "width": 400,
+    "height": 789,
+    "dpr": 3
+  },
+  "stick": {
+    "x": 26,
+    "y": 603.3333740234375,
+    "width": 164,
+    "height": 164
+  },
+  "skill": {
+    "x": 256,
+    "y": 655.3333740234375,
+    "width": 116,
+    "height": 112
+  },
+  "canvas": {
+    "x": 14,
+    "y": 111.33333587646484,
+    "width": 372,
+    "height": 429.22916412353516
+  },
+  "beads": true,
+  "nativeTrustedTouchEvents": 4,
+  "joystickDeadzone": true,
+  "diagonalHysteresis": true,
+  "dragOutside": true,
+  "releaseAndCancel": true,
+  "multitouchSkill": true,
+  "clearReleasesCapture": true,
+  "firstLevelWin": true,
+  "resultDelayObservedMs": 1292,
+  "pauseFreeze": true,
+  "errors": []
+}

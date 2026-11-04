@@ -4,13 +4,16 @@ import { step } from '../core/engine';
 import type { Command, GameEvent, GameState } from '../core/types';
 import { Arena } from './renderers/Arena';
 import { VIEWPORT } from './config';
+import { CHARACTER_ATLAS, characterFrame } from './characters';
 
 export interface GameOptions {
   state: GameState;
   command: () => Command;
   onTick: (events: GameEvent[]) => void;
   onReady: () => void;
+  onError: () => void;
   reducedMotion: () => boolean;
+  inspectingLoss?: () => boolean;
 }
 export function createGame(
   parent: HTMLElement,
@@ -21,10 +24,24 @@ export function createGame(
     disposed = false;
   class PlayScene extends Phaser.Scene {
     private arena?: Arena;
+    private failed = false;
+    preload(): void {
+      this.load.once('loaderror', () => {
+        this.failed = true;
+        options.onError();
+      });
+      this.load.image('characters', CHARACTER_ATLAS);
+    }
     create(): void {
+      if (this.failed) return;
+      const texture = this.textures.get('characters');
+      for (let frame = 0; frame < 11; frame++) {
+        const { x, y, width, height } = characterFrame(frame);
+        texture.add(frame, 0, x, y, width, height);
+      }
       this.cameras.main.setOrigin(0, 0).setZoom(renderScale);
       this.arena = new Arena(this, options.state);
-      this.arena.draw(0, true);
+      this.arena.draw(0, true, false);
       options.onReady();
     }
     update(_time: number, delta: number): void {
@@ -32,7 +49,12 @@ export function createGame(
       const state = options.state;
       if (state.paused || state.status !== 'playing') {
         accumulator = 0;
-        if (!state.paused) this.arena.draw(Math.min(delta, 100), true);
+        if (!state.paused)
+          this.arena.draw(
+            Math.min(delta, 100),
+            options.reducedMotion(),
+            options.inspectingLoss?.() ?? false,
+          );
         return;
       }
       accumulator += Math.min(delta, 100);
@@ -51,7 +73,8 @@ export function createGame(
       // 终止帧直接对齐规则格，现场标记不能落在尚未追上的插值位置。
       this.arena.draw(
         Math.min(delta, 100),
-        state.status !== 'playing' || options.reducedMotion(),
+        options.reducedMotion(),
+        options.inspectingLoss?.() ?? false,
       );
     }
   }

@@ -6,18 +6,16 @@ import {
   pulseTargets,
 } from '../../core/engine';
 import { BEACON_MS, VECTOR } from '../../core/config';
-import type {
-  Direction,
-  GameEvent,
-  GameState,
-  Point,
-  Snake,
-} from '../../core/types';
+import type { GameEvent, GameState, Point, Snake } from '../../core/types';
 import { ENEMY_SYMBOLS, groupEnemies } from '../feedback';
+import {
+  CHARACTER_FRAMES,
+  APPLE_FRAME,
+  CAUGHT_APPLE_FRAME,
+} from '../characters';
 
 const CELL = 32,
   INK = 0x3d2c24;
-const COLORS = { normal: 0xb3d653, swift: 0xf0b75c, cautious: 0xb6a0d5 };
 const center = (p: Point): Point => ({
   x: (p.x + 0.5) * CELL,
   y: (p.y + 0.5) * CELL,
@@ -29,7 +27,12 @@ interface Burst extends Point {
 
 /** 只读规则状态：画面插值从不参与碰撞或计时。 */
 export class Arena {
+  private segments = new Map<number, Phaser.GameObjects.Image[]>();
+  private heads = new Map<number, Phaser.GameObjects.Image>();
+  private fruit: Phaser.GameObjects.Image;
+  private endingMs = 0;
   private graphics: Phaser.GameObjects.Graphics;
+  private inspection: Phaser.GameObjects.Graphics;
   private positions = new Map<string, Point>();
   private bursts: Burst[] = [];
   private labels = new Map<number, Phaser.GameObjects.Text>();
@@ -80,7 +83,28 @@ export class Arena {
       }
     }
     this.graphics = scene.add.graphics();
+    this.inspection = scene.add.graphics().setDepth(3);
+    this.fruit = scene.add
+      .image(0, 0, 'characters', APPLE_FRAME)
+      .setDisplaySize(48, 48)
+      .setDepth(2);
     for (const snake of state.snakes) {
+      this.segments.set(
+        snake.id,
+        Array.from({ length: 4 }, () =>
+          scene.add
+            .image(0, 0, 'characters', CHARACTER_FRAMES[snake.kind].body)
+            .setDepth(0.8)
+            .setVisible(false),
+        ),
+      );
+      this.heads.set(
+        snake.id,
+        scene.add
+          .image(0, 0, 'characters', CHARACTER_FRAMES[snake.kind].head)
+          .setDisplaySize(56, 56)
+          .setDepth(1),
+      );
       const style = {
         resolution: Math.min(window.devicePixelRatio || 1, 3),
         fontFamily: 'system-ui, sans-serif',
@@ -99,6 +123,7 @@ export class Arena {
   }
   events(events: GameEvent[], reducedMotion: boolean): void {
     for (const event of events) {
+      if (event.type === 'lost' || event.type === 'won') this.endingMs = 0;
       if (event.type === 'dodge') this.positions.delete('apple');
       if (
         (event.type === 'wall' ||
@@ -128,44 +153,45 @@ export class Arena {
     this.positions.set(key, result);
     return result;
   }
-  draw(delta: number, reducedMotion: boolean): void {
+  draw(delta: number, reducedMotion: boolean, inspectingLoss = false): void {
+    const ended = this.state.status !== 'playing';
+    if (ended) this.endingMs += delta;
     const g = this.graphics;
     g.clear();
+    this.inspection.clear();
     this.mechanisms(reducedMotion);
     for (const s of this.state.snakes) {
       this.labels.get(s.id)!.setVisible(false);
+      this.heads.get(s.id)!.setVisible(s.alive);
+      for (const segment of this.segments.get(s.id)!) segment.setVisible(false);
       if (!s.alive) continue;
-      const duration = reducedMotion ? 1 : s.phase === 'dashing' ? 20 : 65;
-      let previous = this.position(`head${s.id}`, s, delta, duration);
-      const body = s.body.map((point, i) =>
-        this.position(`${s.id}-${i}`, point, delta, duration),
-      );
-      for (let i = 0; i < body.length; i++) {
-        const point = body[i]!;
-        g.lineStyle(27 - i, INK);
-        g.lineBetween(previous.x, previous.y, point.x, point.y);
-        g.lineStyle(22 - i, COLORS[s.kind]);
-        g.lineBetween(previous.x, previous.y, point.x, point.y);
-        previous = point;
+      const duration =
+        reducedMotion || ended ? 1 : s.phase === 'dashing' ? 32 : 65;
+      const head = this.position(`head${s.id}`, s, delta, duration);
+      const points = [
+        head,
+        ...s.body.map((point, i) =>
+          this.position(`${s.id}-${i}`, point, delta, duration),
+        ),
+      ];
+      this.body(points, s);
+      const caught = this.state.loss?.enemy === s.id && !inspectingLoss;
+      const face = this.heads.get(s.id)!;
+      face.setFrame(CHARACTER_FRAMES[s.kind][caught ? 'happy' : 'head']);
+      face.setPosition(head.x, head.y - 1);
+      face.setDisplaySize(56, 56);
+      if (s.stunMs) {
+        g.lineStyle(2, 0x9478b1, 0.8);
+        g.strokeCircle(head.x, head.y, 19);
       }
-      for (let i = body.length - 1; i >= 0; i--) {
-        const point = body[i]!,
-          radius = 13.5 - i * 0.6;
-        g.fillStyle(INK, 0.13);
-        g.fillEllipse(point.x + 1, point.y + 6, radius * 2, radius * 1.5);
-        g.fillStyle(COLORS[s.kind]);
-        g.fillCircle(point.x, point.y, radius);
-        g.lineStyle(2, INK);
-        g.strokeCircle(point.x, point.y, radius);
-        g.fillStyle(0xffffff, 0.28);
-        g.fillEllipse(point.x - 2, point.y - 4, radius * 1.1, radius * 0.45);
-      }
-      const head = this.positions.get(`head${s.id}`)!;
-      this.snake(s, head);
     }
-    this.apple(
-      this.position('apple', this.state.apple, delta, reducedMotion ? 1 : 40),
+    const fruitPoint = this.position(
+      'apple',
+      this.state.apple,
+      delta,
+      reducedMotion || ended ? 1 : 40,
     );
+    this.apple(fruitPoint, reducedMotion, inspectingLoss);
     this.enemyLabels();
     this.bursts = this.bursts.filter((b) => b.life > 0);
     for (const b of this.bursts) {
@@ -186,7 +212,7 @@ export class Arena {
         );
       }
     }
-    if (this.state.loss) this.lossMarker();
+    if (this.state.loss && inspectingLoss) this.lossMarker();
   }
   private placeLabel(
     label: Phaser.GameObjects.Text,
@@ -226,7 +252,7 @@ export class Arena {
   }
   private lossMarker(): void {
     const loss = this.state.loss!;
-    const g = this.graphics;
+    const g = this.inspection;
     for (const p of loss.path) {
       g.lineStyle(3, 0xd79b2e, 0.95);
       g.strokeRoundedRect(p.x * CELL + 3, p.y * CELL + 3, 26, 26, 4);
@@ -416,105 +442,58 @@ export class Arena {
         g.lineBetween(c.x - 9, c.y + offset, c.x + 9, c.y + offset - 7);
     }
   }
-  private snake(s: Snake, p: Point): void {
-    const g = this.graphics;
-    const direction: Direction = s.phase === 'dashing' ? s.locked : s.facing;
-    const f = VECTOR[direction],
-      side = { x: -f.y, y: f.x };
-    g.fillStyle(INK, 0.16);
-    g.fillEllipse(p.x + 1, p.y + 9, 31, 16);
-    const points = Array.from({ length: 32 }, (_, i) => {
-      const a = (i * Math.PI) / 16;
-      return {
-        x: p.x + f.x * Math.cos(a) * 15 + side.x * Math.sin(a) * 13,
-        y: p.y + f.y * Math.cos(a) * 15 + side.y * Math.sin(a) * 13,
-      };
-    });
-    g.fillStyle(COLORS[s.kind]);
-    g.fillPoints(points, true);
-    g.lineStyle(2.5, INK);
-    g.strokePoints(points, true);
-    g.fillStyle(0xffffff, 0.3);
-    g.fillEllipse(p.x - 3, p.y - 6, 14, 5);
-    for (const sign of [-1, 1]) {
-      const x = p.x + f.x * 5 + side.x * sign * 6;
-      const y = p.y + f.y * 5 + side.y * sign * 6;
-      g.fillStyle(0xfff9e9);
-      g.fillCircle(x, y, 4);
-      g.fillStyle(INK);
-      g.fillCircle(x + f.x, y + f.y, 2.4);
-      g.lineStyle(2.2, INK);
-      g.lineBetween(
-        x - f.x * 4 + side.x * sign * 2,
-        y - f.y * 4 + side.y * sign * 2,
-        x - f.x * 1 - side.x * sign * 3,
-        y - f.y * 1 - side.y * sign * 3,
-      );
-    }
-    g.lineStyle(1.6, INK);
-    g.lineBetween(
-      p.x + f.x * 11 - side.x * 4,
-      p.y + f.y * 11 - side.y * 4,
-      p.x + f.x * 11 + side.x * 4,
-      p.y + f.y * 11 + side.y * 4,
-    );
-    if (s.kind === 'swift') {
-      g.lineStyle(2, INK);
-      g.lineBetween(
-        p.x - f.x * 6 + side.x * 3,
-        p.y - f.y * 6 + side.y * 3,
-        p.x - f.x * 2,
-        p.y - f.y * 2,
-      );
-      g.lineBetween(
-        p.x - f.x * 2,
-        p.y - f.y * 2,
-        p.x - f.x * 6 - side.x * 3,
-        p.y - f.y * 6 - side.y * 3,
-      );
-    } else if (s.kind === 'cautious') {
-      g.lineStyle(2, INK);
-      g.strokeCircle(p.x - f.x * 5, p.y - f.y * 5, 3);
-    }
-    if (s.stunMs > 0) {
-      g.lineStyle(2, 0x7f669c);
-      g.strokeCircle(p.x, p.y, 18);
+  private body(points: Point[], snake: Snake): void {
+    const segments = this.segments.get(snake.id)!;
+    for (let i = 0; i < segments.length; i++) {
+      const point = points[i + 1];
+      if (!point) continue;
+      segments[i]!.setVisible(true)
+        .setPosition(point.x, point.y - 1)
+        .setDisplaySize(50 - i * 2, 50 - i * 2);
     }
   }
-  private apple(p: Point): void {
-    const g = this.graphics,
-      f = VECTOR[this.state.facing];
-    g.fillStyle(INK, 0.16);
-    g.fillEllipse(p.x + 1, p.y + 12, 28, 10);
-    g.fillStyle(0xf36b50);
-    g.fillEllipse(p.x, p.y + 2, 27, 26);
-    g.lineStyle(2.5, INK);
-    g.strokeEllipse(p.x, p.y + 2, 27, 26);
-    g.lineStyle(3, 0x725137);
-    g.lineBetween(p.x, p.y - 10, p.x - 2, p.y - 17);
-    g.fillStyle(0x9ebf49);
-    g.fillEllipse(p.x + 6, p.y - 13, 13, 7);
-    g.lineStyle(1.5, INK);
-    g.strokeEllipse(p.x + 6, p.y - 13, 13, 7);
-    g.fillStyle(0xfff7e7, 0.9);
-    g.fillEllipse(p.x - 7, p.y - 3, 4, 8);
-    g.fillCircle(p.x - 8, p.y + 4, 1.5);
-    g.fillStyle(INK);
-    g.fillCircle(p.x - 3, p.y + 1, 1.8);
-    g.fillCircle(p.x + 6, p.y + 1, 1.8);
-    g.lineStyle(1.7, INK);
-    g.beginPath();
-    g.arc(p.x + 2, p.y + 4, 3.5, 0.15, Math.PI - 0.15, false);
-    g.strokePath();
-    const side = { x: -f.y, y: f.x };
-    g.fillStyle(0x6a793a);
-    g.fillTriangle(
-      p.x + f.x * 23,
-      p.y + f.y * 23,
-      p.x + f.x * 18 + side.x * 3,
-      p.y + f.y * 18 + side.y * 3,
-      p.x + f.x * 18 - side.x * 3,
-      p.y + f.y * 18 - side.y * 3,
-    );
+  private apple(p: Point, reducedMotion: boolean, inspecting: boolean): void {
+    const caught = Boolean(this.state.loss) && !inspecting;
+    const t = reducedMotion ? 1 : Math.min(1, this.endingMs / 420);
+    this.fruit.setFrame(caught ? CAUGHT_APPLE_FRAME : APPLE_FRAME);
+    this.fruit.setDisplaySize(48, 48).setRotation(0).setAlpha(1);
+    this.fruit.setPosition(p.x, p.y - 2);
+    if (caught) {
+      // 一个轻巧的受挫动作，保留可辨认的果形，不叠加诊断框。
+      const squash = reducedMotion
+        ? 0
+        : Math.sin(Math.min(1, this.endingMs / 150) * Math.PI);
+      this.fruit.setDisplaySize(48 + squash * 9, 48 - squash * 10);
+      this.fruit.setPosition(
+        p.x + 10 * t,
+        p.y + 6 * t - (reducedMotion ? 0 : Math.sin(t * Math.PI) * 12),
+      );
+      this.fruit.setRotation(-0.25 * t);
+      if (!reducedMotion && t < 1) {
+        const g = this.graphics;
+        for (let i = 0; i < 5; i++) {
+          const angle = (i * Math.PI * 2) / 5 - Math.PI / 2,
+            distance = 12 + 24 * t;
+          const x = p.x + Math.cos(angle) * distance,
+            y = p.y + Math.sin(angle) * distance;
+          g.lineStyle(2.5, i % 2 ? 0x9aba52 : 0xf2bd58, 1 - t);
+          g.lineBetween(x - 2, y, x + 2, y);
+          g.lineBetween(x, y - 2, x, y + 2);
+        }
+      }
+    } else {
+      const f = VECTOR[this.state.facing],
+        side = { x: -f.y, y: f.x },
+        g = this.graphics;
+      g.fillStyle(0x6a793a, 0.8);
+      g.fillTriangle(
+        p.x + f.x * 23,
+        p.y + f.y * 23,
+        p.x + f.x * 19 + side.x * 2.5,
+        p.y + f.y * 19 + side.y * 2.5,
+        p.x + f.x * 19 - side.x * 2.5,
+        p.y + f.y * 19 - side.y * 2.5,
+      );
+    }
   }
 }
