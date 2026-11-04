@@ -3,7 +3,10 @@ import type { Direction, Point, SnakeKind, SnakeRules } from './types';
 export const TICK_MS = 20;
 export const MOVE_MS = 120;
 export const DODGE_CELLS = 2;
-export const COOLDOWN_MS = 2200;
+export const COOLDOWN_MS = 240;
+export const MAX_ENERGY = 2;
+export const RECHARGE_MS = 3000;
+export const BEACON_MS = 2800;
 export const DIRECTIONS: Direction[] = ['up', 'right', 'down', 'left'];
 export const VECTOR: Record<Direction, Point> = {
   up: { x: 0, y: -1 },
@@ -14,27 +17,27 @@ export const VECTOR: Record<Direction, Point> = {
 export const SNAKE_RULES: Record<SnakeKind, SnakeRules> = {
   normal: {
     trackMs: 300,
-    chargeMs: 900,
+    chargeMs: 760,
     dashMs: 40,
-    dashCells: 9,
+    dashCells: 4,
     recoverMs: 800,
-    range: 7,
-    aimMs: 0,
+    range: 5,
+    aimMs: 120,
   },
   swift: {
     trackMs: 260,
-    chargeMs: 820,
+    chargeMs: 700,
     dashMs: 20,
-    dashCells: 10,
+    dashCells: 3,
     recoverMs: 1000,
-    range: 8,
-    aimMs: 0,
+    range: 5,
+    aimMs: 100,
   },
   cautious: {
     trackMs: 360,
-    chargeMs: 1000,
+    chargeMs: 900,
     dashMs: 40,
-    dashCells: 7,
+    dashCells: 5,
     recoverMs: 600,
     range: 5,
     aimMs: 240,

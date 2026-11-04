@@ -1,8 +1,11 @@
 import {
+  BEACON_MS,
   COOLDOWN_MS,
   DIRECTIONS,
   DODGE_CELLS,
   MOVE_MS,
+  MAX_ENERGY,
+  RECHARGE_MS,
   SNAKE_RULES,
   TICK_MS,
   VECTOR,
@@ -30,6 +33,17 @@ export function solid(level: Level, p: Point): boolean {
     level.walls.some((w) => same(w, p))
   );
 }
+/** 静态墙与当前关闭的门；动画和待切换状态都不会改变碰撞。 */
+export function blocked(state: GameState, p: Point): boolean {
+  return (
+    solid(state.level, p) ||
+    (state.level.gates ?? []).some(
+      (gate) =>
+        state.gates.some((g) => g.id === gate.id && g.closed) &&
+        gate.cells.some((cell) => same(cell, p)),
+    )
+  );
+}
 export function createState(level: Level): GameState {
   return {
     level,
@@ -40,6 +54,16 @@ export function createState(level: Level): GameState {
     facing: level.facing,
     moveTimer: MOVE_MS,
     cooldownMs: 0,
+    energy: MAX_ENERGY,
+    rechargeMs: 0,
+    beacon: null,
+    beacons: 0,
+    gates: (level.gates ?? []).map((gate) => ({
+      id: gate.id,
+      closed: gate.initialClosed,
+      pending: null,
+    })),
+    lossReason: null,
     dodges: 0,
     events: [],
     snakes: level.snakes.map((spawn, id) => ({
@@ -74,17 +98,87 @@ function finish(state: GameState, status: 'won' | 'lost'): void {
 function headAt(state: GameState, point: Point): boolean {
   return state.snakes.some((s) => s.alive && same(s, point));
 }
+function hitPlayer(state: GameState, reason: string): void {
+  if (state.status !== 'playing') return;
+  state.lossReason = reason;
+  finish(state, 'lost');
+}
+function applyPendingGates(state: GameState): void {
+  // 正式攻击的整段预警与冲刺共享同一地形，不让机关偷偷改变已展示路径。
+  if (
+    state.snakes.some(
+      (s) => s.alive && (s.phase === 'charging' || s.phase === 'dashing'),
+    )
+  )
+    return;
+  for (const gate of state.level.gates ?? []) {
+    const current = state.gates.find((g) => g.id === gate.id);
+    if (!current || current.pending === null) continue;
+    if (
+      current.pending &&
+      gate.cells.some((p) => same(state.apple, p) || headAt(state, p))
+    )
+      continue;
+    current.closed = current.pending;
+    current.pending = null;
+  }
+}
+function enterSwitches(state: GameState, previous: Point, next: Point): void {
+  for (const gate of state.level.gates ?? []) {
+    if (
+      gate.switches.some((p) => same(p, next)) &&
+      !gate.switches.some((p) => same(p, previous))
+    ) {
+      const current = state.gates.find((g) => g.id === gate.id);
+      if (!current) continue;
+      const desired = !(current.pending ?? current.closed);
+      current.pending = desired === current.closed ? null : desired;
+    }
+  }
+  applyPendingGates(state);
+}
 function moveApple(state: GameState, direction: Direction): boolean {
   const next = ahead(state.apple, direction);
-  if (solid(state.level, next)) return false;
+  if (blocked(state, next)) return false;
+  const previous = state.apple;
   state.apple = next;
   // 即使同一时间蛇准备离开此格，也不能与蛇头换位穿越。
-  if (headAt(state, next)) finish(state, 'lost');
+  if (headAt(state, next))
+    hitPlayer(state, '撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。');
+  else enterSwitches(state, previous, next);
   return true;
 }
+/** 追踪目标可以变化；正式锁向后只使用 snake.locked，不再取本目标。 */
+export function targetFor(state: GameState, snake: Snake): Point {
+  if (state.beacon) return { x: state.beacon.x, y: state.beacon.y };
+  let target = { ...state.apple };
+  if (snake.kind === 'swift') {
+    for (let i = 0; i < 2; i++) {
+      const next = ahead(target, state.facing);
+      if (blocked(state, next)) break;
+      target = next;
+    }
+  }
+  return target;
+}
+export function warningPath(state: GameState, snake: Snake): Point[] {
+  if (!snake.alive || (snake.phase !== 'charging' && snake.phase !== 'dashing'))
+    return [];
+  const result: Point[] = [];
+  let p: Point = snake;
+  const count =
+    snake.phase === 'charging' ? snake.rules.dashCells : snake.remaining;
+  for (let i = 0; i < count; i++) {
+    p = ahead(p, snake.locked);
+    if (blocked(state, p)) break;
+    result.push(p);
+  }
+  return result;
+}
 export function aimDirection(state: GameState, snake: Snake): Direction | null {
-  const dx = state.apple.x - snake.x,
-    dy = state.apple.y - snake.y;
+  const target = targetFor(state, snake);
+  const dx = target.x - snake.x,
+    dy = target.y - snake.y;
   if (dx !== 0 && dy !== 0) return null;
   const distance = Math.abs(dx) + Math.abs(dy);
   if (distance === 0 || distance > snake.rules.range) return null;
@@ -92,20 +186,29 @@ export function aimDirection(state: GameState, snake: Snake): Direction | null {
   let point: Point = snake;
   for (let i = 0; i < distance; i++) {
     point = ahead(point, direction);
-    if (solid(state.level, point)) return null;
+    if (blocked(state, point)) return null;
+  }
+  if (snake.kind === 'cautious' && !state.beacon) {
+    point = snake;
+    for (let i = 0; i < snake.rules.dashCells; i++) {
+      point = ahead(point, direction);
+      if (blocked(state, point)) return null;
+    }
   }
   return direction;
 }
-// 从苹果做一次 BFS，追踪只选择可通行、距离变短的格；不以碰墙代替寻路。
-function distances(state: GameState): Map<string, number> {
-  const result = new Map<string, number>([[key(state.apple), 0]]);
-  const queue = [state.apple];
+// 从目标做 BFS，追踪只选择可通行格；不以碰墙代替寻路。
+function distances(state: GameState, target: Point): Map<string, number> {
+  // 信标可以留在随后关闭的门格内；不可从不可通行的目标反向寻出穿门路线。
+  if (blocked(state, target)) return new Map();
+  const result = new Map<string, number>([[key(target), 0]]);
+  const queue = [target];
   for (let i = 0; i < queue.length; i++) {
     const current = queue[i]!;
     for (const d of DIRECTIONS) {
       const next = ahead(current, d),
         k = key(next);
-      if (!solid(state.level, next) && !result.has(k)) {
+      if (!blocked(state, next) && !result.has(k)) {
         result.set(k, result.get(key(current))! + 1);
         queue.push(next);
       }
@@ -127,18 +230,33 @@ export function step(state: GameState, command: Command): void {
   if (state.paused || state.status !== 'playing') return;
   state.elapsedMs += TICK_MS;
   state.cooldownMs = Math.max(0, state.cooldownMs - TICK_MS);
+  if (state.energy < MAX_ENERGY) {
+    state.rechargeMs += TICK_MS;
+    if (state.rechargeMs >= RECHARGE_MS) {
+      state.energy++;
+      state.rechargeMs -= RECHARGE_MS;
+    }
+  }
+  if (state.energy === MAX_ENERGY) state.rechargeMs = 0;
+  if (state.beacon) {
+    state.beacon.remainingMs -= TICK_MS;
+    if (state.beacon.remainingMs <= 0) state.beacon = null;
+  }
+  applyPendingGates(state);
   if (command.direction) state.facing = command.direction;
   if (headAt(state, state.apple)) {
-    finish(state, 'lost');
+    hitPlayer(state, '撞上了敌人头部。请先观察退路，再接近敌人。');
     return;
   }
   let dodged = false;
   if (
     command.dodge &&
+    state.energy > 0 &&
     state.cooldownMs === 0 &&
-    !solid(state.level, ahead(state.apple, state.facing))
+    !blocked(state, ahead(state.apple, state.facing))
   ) {
     state.dodges++;
+    state.energy--;
     state.cooldownMs = COOLDOWN_MS;
     dodged = true;
     state.events.push({ type: 'dodge', ...state.apple });
@@ -148,6 +266,16 @@ export function step(state: GameState, command: Command): void {
     state.moveTimer = MOVE_MS;
   }
   if (state.status !== 'playing') return;
+  if (
+    command.beacon &&
+    state.level.beaconEnabled &&
+    state.energy > 0 &&
+    !state.beacon
+  ) {
+    state.energy--;
+    state.beacons++;
+    state.beacon = { ...state.apple, remainingMs: BEACON_MS };
+  }
   if (!command.direction) state.moveTimer = MOVE_MS;
   else if (!dodged) {
     state.moveTimer -= TICK_MS;
@@ -158,8 +286,9 @@ export function step(state: GameState, command: Command): void {
   }
   if (state.status !== 'playing') return;
 
-  let path: Map<string, number> | undefined;
+  const paths = new Map<string, Map<string, number>>();
   let touched = false;
+  let hitByDash = false;
   for (const snake of state.snakes) {
     if (!snake.alive) continue;
     if (snake.phase === 'charging' || snake.phase === 'recovering') {
@@ -201,13 +330,24 @@ export function step(state: GameState, command: Command): void {
       }
       snake.timer -= TICK_MS;
       if (snake.timer <= 0) {
-        path ??= distances(state);
+        const target = targetFor(state, snake);
+        let path = paths.get(key(target));
+        if (!path) {
+          path = distances(state, target);
+          paths.set(key(target), path);
+        }
         let best = path.get(key(snake)) ?? Infinity;
         let chosen: Direction | undefined;
+        const keepDistance = snake.kind === 'cautious' && !state.beacon;
+        const retreat = keepDistance && best < 2;
         for (const direction of DIRECTIONS) {
           const next = ahead(snake, direction),
             distance = path.get(key(next));
-          if (distance !== undefined && distance < best) {
+          if (
+            distance !== undefined &&
+            (retreat ? distance > best && distance <= 2 : distance < best) &&
+            (!keepDistance || retreat || distance >= 2)
+          ) {
             best = distance;
             chosen = direction;
           }
@@ -223,7 +363,7 @@ export function step(state: GameState, command: Command): void {
       // dashMs 可小于固定步；每次只跨一格，并且逐格判定。
       while (snake.timer <= 0 && snake.alive && snake.phase === 'dashing') {
         const next = ahead(snake, snake.locked);
-        if (solid(state.level, next)) {
+        if (blocked(state, next)) {
           snake.alive = false;
           state.events.push({ type: 'wall', snake: snake.id, ...next });
           break;
@@ -233,6 +373,7 @@ export function step(state: GameState, command: Command): void {
         snake.timer += snake.rules.dashMs;
         if (same(snake, state.apple)) {
           touched = true;
+          hitByDash = true;
           break;
         }
         if (snake.remaining <= 0) {
@@ -244,8 +385,15 @@ export function step(state: GameState, command: Command): void {
     if (same(snake, state.apple)) touched = true;
   }
   // 收集所有蛇的同刻事件后统一结算：头部触及苹果优先于全蛇撞墙。
-  if (touched) finish(state, 'lost');
+  if (touched)
+    hitPlayer(
+      state,
+      hitByDash
+        ? '仍在锁定的冲刺通道内。看准箭头，横向离开危险格。'
+        : '被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。',
+    );
   else if (state.snakes.every((s) => !s.alive)) finish(state, 'won');
+  if (state.status === 'playing') applyPendingGates(state);
 }
 
 export function stars(

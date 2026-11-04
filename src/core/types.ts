@@ -19,15 +19,25 @@ export interface Spawn extends Point {
   delayMs?: number;
   rules?: Partial<SnakeRules>;
 }
+export interface Gate {
+  id: string;
+  cells: Point[];
+  switches: Point[];
+  initialClosed: boolean;
+}
 export interface Level {
   id: number;
   name: string;
   chapter: string;
   focus: string;
   intent: string;
+  decision?: string;
+  failure?: string;
   width: number;
   height: number;
   walls: Point[];
+  gates?: Gate[];
+  beaconEnabled?: boolean;
   apple: Point;
   facing: Direction;
   snakes: Spawn[];
@@ -60,6 +70,12 @@ export interface GameState {
   facing: Direction;
   moveTimer: number;
   cooldownMs: number;
+  energy: number;
+  rechargeMs: number;
+  beacon: (Point & { remainingMs: number }) | null;
+  beacons: number;
+  gates: { id: string; closed: boolean; pending: boolean | null }[];
+  lossReason: string | null;
   dodges: number;
   snakes: Snake[];
   events: GameEvent[];
@@ -67,4 +83,5 @@ export interface GameState {
 export interface Command {
   direction: Direction | null;
   dodge?: boolean;
+  beacon?: boolean;
 }

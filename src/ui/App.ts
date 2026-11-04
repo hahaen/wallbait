@@ -1,5 +1,6 @@
 import { createState, setPaused, stars } from '../core/engine';
 import { LEVELS } from '../core/levels';
+import { BEACON_MS, RECHARGE_MS } from '../core/config';
 import type { GameState } from '../core/types';
 import type { createGame } from '../game/createGame';
 import { Sound } from '../game/audio';
@@ -10,10 +11,10 @@ import {
   recordWin,
   writeSave,
 } from '../storage/save';
-import { appleArt, heroArt } from './art';
+import { robotArt, heroArt } from './art';
 
 const arrows = { up: '↑', right: '→', down: '↓', left: '←' };
-const kinds = { normal: '普通蛇', swift: '迅捷蛇', cautious: '谨慎蛇' };
+const kinds = { normal: '冲锋者', swift: '截击者', cautious: '侦察者' };
 const seconds = (ms: number): string => (ms / 1000).toFixed(1);
 const starText = (value: number): string =>
   '★'.repeat(value) + '☆'.repeat(3 - value);
@@ -96,16 +97,16 @@ export class App {
     this.setScreen(
       'home',
       `<section class="home screen">
-      <div class="home-top"><span class="edition">反向贪吃蛇 / 20 关</span>${button('settings', '设置', 'quiet')}</div>
+      <div class="home-top"><span class="edition">试验场进阶版 / 20 关</span>${button('settings', '设置', 'quiet')}</div>
       <h1 tabindex="-1">撞墙了么<span class="title-spark" aria-hidden="true">!</span></h1>
       <p class="tagline">你追你的，墙就在那儿。</p>
       <div class="hero-art">${heroArt}</div>
-      <p class="home-pitch">这次，苹果说了算。</p>
-      <p class="home-instruction">引它追 · 等它冲 · 闪开，让墙来收场</p>
+      <p class="home-pitch">小小阿零，大有办法。</p>
+      <p class="home-instruction">设局 · 切门 · 留电，让墙来收场</p>
       <div class="home-actions">${button(completed ? 'continue' : 'start', completed ? `继续挑战 · 第 ${this.save.unlocked} 关` : '开始游戏', 'primary')}
       <div class="action-row">${button('levels', '选择关卡')}${button('help', '怎么玩')}</div>
       ${completed ? button('start', '从第一关开始', 'text-button') : ''}</div>
-      <footer class="home-footer"><span>${completed === 20 ? '20 关已通关，自由重玩' : `已通关 ${completed} / 20`}</span><span class="stars">${totalStars} / 60 ★</span></footer>
+      ${this.save.legacyCompleted ? `<p class="legacy-note">旧版 ${this.save.legacyCompleted} 关记录已保留，进阶挑战重新计分。</p>` : ''}<footer class="home-footer"><span>${completed === 20 ? '20 关已通关，自由重玩' : `已通关 ${completed} / 20`}</span><span class="stars">${totalStars} / 60 ★</span></footer>
     </section>`,
     );
   }
@@ -113,7 +114,7 @@ export class App {
     this.setScreen(
       'levels',
       `<section class="level-screen screen"><header class="page-header">${button('home', '‹ 首页', 'quiet')}<h1 tabindex="-1">选一堵墙</h1><span>${Object.values(this.save.best).reduce((n, b) => n + b.stars, 0)} ★</span></header>
-      <p class="page-intro">逐关解锁，随时回来刷新星级。</p>
+      <p class="page-intro">四区试炼，逐关解锁。已通关的关卡可自由重玩。</p>
       ${[0, 1, 2, 3]
         .map(
           (chapter) =>
@@ -132,23 +133,24 @@ export class App {
       <p class="footnote">过关一星，时间达标一星，闪避次数达标一星。</p></section>`,
     );
   }
-  private start(id: number): void {
+  private start(id: number, brief = true): void {
     if (id < 1 || id > this.save.unlocked) return;
     const level = LEVELS[id - 1]!;
     this.setScreen(
       'play',
       `<section class="play-screen screen"><header class="play-header"><div><small>第 ${String(id).padStart(2, '0')} / 20 关</small><h1 tabindex="-1">${level.name}</h1></div>${button('pause', 'Ⅱ', 'pause-button')} </header>
-      <div class="hud"><span id="enemy-count"></span><span id="clock">0.0s</span><span id="cooldown" class="ready">闪避就绪</span></div>
-      <div class="arena-slot"><div id="arena" role="img" aria-label="对局地图：红苹果、绿蛇、灰色墙与橙色冲刺通道"><span class="loading">正在摆好墙…</span></div></div>
+      <div class="hud"><span id="enemy-count"></span><span id="clock">0.0s</span><span id="cooldown" class="ready">电量 ▰▰</span><span id="mechanisms" class="mechanisms"></span></div>
+      <div class="arena-slot"><div id="arena" role="img" aria-label="对局地图：青色机器人阿零、机械追逐者、墙、配对闸门与橙色危险通道"><span class="loading">正在摆好墙…</span></div></div>
       <div class="play-status" id="play-status" aria-live="polite">${level.focus}</div>
-      <div class="controls"><div class="dpad" aria-label="四向移动"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span aria-hidden="true">移动</span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="dodge-wrap"><button class="dodge" data-dodge aria-label="闪避"><span aria-hidden="true">⌃</span><b>闪避</b><small id="dodge-text">就绪</small></button></div></div>
-      <footer class="play-footer"><span>方向键 / WASD 移动 · 空格闪避</span><span>目标 ${level.parMs / 1000}s / ≤${level.parDodges} 次闪避</span></footer></section>`,
+      <div class="controls"><div class="dpad" aria-label="四向移动"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span aria-hidden="true">移动</span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="skills"><button class="skill dodge" data-dodge aria-label="闪避"><span aria-hidden="true">↟</span><b>闪避</b><small id="dodge-text">1 格电</small></button><button class="skill beacon" data-beacon aria-label="信标" ${level.beaconEnabled ? '' : 'disabled'}><span aria-hidden="true">⌖</span><b>信标</b><small id="beacon-text">${level.beaconEnabled ? '1 格电' : '未启用'}</small></button></div></div>
+      <footer class="play-footer"><span>方向键 / WASD · 空格闪避 · E 信标 · P 暂停</span><span>目标 ${level.parMs / 1000}s / ≤${level.parDodges} 次闪避</span></footer></section>`,
     );
     this.root
       .querySelector('[data-action="pause"]')
       ?.setAttribute('aria-label', '暂停游戏');
     const state = createState(level);
     this.state = state;
+    if (brief) setPaused(state, true);
     this.controls = new Controls(
       this.root,
       () => state.status === 'playing' && !state.paused,
@@ -166,13 +168,13 @@ export class App {
             matchMedia('(prefers-reduced-motion: reduce)').matches,
           onTick: (events) => {
             if (this.state !== state) return;
-            arena.querySelector('.loading')?.remove();
             events.forEach((e) => this.sound.play(e.type));
             this.hud();
             if (events.some((e) => e.type === 'won' || e.type === 'lost'))
               this.result();
           },
         });
+        arena.querySelector('.loading')?.remove();
       })
       .catch(() => {
         if (this.state !== state) return;
@@ -181,6 +183,13 @@ export class App {
         );
       });
     this.hud();
+    if (brief) {
+      this.controls.clear();
+      this.game?.resetClock();
+      this.dialog(
+        `<p class="result-kicker">第 ${level.id} 关 · ${level.chapter}</p><h2 id="dialog-title">试验准备</h2><p>${level.focus}</p><p class="score-rule">${level.decision}</p>${button('begin', '进入试验', 'primary')}${button('levels', '返回选关', 'text-button')}`,
+      );
+    }
   }
   private hud(): void {
     const s = this.state;
@@ -191,25 +200,61 @@ export class App {
     };
     text(
       'enemy-count',
-      `剩余 ${s.snakes.filter((v) => v.alive).length} / ${s.snakes.length} 条`,
+      `剩余 ${s.snakes.filter((v) => v.alive).length} / ${s.snakes.length}`,
     );
     text('clock', `${seconds(s.elapsedMs)}s`);
     text(
       'cooldown',
-      s.cooldownMs ? `闪避 ${seconds(s.cooldownMs)}s` : '闪避就绪',
+      `电量 ${'▰'.repeat(s.energy)}${'▱'.repeat(2 - s.energy)}${s.energy < 2 ? ` · ${seconds(RECHARGE_MS - s.rechargeMs)}s` : ''}`,
     );
-    text('dodge-text', s.cooldownMs ? `${seconds(s.cooldownMs)}s` : '就绪');
+    const dodgeReady = s.energy > 0 && s.cooldownMs === 0;
+    const beaconReady = s.energy > 0 && !s.beacon && s.level.beaconEnabled;
+    text('dodge-text', dodgeReady ? '1 格电' : s.energy ? '缓冲中' : '充电中');
+    text(
+      'beacon-text',
+      !s.level.beaconEnabled
+        ? '未启用'
+        : s.beacon
+          ? `${seconds(s.beacon.remainingMs)}s`
+          : beaconReady
+            ? '1 格电'
+            : '充电中',
+    );
     this.root
       .querySelector('#cooldown')
-      ?.classList.toggle('ready', s.cooldownMs === 0);
-    const dodge = this.root.querySelector<HTMLElement>('.dodge');
-    dodge?.classList.toggle('cooling', s.cooldownMs > 0);
-    dodge?.setAttribute(
-      'aria-label',
-      s.cooldownMs ? `闪避冷却 ${seconds(s.cooldownMs)} 秒` : '闪避',
+      ?.classList.toggle('ready', s.energy > 0);
+    for (const [selector, ready] of [
+      ['.dodge', dodgeReady],
+      ['.beacon', beaconReady],
+    ] as const) {
+      const skill = this.root.querySelector<HTMLElement>(selector);
+      skill?.classList.toggle('cooling', !ready);
+      skill?.setAttribute('aria-disabled', String(!ready));
+    }
+    const gateText = s.gates
+      .map(
+        (gate) =>
+          `${gate.id} ${gate.closed ? '闭' : '开'}${gate.pending === null ? '' : `→待${gate.pending ? '关' : '开'}`}`,
+      )
+      .join(' · ');
+    text(
+      'mechanisms',
+      [
+        gateText,
+        s.beacon
+          ? `信标 ${seconds(s.beacon.remainingMs)}s`
+          : s.level.beaconEnabled
+            ? '闪避 / 信标共用电量'
+            : '闪避两格 · 每3秒回1电',
+      ]
+        .filter(Boolean)
+        .join('  |  '),
     );
     const charging = s.snakes.filter((v) => v.alive && v.phase === 'charging');
     const dashing = s.snakes.some((v) => v.alive && v.phase === 'dashing');
+    const recovering = s.snakes.filter(
+      (v) => v.alive && v.phase === 'recovering',
+    );
     text(
       'play-status',
       charging.length
@@ -218,7 +263,9 @@ export class App {
             .join(' · ')
         : dashing
           ? '冲刺中！离开橙色通道'
-          : s.level.focus,
+          : recovering.length
+            ? `${recovering.map((v) => `${kinds[v.kind]}恢复`).join(' · ')}｜趁现在重新设局`
+            : s.level.focus,
     );
     this.root
       .querySelector('#play-status')
@@ -252,7 +299,7 @@ export class App {
     this.controls?.clear();
     this.game?.resetClock();
     this.dialog(
-      `<div class="panel-symbol">Ⅱ</div><h2 id="dialog-title">歇一口气</h2><p>蛇也在等你。准备好了再继续。</p>${button('resume', '继续游戏', 'primary')}${button('retry', '重新挑战')}${button('levels', '返回选关', 'text-button')}`,
+      `<div class="panel-symbol">Ⅱ</div><h2 id="dialog-title">歇一口气</h2><p>试验场已暂停。电量、机关与追逐者都在等你。</p><p class="score-rule">${this.state.level.focus}</p>${button('resume', '继续游戏', 'primary')}${button('retry', '重新挑战')}${button('levels', '返回选关', 'text-button')}`,
     );
   }
   private resume(): void {
@@ -273,8 +320,8 @@ export class App {
       this.persist();
     }
     this.dialog(
-      `<div class="result-apple ${won ? '' : 'sad'}">${appleArt}</div><p class="result-kicker">${complete ? '四章 · 二十关 · 一颗不服输的苹果' : won ? `第 ${s.level.id} 关完成` : '这一口，没躲过'}</p><h2 id="dialog-title">${complete ? '墙都记住你了！' : won ? '撞墙了吧！' : '再骗它一次'}</h2>
-      ${won ? `<div class="result-stars" aria-label="本关 ${stars(s)} 星">${starText(stars(s))}</div><div class="result-stats"><span><b>${seconds(s.elapsedMs)}s</b>通关用时</span><span><b>${s.dodges} 次</b>使用闪避</span></div><p class="score-rule">${s.elapsedMs <= s.level.parMs ? '✓' : '○'} ${s.level.parMs / 1000} 秒内通关 · ${s.dodges <= s.level.parDodges ? '✓' : '○'} 闪避 ≤${s.level.parDodges} 次</p>` : `<p>${s.level.focus}</p><p class="score-rule">蛇头会伤你，蛇身不会。预警后横向闪开。</p>`}
+      `<div class="result-robot ${won ? '' : 'sad'}">${robotArt}</div><p class="result-kicker">${complete ? '试验场全部通过 · 阿零，出厂合格！' : won ? `第 ${s.level.id} 关完成` : '这次，路线被封住了'}</p><h2 id="dialog-title">${complete ? '墙都记住你了！' : won ? '撞墙了吧！' : '再骗它一次'}</h2>
+      ${won ? `<div class="result-stars" aria-label="本关 ${stars(s)} 星">${starText(stars(s))}</div><div class="result-stats"><span><b>${seconds(s.elapsedMs)}s</b>通关用时</span><span><b>${s.dodges} / ${s.beacons}</b>闪避 / 信标</span></div><p class="score-rule">${s.elapsedMs <= s.level.parMs ? '✓' : '○'} ${s.level.parMs / 1000} 秒内通关 · ${s.dodges <= s.level.parDodges ? '✓' : '○'} 闪避 ≤${s.level.parDodges} 次</p>` : `<p>${s.lossReason ?? '碰到追逐者的头部了。'}</p><p class="score-rule">${s.level.focus}</p>`}
       ${this.storageWarning ? '<p class="save-warning">浏览器未能保存，当前进度仍在，刷新后可能丢失。</p>' : ''}
       ${complete ? `<p>你追你的，墙就在那儿。<br>20 关全部解锁，回来把每颗星带走。</p>${button('levels', '自由重玩', 'primary')}` : won ? button('next', '下一关', 'primary') : button('retry', '再试一次', 'primary')}
       ${won ? button('retry', '重试本关') : ''}${button('levels', '返回选关', 'text-button')}`,
@@ -283,12 +330,12 @@ export class App {
   }
   private help(): void {
     this.dialog(
-      `<h2 id="dialog-title">你是苹果，别被吃掉</h2><div class="help-art">${heroArt}</div><ol class="instructions"><li><b>引它追。</b>按住方向移动，松手停下。墙和障碍都不能穿过。</li><li><b>等它冲。</b>同行或同列时蛇会蓄力，橙色箭头就是它不会改变的冲刺方向。</li><li><b>闪开。</b>横向移动或闪避两格，让蛇撞墙。闪避没有无敌，冷却 2.2 秒。</li></ol><p>普通蛇是浅绿圆眼；迅捷蛇有闪电纹；谨慎蛇有双眉，需靠近并短暂对齐。</p><p>手机：左手移动，右手闪避。<br>电脑：WASD / 方向键、空格、Esc / P。</p><p class="score-rule">通关得一星；达到每关的时间和闪避目标各加一星。超目标也能过关。</p>${button('close', '知道了', 'primary')}`,
+      `<h2 id="dialog-title">你是阿零，借墙脱身</h2><div class="help-art">${heroArt}</div><ol class="instructions"><li><b>把墙留在它前方。</b>追逐者只冲几格。先引近墙，再对齐；橙色箭头出现后方向和长度锁定。</li><li><b>两格电，两种用途。</b>闪避走两格，无无敌；信标留在原地吸引追逐者 ${BEACON_MS / 1000} 秒。各耗一格电，每 ${RECHARGE_MS / 1000} 秒恢复一格。</li><li><b>踩踏板，切通路。</b>踏板和闸门用同一字母配对。再次走上踏板切换；攻击期间或门口有人时等待执行，不会夹人。</li></ol><div class="enemy-guide"><p><b class="normal-color">冲锋者 ›</b>直追目标，近墙对齐后侧移。</p><p><b class="swift-color">截击者 ϟ</b>预判你朝向前两格，变向甩开截击。</p><p><b class="cautious-color">侦察者 ◇</b>会识破撞墙路线；留下信标，骗它冒进。</p></div><p>手机：左手方向，右手闪避 / 信标。<br>电脑：WASD / 方向键、空格、E、Esc / P。</p><p class="score-rule">只碰头部会失败，履带不伤人。通关得一星，时间和闪避达标各加一星；超目标也能过关。</p>${button('close', '知道了', 'primary')}`,
     );
   }
   private settings(): void {
     this.dialog(
-      `<h2 id="dialog-title">按你的节奏来</h2><div class="setting-row"><span>游戏音效<small>冲刺、闪避、撞墙与胜负提示</small></span>${button('mute', this.save.muted ? '已静音' : '已开启', 'toggle')}</div><div class="setting-row"><span>减少动态效果<small>关闭震动镜头和位移插值</small></span>${button('motion', this.save.reducedMotion ? '已开启' : '已关闭', 'toggle')}</div><p class="score-rule">进度自动保存在当前浏览器。切换设备或清除浏览器数据后不会同步。</p>${this.storageWarning ? '<p class="save-warning">保存暂不可用，设置会在本次游玩生效。</p>' : ''}${button('close', '完成', 'primary')}`,
+      `<h2 id="dialog-title">按你的节奏来</h2><div class="setting-row"><span>游戏音效<small>预警、闪避、撞墙与胜负提示</small></span>${button('mute', this.save.muted ? '已静音' : '已开启', 'toggle')}</div><div class="setting-row"><span>减少动态效果<small>关闭震动镜头和位移插值</small></span>${button('motion', this.save.reducedMotion ? '已开启' : '已关闭', 'toggle')}</div><p class="score-rule">进度自动保存在当前浏览器。切换设备或清除浏览器数据后不会同步。</p>${this.storageWarning ? '<p class="save-warning">保存暂不可用，设置会在本次游玩生效。</p>' : ''}${button('close', '完成', 'primary')}`,
     );
   }
   private act(action: string): void {
@@ -312,11 +359,12 @@ export class App {
       case 'pause':
         this.pause();
         break;
+      case 'begin':
       case 'resume':
         this.resume();
         break;
       case 'retry':
-        if (this.state) this.start(this.state.level.id);
+        if (this.state) this.start(this.state.level.id, false);
         break;
       case 'next':
         if (this.state?.status === 'won') this.start(this.state.level.id + 1);

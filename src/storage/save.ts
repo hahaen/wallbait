@@ -2,53 +2,94 @@ import { LEVELS } from '../core/levels';
 import { stars } from '../core/engine';
 import type { GameState } from '../core/types';
 
-export const SAVE_KEY = 'wallbait.save.v1';
+export const SAVE_KEY = 'wallbait.save.v2';
+export const LEGACY_SAVE_KEY = 'wallbait.save.v1';
+export const CAMPAIGN = 'foundry-v2';
 export interface Best {
   timeMs: number;
   dodges: number;
+  beacons: number;
   stars: number;
 }
 export interface Save {
-  version: 1;
+  version: 2;
+  campaign: typeof CAMPAIGN;
   unlocked: number;
   best: Record<string, Best>;
   muted: boolean;
   reducedMotion: boolean;
+  legacyCompleted: number;
 }
 export interface StoragePort {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
 }
 export const defaults = (): Save => ({
-  version: 1,
+  version: 2,
+  campaign: CAMPAIGN,
   unlocked: 1,
   best: {},
   muted: false,
   reducedMotion: false,
+  legacyCompleted: 0,
 });
 const record = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 const integer = (v: unknown, min: number, max: number): v is number =>
   typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max;
+function readObject(
+  storage: StoragePort,
+  key: string,
+): Record<string, unknown> | null {
+  try {
+    const value: unknown = JSON.parse(storage.getItem(key) ?? 'null');
+    return record(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+function validLegacyBest(
+  value: unknown,
+): value is Pick<Best, 'timeMs' | 'dodges' | 'stars'> &
+  Record<string, unknown> {
+  return (
+    record(value) &&
+    integer(value.timeMs, 20, 86400000) &&
+    integer(value.dodges, 0, 100000) &&
+    integer(value.stars, 1, 3)
+  );
+}
 export function readSave(storage: StoragePort): Save {
   const save = defaults();
-  try {
-    const parsed: unknown = JSON.parse(storage.getItem(SAVE_KEY) ?? 'null');
-    if (!record(parsed) || parsed.version !== 1) return save;
+  // 只读旧键，不覆盖、不删除；旧版成绩不能用于新关卡解锁或评分。
+  const legacy = readObject(storage, LEGACY_SAVE_KEY);
+  if (legacy?.version === 1) {
+    save.muted = legacy.muted === true;
+    save.reducedMotion = legacy.reducedMotion === true;
+    if (record(legacy.best)) {
+      const legacyBest = legacy.best;
+      save.legacyCompleted = LEVELS.filter((level) =>
+        validLegacyBest(legacyBest[String(level.id)]),
+      ).length;
+    }
+  }
+  const parsed = readObject(storage, SAVE_KEY);
+  if (parsed?.version === 2 && parsed.campaign === CAMPAIGN) {
     save.muted = parsed.muted === true;
     save.reducedMotion = parsed.reducedMotion === true;
+    if (integer(parsed.legacyCompleted, 0, LEVELS.length))
+      save.legacyCompleted = Math.max(
+        save.legacyCompleted,
+        parsed.legacyCompleted,
+      );
     if (record(parsed.best))
       for (const level of LEVELS) {
         const best = parsed.best[String(level.id)];
-        if (
-          record(best) &&
-          integer(best.timeMs, 20, 86400000) &&
-          integer(best.dodges, 0, 100000) &&
-          integer(best.stars, 1, 3)
-        ) {
+        if (validLegacyBest(best) && integer(best.beacons, 0, 100000)) {
           save.best[String(level.id)] = {
             timeMs: best.timeMs,
             dodges: best.dodges,
+            beacons: best.beacons,
             stars: best.stars,
           };
         }
@@ -56,8 +97,6 @@ export function readSave(storage: StoragePort): Save {
     // 解锁由连续通关记录恢复，损坏的 unlocked 不会锁死正常存档。
     while (save.unlocked < LEVELS.length && save.best[String(save.unlocked)])
       save.unlocked++;
-  } catch {
-    /* 不可用或损坏时使用内存存档，仍可游玩。 */
   }
   return save;
 }
@@ -76,6 +115,7 @@ export function recordWin(save: Save, state: GameState): void {
   save.best[key] = {
     timeMs: Math.min(previous?.timeMs ?? Infinity, state.elapsedMs),
     dodges: Math.min(previous?.dodges ?? Infinity, state.dodges),
+    beacons: Math.min(previous?.beacons ?? Infinity, state.beacons),
     stars: Math.max(previous?.stars ?? 0, stars(state)),
   };
   save.unlocked = Math.max(

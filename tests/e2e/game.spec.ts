@@ -5,6 +5,7 @@ async function start(page: Page): Promise<void> {
   await page.goto('/');
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
   await expect(page.locator('canvas')).toBeVisible();
+  await page.getByRole('button', { name: '进入试验', exact: true }).click();
 }
 async function winFirst(page: Page): Promise<void> {
   await expect(page.locator('#play-status')).toContainText('蓄力', {
@@ -24,7 +25,7 @@ test('首页、说明、设置、失败重试、胜利下一关、刷新和选�
   await page.goto('/');
   await page.getByRole('button', { name: '怎么玩' }).click();
   await expect(
-    page.getByRole('heading', { name: '你是苹果，别被吃掉' }),
+    page.getByRole('heading', { name: '你是阿零，借墙脱身' }),
   ).toBeVisible();
   await page.getByRole('button', { name: '知道了' }).click();
   await page.getByRole('button', { name: '设置', exact: true }).click();
@@ -32,6 +33,11 @@ test('首页、说明、设置、失败重试、胜利下一关、刷新和选�
   await expect(page.getByRole('button', { name: '已静音' })).toBeVisible();
   await page.getByRole('button', { name: '完成', exact: true }).click();
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '试验准备' })).toBeVisible();
+  await expect(page.locator('#clock')).toHaveText('0.0s');
+  await page.waitForTimeout(350);
+  await expect(page.locator('#clock')).toHaveText('0.0s');
+  await page.getByRole('button', { name: '进入试验' }).click();
   await expect(page.getByRole('heading', { name: '再骗它一次' })).toBeVisible({
     timeout: 15000,
   });
@@ -42,7 +48,7 @@ test('首页、说明、设置、失败重试、胜利下一关、刷新和选�
     '本关 3 星',
   );
   await page.getByRole('button', { name: '下一关', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '看准箭头' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '还差一步' })).toBeVisible();
   await page.reload();
   await expect(
     page.getByRole('button', { name: '继续挑战 · 第 2 关' }),
@@ -55,13 +61,15 @@ test('首页、说明、设置、失败重试、胜利下一关、刷新和选�
   await expect(page.locator('[data-action="level:2"]')).toBeEnabled();
   await expect(page.locator('[data-action="level:3"]')).toBeDisabled();
   await page.locator('[data-action="level:1"]').click();
-  await expect(page.getByRole('heading', { name: '苹果先走' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '借墙脱身' })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
 test('暂停冻结时间与冷却、后台暂停、连续重开无重复监听', async ({ page }) => {
   await start(page);
+  await page.keyboard.down('ArrowRight');
   await page.keyboard.press('Space');
+  await page.keyboard.up('ArrowRight');
   await page.waitForTimeout(100);
   await page.keyboard.press('p');
   await expect(page.getByRole('heading', { name: '歇一口气' })).toBeVisible();
@@ -85,7 +93,7 @@ test('暂停冻结时间与冷却、后台暂停、连续重开无重复监听',
 
 test('损坏及不可用的存储仍能正常游玩', async ({ page }) => {
   await page.addInitScript(() =>
-    localStorage.setItem('wallbait.save.v1', '{bad'),
+    localStorage.setItem('wallbait.save.v2', '{bad'),
   );
   await start(page);
   await winFirst(page);
@@ -100,7 +108,7 @@ test('损坏及不可用的存储仍能正常游玩', async ({ page }) => {
   await winFirst(page);
   await expect(page.locator('.save-warning')).toBeVisible();
   await page.getByRole('button', { name: '下一关', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '看准箭头' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '还差一步' })).toBeVisible();
 });
 
 test('地图与触控区无重叠、竖屏安全空间', async ({ page }) => {
@@ -154,7 +162,7 @@ test('真实浏览器多点触控移动与闪避同时按、取消后释放', as
     type: 'touchStart',
     touchPoints: [a, b],
   });
-  await expect(page.locator('#cooldown')).not.toHaveText('闪避就绪');
+  await expect(page.locator('#cooldown')).toContainText('▰▱');
   await expect(page.locator('[data-direction="left"]')).toHaveClass(/pressed/);
   await client.send('Input.dispatchTouchEvent', {
     type: 'touchCancel',
@@ -201,7 +209,64 @@ test('输入边界：最近方向优先、快速松手不丢闪避朝向、销�
   });
   expect(result.latest.direction).toBe('up');
   expect(result.fallback.direction).toBe('right');
-  expect(result.quickDodge).toEqual({ direction: 'right', dodge: true });
+  expect(result.quickDodge).toEqual({
+    direction: 'right',
+    dodge: true,
+    beacon: false,
+  });
   for (const c of [result.stopped, result.cleared, result.destroyed])
-    expect(c).toEqual({ direction: null, dodge: false });
+    expect(c).toEqual({ direction: null, dodge: false, beacon: false });
+});
+
+test('信标按键只触发一次，触控取消不遗留技能，快速点按仍有效', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const path = '/src/input/controls.ts';
+    const { Controls } = await import(path);
+    const root = document.createElement('div');
+    root.innerHTML =
+      '<button data-beacon>信标</button><button data-dodge>闪避</button>';
+    const beacon = root.querySelector<HTMLButtonElement>('[data-beacon]')!;
+    // 隔离输入适配器：合成 PointerEvent 没有浏览器原生 pointer capture。
+    // 真正多指的 capture/cancel 由上方 Chromium CDP 用例覆盖。
+    for (const button of root.querySelectorAll('button')) {
+      button.setPointerCapture = () => {};
+      button.hasPointerCapture = () => false;
+    }
+    const controls = new Controls(
+      root,
+      () => true,
+      () => {},
+    );
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyE' }));
+    const first = controls.sample();
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { code: 'KeyE', repeat: true }),
+    );
+    const repeat = controls.sample();
+    const pointer = (type: string, id: number): void => {
+      beacon.dispatchEvent(
+        new PointerEvent(type, { pointerId: id, bubbles: true }),
+      );
+    };
+    pointer('pointerdown', 1);
+    pointer('pointercancel', 1);
+    const cancelled = controls.sample();
+    pointer('pointerdown', 2);
+    pointer('pointerup', 2);
+    pointer('lostpointercapture', 2);
+    const tapped = controls.sample();
+    pointer('pointerdown', 3);
+    controls.clear();
+    const cleared = controls.sample();
+    controls.destroy();
+    return { first, repeat, cancelled, tapped, cleared };
+  });
+  expect(result.first.beacon).toBe(true);
+  expect(result.tapped.beacon).toBe(true);
+  for (const command of [result.repeat, result.cancelled, result.cleared]) {
+    expect(command).toEqual({ direction: null, dodge: false, beacon: false });
+  }
 });

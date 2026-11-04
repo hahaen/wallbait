@@ -18,7 +18,7 @@ test('原生键盘输入从第一关连续闯到 20 关通关，刷新后自由�
     info.project.name !== 'desktop',
     '连续关卡使用桌面原生键盘；移动流程独立验证',
   );
-  test.setTimeout(300000);
+  test.setTimeout(600000);
   await page.clock.install({ time: new Date('2026-11-04T04:00:00Z') });
   await page.clock.pauseAt(new Date('2026-11-04T04:00:01Z'));
   await page.goto('/');
@@ -27,11 +27,15 @@ test('原生键盘输入从第一关连续闯到 20 关通关，刷新后自由�
     .click({ force: true });
   for (const replay of replays) {
     await expect(page.locator('canvas')).toBeVisible();
+    await page
+      .getByRole('button', { name: '进入试验', exact: true })
+      .click({ force: true });
     // Phaser 在首帧初始化场景；随后与规则回放同为 120ms 一个输入段。
     await page.clock.runFor(16);
     for (const command of replay.commands) {
       if (command.direction) await page.keyboard.down(keys[command.direction]);
       if (command.dodge) await page.keyboard.press('Space');
+      if (command.beacon) await page.keyboard.press('KeyE');
       await page.clock.runFor(120);
       if (command.direction) await page.keyboard.up(keys[command.direction]);
     }

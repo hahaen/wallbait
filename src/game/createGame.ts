@@ -48,7 +48,7 @@ export function createGame(
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent,
-    backgroundColor: '#e3eabf',
+    backgroundColor: '#193440',
     render: { antialias: true, pixelArt: false },
     scale: {
       mode: Phaser.Scale.FIT,

@@ -68,6 +68,7 @@ describe('状态机与碰撞', () => {
       const s = createState({
         ...LEVELS[1]!,
         apple: { x: 7, y: 7 },
+        facing: 'left',
         snakes: [{ x: 3, y: 7, kind }],
       });
       ticks(s, 15);

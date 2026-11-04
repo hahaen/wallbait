@@ -1,9 +1,11 @@
 # 输入
 
-`Controls` 为每局创建一组可 Abort 的监听器，销毁时解除。键盘和触控统一进入按住方向 Map；最后按下且仍按住的方向优先，不斜走。
+`Controls` 每局创建一组可 Abort 的监听器，销毁时解除。键盘和触控统一进入按住方向 Map；最后按下且仍按住的方向优先，不斜走。
 
-手机使用 Pointer Events、pointer capture 和独立 pointerId，移动与闪避可以同时按。pointerup、pointercancel、lostpointercapture 都释放该指针；暂停清空全部方向和待消费闪避。
+手机使用 Pointer Events、pointer capture 和独立 pointerId，方向、闪避与信标可以多点同时按下。`pointerup`、`pointercancel`、`lostpointercapture` 释放对应指针；取消和异常丢失捕获会取消该指针尚未采样的技能，正常快速点击仍保留一次操作。多个手指按同一按钮时，只有全部释放才移除按下外观。
 
-闪避记录按下瞬间的方向，避免「方向 + 闪避 + 快速松手」在下一个 20ms 采样时丢失方向。按键自动重复不会不断触发闪避。WASD/方向键移动，Space 闪避，Escape/P 暂停。
+闪避记录按下瞬间的方向，避免“方向 + 闪避 + 快速松手”在下一次 20ms 采样时丢失方向。技能是一次性意图，采样后清除；键盘自动重复不会连续触发技能。实际能否使用由 core 的电量、短锁、信标与关卡开关决定。
 
-失焦与 visibilitychange 在 App 边界自动暂停，返回后主动继续。重开销毁旧 Controls；四次连续重开测试用单次 Escape 检测重复监听。
+WASD / 方向键移动，Space 闪避，E 放信标，Escape / P 暂停。失焦与 `visibilitychange` 在 App 边界自动暂停，返回后主动继续。暂停、切关与重开清空方向和两种待消费技能，释放捕获；重开销毁旧 Controls，避免旧监听器残留。
+
+输入不写玩家坐标、敌人阶段或胜负；统一输出 `Command`。浏览器多点触控、取消及连续重开的实际结果见[验收文档](../../testing/README.md)。

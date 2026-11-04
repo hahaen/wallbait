@@ -8,22 +8,27 @@
 - [关卡设计](levels.md)：四章 20 关的设计意图与可复现获胜方案。
 - [架构设计](architecture.md)：模块边界、数据流、逻辑时间与碰撞顺序。
 - [开发与验收计划](development.md)：里程碑、完成状态和发布条件。
+- [后续事项](remaining-work.md)：中后期实际试玩、真机与扩大真人测试，按本轮范围后续跟进。
 - [视觉参考](design/README.md)：概念图及视觉说明。
 
 ## 模块开发文档
 
 | 目录                                 | 对应源码       | 记录内容                             |
 | ------------------------------------ | -------------- | ------------------------------------ |
-| [核心规则](modules/core/README.md)   | `src/core/`    | 状态、移动、蛇行为、碰撞、闪避与胜负 |
+| [核心规则](modules/core/README.md)   | `src/core/`    | 追逐策略、机关、共享电量、碰撞与胜负 |
 | [游戏与渲染](modules/game/README.md) | `src/game/`    | 场景、逻辑驱动、渲染、插值与生命周期 |
 | [输入](modules/input/README.md)      | `src/input/`   | 键盘、多点触控与统一命令             |
 | [界面](modules/ui/README.md)         | `src/ui/`      | HUD、操作面板、暂停、结算与布局      |
 | [存档](modules/storage/README.md)    | `src/storage/` | 设置、统计、数据版本与异常恢复       |
 
 - [开发记录](records/README.md)：每次功能、修复与关键决策的实施记录。
-- [测试与验收](testing/README.md)：规则验证、浏览器和真机验收记录。
+- [测试与验收](testing/README.md)：规则验证、实际试玩、浏览器与真机边界。
+- [简单策略专项](testing/strategies.md)：140 个固定算法回合及教学例外。
+- [回放事件证据](testing/replay-metrics.json)：逐关锁向、门、信标与撞击时序。
 
 ## 维护约定
+
+本轮快速收尾与后续未验收项见[进阶版后续事项](remaining-work.md)。
 
 1. 开发前阅读项目开发约定、已有的玩法与架构文档，以及相关模块 README。
 2. 开发时在对应模块目录补充设计、接口约定和重要实现说明；简单功能直接更新模块 README，内容较多再按主题新增 Markdown 文件，并补上链接。
