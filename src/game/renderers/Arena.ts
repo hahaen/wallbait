@@ -8,6 +8,7 @@ import type {
   Point,
   Snake,
 } from '../../core/types';
+import { ENEMY_SYMBOLS, groupEnemies } from '../feedback';
 
 const CELL = 32,
   INK = 0x0b202b;
@@ -26,6 +27,8 @@ export class Arena {
   private graphics: Phaser.GameObjects.Graphics;
   private positions = new Map<string, Point>();
   private bursts: Burst[] = [];
+  private labels = new Map<number, Phaser.GameObjects.Text>();
+  private routeLabels = new Map<number, Phaser.GameObjects.Text>();
   constructor(
     private scene: Phaser.Scene,
     private state: GameState,
@@ -70,6 +73,24 @@ export class Arena {
       }
     }
     this.graphics = scene.add.graphics();
+    for (const snake of state.snakes) {
+      const style = {
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '11px',
+        fontStyle: 'bold',
+        color: '#fff3d9',
+        backgroundColor: '#0b202b',
+        padding: { left: 2, right: 2 },
+      };
+      this.labels.set(
+        snake.id,
+        scene.add.text(0, 0, '', style).setOrigin(0.5, 1).setDepth(3),
+      );
+      this.routeLabels.set(
+        snake.id,
+        scene.add.text(0, 0, '', style).setOrigin(0.5).setDepth(3),
+      );
+    }
     this.draw(100, true);
   }
   events(events: GameEvent[], reducedMotion: boolean): void {
@@ -105,6 +126,8 @@ export class Arena {
       if (s.alive && (s.phase === 'charging' || s.phase === 'dashing'))
         this.warning(s);
     for (const s of this.state.snakes) {
+      this.labels.get(s.id)!.setVisible(false);
+      this.routeLabels.get(s.id)!.setVisible(false);
       if (!s.alive) continue;
       const duration = reducedMotion ? 1 : s.phase === 'dashing' ? 20 : 65;
       for (let i = s.body.length - 1; i >= 0; i--) {
@@ -123,11 +146,13 @@ export class Arena {
         g.lineStyle(2, INK, 0.7);
         g.lineBetween(p.x - size / 2 + 3, p.y, p.x + size / 2 - 3, p.y);
       }
-      this.snake(s, this.position(`head${s.id}`, s, delta, duration));
+      const head = this.position(`head${s.id}`, s, delta, duration);
+      this.snake(s, head);
     }
     this.robot(
       this.position('apple', this.state.apple, delta, reducedMotion ? 1 : 40),
     );
+    this.enemyLabels();
     this.bursts = this.bursts.filter((b) => b.life > 0);
     for (const b of this.bursts) {
       b.life -= delta;
@@ -146,6 +171,107 @@ export class Arena {
           b.y + Math.sin(angle) * (radius + 7),
         );
       }
+    }
+    if (this.state.loss) this.lossMarker();
+  }
+  private placeLabel(
+    label: Phaser.GameObjects.Text,
+    text: string,
+    x: number,
+    y: number,
+  ): void {
+    label.setText(text).setVisible(true);
+    label.setPosition(
+      Phaser.Math.Clamp(
+        x,
+        label.width / 2 + 2,
+        this.state.level.width * CELL - label.width / 2 - 2,
+      ),
+      Math.max(label.height + 2, y),
+    );
+  }
+  private enemyLabels(): void {
+    const alive = this.state.snakes.filter((s) => s.alive);
+    for (const group of groupEnemies(alive, (s) => s)) {
+      const leader = group.enemies[0]!;
+      const p = this.positions.get(`head${leader.id}`)!;
+      const text = group.enemies
+        .map(
+          (s) =>
+            `${s.id + 1}${ENEMY_SYMBOLS[s.kind]}${s.phase === 'charging' ? ` ${(Math.ceil(s.timer / 100) / 10).toFixed(1)}s` : s.phase === 'dashing' ? ' 冲刺' : ''}`,
+        )
+        .join(' / ');
+      this.placeLabel(this.labels.get(leader.id)!, text, p.x, p.y - 25);
+    }
+    for (const group of groupEnemies(alive, (s) =>
+      warningPath(this.state, s).at(-1),
+    )) {
+      const label = this.routeLabels.get(group.enemies[0]!.id)!;
+      const text = group.enemies
+        .map((s) => `${s.id + 1}${ENEMY_SYMBOLS[s.kind]}`)
+        .join(' / ');
+      const c = center(group.point);
+      if (
+        group.point.x === this.state.apple.x &&
+        group.point.y === this.state.apple.y
+      ) {
+        // 终点标签不能盖住阿零；引线只指回原格，不延长危险通道。
+        label.setText(text);
+        const f = VECTOR[group.enemies[0]!.locked];
+        const side = { x: -f.y, y: f.x };
+        const offset = {
+          x: side.x * (CELL / 2 + label.width / 2 + 5),
+          y: side.y * (CELL / 2 + label.height / 2 + 5),
+        };
+        const fits =
+          c.x + offset.x - label.width / 2 >= 2 &&
+          c.x + offset.x + label.width / 2 <=
+            this.state.level.width * CELL - 2 &&
+          c.y + offset.y >= label.height + 2 &&
+          c.y + offset.y + label.height / 2 <=
+            this.state.level.height * CELL - 2;
+        const sign = fits ? 1 : -1;
+        this.placeLabel(
+          label,
+          text,
+          c.x + offset.x * sign,
+          c.y + offset.y * sign,
+        );
+        this.graphics.lineStyle(2, 0xffdd92);
+        this.graphics.lineBetween(
+          c.x + ((side.x * CELL) / 2) * sign,
+          c.y + ((side.y * CELL) / 2) * sign,
+          label.x - ((side.x * label.width) / 2) * sign,
+          label.y - ((side.y * label.height) / 2) * sign,
+        );
+      } else {
+        this.placeLabel(label, text, c.x, group.point.y * CELL + 13);
+      }
+    }
+  }
+  private lossMarker(): void {
+    const loss = this.state.loss!;
+    const g = this.graphics;
+    for (const p of loss.path) {
+      g.lineStyle(3, 0xffd486, 0.95);
+      g.strokeRoundedRect(p.x * CELL + 3, p.y * CELL + 3, 26, 26, 4);
+    }
+    const c = center(loss.cell);
+    g.lineStyle(4, 0xff7e87);
+    g.strokeCircle(c.x, c.y, 16);
+    g.lineBetween(c.x - 8, c.y - 8, c.x + 8, c.y + 8);
+    g.lineBetween(c.x + 8, c.y - 8, c.x - 8, c.y + 8);
+    const snake = this.state.snakes.find((s) => s.id === loss.enemy);
+    if (snake) {
+      for (const other of this.state.snakes)
+        if (other.x === snake.x && other.y === snake.y)
+          this.labels.get(other.id)!.setVisible(false);
+      this.placeLabel(
+        this.labels.get(snake.id)!,
+        `${snake.id + 1}${ENEMY_SYMBOLS[snake.kind]} 命中`,
+        c.x,
+        c.y - 25,
+      );
     }
   }
   private mechanisms(reducedMotion: boolean): void {
@@ -200,11 +326,20 @@ export class Arena {
   private warning(s: Snake): void {
     const g = this.graphics,
       vector = VECTOR[s.locked];
-    for (const p of warningPath(this.state, s)) {
+    const path = warningPath(this.state, s);
+    for (const p of path) {
       const c = center(p),
         side = { x: -vector.y, y: vector.x };
       g.fillStyle(0xffad4f, s.phase === 'charging' ? 0.42 : 0.65);
       g.fillRect(p.x * CELL + 1, p.y * CELL + 1, 30, 30);
+      const inset = 2 + s.id * 3;
+      g.lineStyle(2, COLORS[s.kind]);
+      g.strokeRect(
+        p.x * CELL + inset,
+        p.y * CELL + inset,
+        CELL - inset * 2,
+        CELL - inset * 2,
+      );
       g.lineStyle(3, 0xffdd92, 0.95);
       g.beginPath();
       g.moveTo(

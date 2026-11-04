@@ -4,6 +4,7 @@ import { BEACON_MS, RECHARGE_MS } from '../core/config';
 import type { GameState } from '../core/types';
 import type { createGame } from '../game/createGame';
 import { Sound } from '../game/audio';
+import { dangerText, enemyName, lossAdvice, lossTitle } from '../game/feedback';
 import { Controls } from '../input/controls';
 import {
   browserStorage,
@@ -13,8 +14,6 @@ import {
 } from '../storage/save';
 import { robotArt, heroArt } from './art';
 
-const arrows = { up: '↑', right: '→', down: '↓', left: '←' };
-const kinds = { normal: '冲锋者', swift: '截击者', cautious: '侦察者' };
 const seconds = (ms: number): string => (ms / 1000).toFixed(1);
 const starText = (value: number): string =>
   '★'.repeat(value) + '☆'.repeat(3 - value);
@@ -31,6 +30,7 @@ export class App {
   private storageWarning = false;
   private screen: 'home' | 'levels' | 'play' = 'home';
   private previousFocus?: HTMLElement;
+  private inspectingLoss = false;
   constructor(private root: HTMLElement) {
     this.sound.muted = this.save.muted;
     const signal = this.abort.signal;
@@ -74,6 +74,7 @@ export class App {
     this.game?.destroy();
     this.game = undefined;
     this.state = undefined;
+    this.inspectingLoss = false;
   }
   private persist(): void {
     this.storageWarning = !writeSave(browserStorage, this.save);
@@ -142,6 +143,7 @@ export class App {
       <div class="hud"><span id="enemy-count"></span><span id="clock">0.0s</span><span id="cooldown" class="ready">电量 ▰▰</span><span id="mechanisms" class="mechanisms"></span></div>
       <div class="arena-slot"><div id="arena" role="img" aria-label="对局地图：青色机器人阿零、机械追逐者、墙、配对闸门与橙色危险通道"><span class="loading">正在摆好墙…</span></div></div>
       <div class="play-status" id="play-status" aria-live="polite">${level.focus}</div>
+      <aside class="loss-inspection" hidden aria-label="失败现场说明"><b id="loss-title" tabindex="-1"></b><p id="loss-advice"></p><small>红圈 ×：碰撞格 · 金色框：致命敌人的路线</small><div>${button('result', '返回结算')}${button('retry', '再试一次', 'primary')}</div></aside>
       <div class="controls"><div class="dpad" aria-label="四向移动"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span aria-hidden="true">移动</span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="skills"><button class="skill dodge" data-dodge aria-label="闪避"><span aria-hidden="true">↟</span><b>闪避</b><small id="dodge-text">1 格电</small></button><button class="skill beacon" data-beacon aria-label="信标" ${level.beaconEnabled ? '' : 'disabled'}><span aria-hidden="true">⌖</span><b>信标</b><small id="beacon-text">${level.beaconEnabled ? '1 格电' : '未启用'}</small></button></div></div>
       <footer class="play-footer"><span>方向键 / WASD · 空格闪避 · E 信标 · P 暂停</span><span>目标 ${level.parMs / 1000}s / ≤${level.parDodges} 次闪避</span></footer></section>`,
     );
@@ -154,7 +156,12 @@ export class App {
     this.controls = new Controls(
       this.root,
       () => state.status === 'playing' && !state.paused,
-      () => (state.paused ? this.resume() : this.pause()),
+      () =>
+        this.inspectingLoss
+          ? this.result()
+          : state.paused
+            ? this.resume()
+            : this.pause(),
     );
     const arena = this.root.querySelector<HTMLElement>('#arena')!;
     void import('../game/createGame')
@@ -250,26 +257,23 @@ export class App {
         .filter(Boolean)
         .join('  |  '),
     );
-    const charging = s.snakes.filter((v) => v.alive && v.phase === 'charging');
-    const dashing = s.snakes.some((v) => v.alive && v.phase === 'dashing');
+    const danger = dangerText(s);
     const recovering = s.snakes.filter(
       (v) => v.alive && v.phase === 'recovering',
     );
     text(
       'play-status',
-      charging.length
-        ? charging
-            .map((v) => `${kinds[v.kind]}蓄力 ${arrows[v.locked]}`)
-            .join(' · ')
-        : dashing
-          ? '冲刺中！离开橙色通道'
+      s.status === 'lost'
+        ? lossTitle(s)
+        : danger
+          ? danger
           : recovering.length
-            ? `${recovering.map((v) => `${kinds[v.kind]}恢复`).join(' · ')}｜趁现在重新设局`
+            ? `${recovering.map((v) => `${enemyName(v)}恢复`).join(' · ')}｜趁现在重新设局`
             : s.level.focus,
     );
     this.root
       .querySelector('#play-status')
-      ?.classList.toggle('danger', charging.length > 0 || dashing);
+      ?.classList.toggle('danger', Boolean(danger) || s.status === 'lost');
   }
   private dialog(html: string, cls = ''): void {
     this.closeDialog();
@@ -315,18 +319,37 @@ export class App {
     this.controls?.clear();
     const won = s.status === 'won',
       complete = won && s.level.id === 20;
+    this.inspectingLoss = false;
+    this.root.querySelector('.play-screen')?.classList.remove('inspecting');
+    const inspection = this.root.querySelector<HTMLElement>('.loss-inspection');
+    if (inspection) inspection.hidden = true;
     if (won) {
       recordWin(this.save, s);
       this.persist();
     }
     this.dialog(
       `<div class="result-robot ${won ? '' : 'sad'}">${robotArt}</div><p class="result-kicker">${complete ? '试验场全部通过 · 阿零，出厂合格！' : won ? `第 ${s.level.id} 关完成` : '这次，路线被封住了'}</p><h2 id="dialog-title">${complete ? '墙都记住你了！' : won ? '撞墙了吧！' : '再骗它一次'}</h2>
-      ${won ? `<div class="result-stars" aria-label="本关 ${stars(s)} 星">${starText(stars(s))}</div><div class="result-stats"><span><b>${seconds(s.elapsedMs)}s</b>通关用时</span><span><b>${s.dodges} / ${s.beacons}</b>闪避 / 信标</span></div><p class="score-rule">${s.elapsedMs <= s.level.parMs ? '✓' : '○'} ${s.level.parMs / 1000} 秒内通关 · ${s.dodges <= s.level.parDodges ? '✓' : '○'} 闪避 ≤${s.level.parDodges} 次</p>` : `<p>${s.lossReason ?? '碰到追逐者的头部了。'}</p><p class="score-rule">${s.level.focus}</p>`}
+      ${won ? `<div class="result-stars" aria-label="本关 ${stars(s)} 星">${starText(stars(s))}</div><div class="result-stats"><span><b>${seconds(s.elapsedMs)}s</b>通关用时</span><span><b>${s.dodges} / ${s.beacons}</b>闪避 / 信标</span></div><p class="score-rule">${s.elapsedMs <= s.level.parMs ? '✓' : '○'} ${s.level.parMs / 1000} 秒内通关 · ${s.dodges <= s.level.parDodges ? '✓' : '○'} 闪避 ≤${s.level.parDodges} 次</p>` : `<p class="loss-cause">${lossTitle(s)}</p><p>${s.lossReason ?? '碰到追逐者的头部了。'}</p><p class="score-rule">${lossAdvice(s)}</p>`}
       ${this.storageWarning ? '<p class="save-warning">浏览器未能保存，当前进度仍在，刷新后可能丢失。</p>' : ''}
       ${complete ? `<p>你追你的，墙就在那儿。<br>20 关全部解锁，回来把每颗星带走。</p>${button('levels', '自由重玩', 'primary')}` : won ? button('next', '下一关', 'primary') : button('retry', '再试一次', 'primary')}
-      ${won ? button('retry', '重试本关') : ''}${button('levels', '返回选关', 'text-button')}`,
+      ${won ? button('retry', '重试本关') : button('inspect-loss', '查看失败现场')}${button('levels', '返回选关', 'text-button')}`,
       won ? 'win' : 'lose',
     );
+  }
+  private inspectLoss(): void {
+    const s = this.state;
+    if (!s || s.status !== 'lost') return;
+    this.controls?.clear();
+    this.closeDialog();
+    this.inspectingLoss = true;
+    this.root.querySelector('.play-screen')?.classList.add('inspecting');
+    const inspection =
+      this.root.querySelector<HTMLElement>('.loss-inspection')!;
+    inspection.hidden = false;
+    const title = this.root.querySelector<HTMLElement>('#loss-title')!;
+    title.textContent = lossTitle(s);
+    this.root.querySelector('#loss-advice')!.textContent = lossAdvice(s);
+    title.focus({ preventScroll: true });
   }
   private help(): void {
     this.dialog(
@@ -344,6 +367,12 @@ export class App {
       return;
     }
     switch (action) {
+      case 'inspect-loss':
+        this.inspectLoss();
+        break;
+      case 'result':
+        if (this.inspectingLoss) this.result();
+        break;
       case 'home':
         this.home();
         break;

@@ -57,10 +57,17 @@ export interface Snake extends Point {
   aimDirection: Direction | null;
   remaining: number;
   body: Point[];
+  attackPath: Point[];
 }
 export type GameEvent =
   | { type: 'charge' | 'dash' | 'wall'; snake: number; x: number; y: number }
   | { type: 'dodge' | 'won' | 'lost'; x: number; y: number };
+export interface LossDetails {
+  enemy: number;
+  kind: 'contact' | 'tracking' | 'dash';
+  cell: Point;
+  path: Point[];
+}
 export interface GameState {
   level: Level;
   status: 'playing' | 'won' | 'lost';
@@ -76,6 +83,7 @@ export interface GameState {
   beacons: number;
   gates: { id: string; closed: boolean; pending: boolean | null }[];
   lossReason: string | null;
+  loss: LossDetails | null;
   dodges: number;
   snakes: Snake[];
   events: GameEvent[];

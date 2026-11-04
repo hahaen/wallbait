@@ -362,6 +362,46 @@ button.text-button:hover {
   padding: 0 12px;
   gap: 8px;
 }
+.loss-inspection[hidden] {
+  display: none;
+}
+.loss-inspection {
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #ffe0a2;
+}
+.loss-inspection p {
+  margin: 4px 0;
+  color: var(--ink);
+}
+.loss-inspection small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.loss-inspection > div {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.loss-inspection button.primary {
+  font-size: 16px;
+  min-height: 48px;
+}
+.inspecting .controls,
+.inspecting .play-footer,
+.inspecting .play-status,
+.inspecting .pause-button {
+  display: none;
+}
+.inspecting {
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+.loss-cause {
+  color: #ffc68b;
+  font-weight: 700;
+}
 .dpad {
   display: grid;
   grid-template-columns: repeat(3, 44px);

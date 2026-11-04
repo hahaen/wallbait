@@ -42,7 +42,11 @@ export function createGame(
         this.arena.events(state.events, options.reducedMotion());
         options.onTick(state.events);
       }
-      this.arena.draw(Math.min(delta, 100), options.reducedMotion());
+      // 终止帧直接对齐规则格，现场标记不能落在尚未追上的插值位置。
+      this.arena.draw(
+        Math.min(delta, 100),
+        state.status !== 'playing' || options.reducedMotion(),
+      );
     }
   }
   const game = new Phaser.Game({

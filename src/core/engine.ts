@@ -15,6 +15,7 @@ import type {
   Direction,
   GameState,
   Level,
+  LossDetails,
   Point,
   Snake,
 } from './types';
@@ -52,7 +53,7 @@ export function createState(level: Level): GameState {
     elapsedMs: 0,
     apple: { ...level.apple },
     facing: level.facing,
-    moveTimer: MOVE_MS,
+    moveTimer: 0,
     cooldownMs: 0,
     energy: MAX_ENERGY,
     rechargeMs: 0,
@@ -64,6 +65,7 @@ export function createState(level: Level): GameState {
       pending: null,
     })),
     lossReason: null,
+    loss: null,
     dodges: 0,
     events: [],
     snakes: level.snakes.map((spawn, id) => ({
@@ -81,13 +83,13 @@ export function createState(level: Level): GameState {
       aimDirection: null,
       remaining: 0,
       body: [],
+      attackPath: [],
     })),
   };
 }
 export function setPaused(state: GameState, paused: boolean): void {
   if (state.status !== 'playing') return;
   state.paused = paused;
-  state.moveTimer = MOVE_MS;
   state.events = [];
 }
 function finish(state: GameState, status: 'won' | 'lost'): void {
@@ -95,12 +97,28 @@ function finish(state: GameState, status: 'won' | 'lost'): void {
   state.status = status;
   state.events.push({ type: status, ...state.apple });
 }
-function headAt(state: GameState, point: Point): boolean {
-  return state.snakes.some((s) => s.alive && same(s, point));
+function headAt(state: GameState, point: Point): Snake | undefined {
+  return state.snakes.find((s) => s.alive && same(s, point));
 }
-function hitPlayer(state: GameState, reason: string): void {
+function hitPlayer(
+  state: GameState,
+  reason: string,
+  snake: Snake,
+  kind: LossDetails['kind'],
+  path = snake.phase === 'charging' || snake.phase === 'dashing'
+    ? snake.attackPath.length
+      ? snake.attackPath
+      : [{ x: snake.x, y: snake.y }, ...warningPath(state, snake)]
+    : [{ x: snake.x, y: snake.y }],
+): void {
   if (state.status !== 'playing') return;
   state.lossReason = reason;
+  state.loss = {
+    enemy: snake.id,
+    kind,
+    cell: { ...state.apple },
+    path: path.map((p) => ({ ...p })),
+  };
   finish(state, 'lost');
 }
 function applyPendingGates(state: GameState): void {
@@ -143,8 +161,14 @@ function moveApple(state: GameState, direction: Direction): boolean {
   const previous = state.apple;
   state.apple = next;
   // 即使同一时间蛇准备离开此格，也不能与蛇头换位穿越。
-  if (headAt(state, next))
-    hitPlayer(state, '撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。');
+  const head = headAt(state, next);
+  if (head)
+    hitPlayer(
+      state,
+      '撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。',
+      head,
+      'contact',
+    );
   else enterSwitches(state, previous, next);
   return true;
 }
@@ -229,6 +253,7 @@ export function step(state: GameState, command: Command): void {
   state.events = [];
   if (state.paused || state.status !== 'playing') return;
   state.elapsedMs += TICK_MS;
+  state.moveTimer = Math.max(0, state.moveTimer - TICK_MS);
   state.cooldownMs = Math.max(0, state.cooldownMs - TICK_MS);
   if (state.energy < MAX_ENERGY) {
     state.rechargeMs += TICK_MS;
@@ -244,8 +269,14 @@ export function step(state: GameState, command: Command): void {
   }
   applyPendingGates(state);
   if (command.direction) state.facing = command.direction;
-  if (headAt(state, state.apple)) {
-    hitPlayer(state, '撞上了敌人头部。请先观察退路，再接近敌人。');
+  const head = headAt(state, state.apple);
+  if (head) {
+    hitPlayer(
+      state,
+      '撞上了敌人头部。请先观察退路，再接近敌人。',
+      head,
+      'contact',
+    );
     return;
   }
   let dodged = false;
@@ -276,21 +307,18 @@ export function step(state: GameState, command: Command): void {
     state.beacons++;
     state.beacon = { ...state.apple, remainingMs: BEACON_MS };
   }
-  if (!command.direction) state.moveTimer = MOVE_MS;
-  else if (!dodged) {
-    state.moveTimer -= TICK_MS;
-    if (state.moveTimer <= 0) {
-      moveApple(state, command.direction);
-      state.moveTimer += MOVE_MS;
-    }
+  if (command.direction && !dodged && state.moveTimer === 0) {
+    moveApple(state, command.direction);
+    state.moveTimer = MOVE_MS;
   }
   if (state.status !== 'playing') return;
 
   const paths = new Map<string, Map<string, number>>();
-  let touched = false;
-  let hitByDash = false;
+  let collision:
+    { snake: Snake; kind: 'tracking' | 'dash'; path: Point[] } | undefined;
   for (const snake of state.snakes) {
     if (!snake.alive) continue;
+    const origin = { x: snake.x, y: snake.y };
     if (snake.phase === 'charging' || snake.phase === 'recovering') {
       snake.timer -= TICK_MS;
       if (snake.timer > 0) continue;
@@ -319,6 +347,10 @@ export function step(state: GameState, command: Command): void {
         snake.locked = aim;
         snake.facing = aim;
         snake.timer = snake.rules.chargeMs;
+        snake.attackPath = [
+          { x: snake.x, y: snake.y },
+          ...warningPath(state, snake),
+        ];
         snake.aim = 0;
         state.events.push({
           type: 'charge',
@@ -359,6 +391,9 @@ export function step(state: GameState, command: Command): void {
         snake.timer += snake.rules.trackMs;
       }
     } else {
+      const path = snake.attackPath.length
+        ? snake.attackPath
+        : [origin, ...warningPath(state, snake)];
       snake.timer -= TICK_MS;
       // dashMs 可小于固定步；每次只跨一格，并且逐格判定。
       while (snake.timer <= 0 && snake.alive && snake.phase === 'dashing') {
@@ -372,8 +407,7 @@ export function step(state: GameState, command: Command): void {
         snake.remaining--;
         snake.timer += snake.rules.dashMs;
         if (same(snake, state.apple)) {
-          touched = true;
-          hitByDash = true;
+          collision ??= { snake, kind: 'dash', path };
           break;
         }
         if (snake.remaining <= 0) {
@@ -382,15 +416,23 @@ export function step(state: GameState, command: Command): void {
         }
       }
     }
-    if (same(snake, state.apple)) touched = true;
+    if (same(snake, state.apple))
+      collision ??= {
+        snake,
+        kind: 'tracking',
+        path: [origin, { ...state.apple }],
+      };
   }
   // 收集所有蛇的同刻事件后统一结算：头部触及苹果优先于全蛇撞墙。
-  if (touched)
+  if (collision)
     hitPlayer(
       state,
-      hitByDash
+      collision.kind === 'dash'
         ? '仍在锁定的冲刺通道内。看准箭头，横向离开危险格。'
         : '被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。',
+      collision.snake,
+      collision.kind,
+      collision.path,
     );
   else if (state.snakes.every((s) => !s.alive)) finish(state, 'won');
   if (state.status === 'playing') applyPendingGates(state);

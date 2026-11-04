@@ -18,6 +18,27 @@ function ticks(
   for (let i = 0; i < count; i++) step(s, c);
 }
 describe('移动与闪避', () => {
+  it('首次短按立即移动，松手再按和快速换向不能绕过 120ms 间隔', () => {
+    const s = make();
+    step(s, { direction: 'right' });
+    expect(s.apple).toEqual({ x: 7, y: 10 });
+    for (let i = 0; i < 5; i++) step(s, { direction: i % 2 ? null : 'up' });
+    expect(s.apple).toEqual({ x: 7, y: 10 });
+    step(s, { direction: 'up' });
+    expect(s.apple).toEqual({ x: 7, y: 9 });
+    ticks(s, 6);
+    step(s, { direction: 'left' });
+    expect(s.apple).toEqual({ x: 6, y: 9 });
+  });
+  it('暂停恢复不清除尚未到期的步进间隔', () => {
+    const s = make();
+    step(s, { direction: 'right' });
+    setPaused(s, true);
+    ticks(s, 100);
+    setPaused(s, false);
+    step(s, { direction: 'up' });
+    expect(s.apple).toEqual({ x: 7, y: 10 });
+  });
   it('按住按间隔四向走、松开停止，不穿外围墙和障碍', () => {
     const s = make();
     ticks(s, MOVE_MS / TICK_MS, { direction: 'right' });
@@ -59,6 +80,11 @@ describe('移动与闪避', () => {
     step(s, { direction: 'right', dodge: true });
     expect(s.status).toBe('lost');
     expect(s.apple.x).toBe(7);
+    expect(s.loss).toMatchObject({
+      enemy: 0,
+      kind: 'contact',
+      cell: { x: 7, y: 10 },
+    });
   });
 });
 describe('状态机与碰撞', () => {
@@ -101,6 +127,13 @@ describe('状态机与碰撞', () => {
     step(s, { direction: null });
     expect(s.status).toBe('lost');
     expect(snake.x).toBe(6);
+    expect(s.loss).toMatchObject({
+      enemy: 0,
+      kind: 'dash',
+      cell: { x: 6, y: 5 },
+    });
+    expect(s.loss!.path).toContainEqual({ x: 5, y: 5 });
+    expect(s.loss!.path).toContainEqual({ x: 6, y: 5 });
   });
   it('冲刺逐格撞实心墙，不穿墙；追踪遇墙绕路', () => {
     const s = make(),
