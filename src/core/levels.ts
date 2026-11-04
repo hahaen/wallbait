@@ -1,6 +1,6 @@
 import { ahead, solid } from './engine';
 import { DIRECTIONS, SNAKE_RULES, TICK_MS } from './config';
-import type { Level, Point, Spawn } from './types';
+import type { Level, MemoryChip, Point, Spawn } from './types';
 
 const h = (x: number, y: number, n: number): Point[] =>
   Array.from({ length: n }, (_, i) => ({ x: x + i, y }));
@@ -21,6 +21,26 @@ const gate = (
 ) => ({ id, cells, switches, initialClosed });
 const chapters = ['唤醒试验场', '改变追逐路线', '分配注意力', '最后的试验'];
 const partition = (y: number) => [...h(1, y, 5), ...h(7, y, 5)];
+const chips: Record<number, MemoryChip> = {
+  7: {
+    x: 2,
+    y: 10,
+    title: '第一次绕远',
+    memory: '阿零的导航记录：最近的路线不一定能回家。今天试了另一条。',
+  },
+  11: {
+    x: 3,
+    y: 6,
+    title: '留一条路',
+    memory: '维修员便签：别把出口也当成耗材。给自己留条路。',
+  },
+  18: {
+    x: 2,
+    y: 7,
+    title: '回收清单',
+    memory: '回收记录：机壳三件，旧电池一枚。小机器人一个——划掉，它自己走了。',
+  },
+};
 function stage(
   id: number,
   name: string,
@@ -51,6 +71,7 @@ function stage(
     walls,
     gates,
     beaconEnabled: id >= 5,
+    ...(chips[id] ? { chip: chips[id] } : {}),
     parMs,
     parDodges,
   };
@@ -229,13 +250,13 @@ export const LEVELS: Level[] = [
   stage(
     11,
     '分头设局',
-    '两只敌人错峰逼近。躲开第一条线后，别停在第二只的入口。',
-    '两个独立弱点，错位短墙制造交叉视线。',
-    '普通诱撞与信标诱撞分配先后，不盲追最短时间。',
-    '躲过一条预警，却走进另一条正在追踪的头部。',
-    { x: 6, y: 11 },
-    [bot(3, 4), bot(10, 3, 'cautious', 720)],
-    [...h(2, 8, 3), ...h(8, 6, 3), { x: 7, y: 11 }],
+    '中央口借墙后会被残骸堵住；先选撞毁位置，右侧还留着绕行口。',
+    'T形中央口与右侧绕道：残骸能提供诱撞点，也会封住中央出口。',
+    '先取左侧芯片再封中央口，或先解决冲锋者，经右侧绕行回收；用残骸诱导侦察者。',
+    '把中央残骸当成还能穿过的出口，或在没有侧撤空间时放信标。',
+    { x: 9, y: 12 },
+    [bot(6, 9, 'normal', 1200), bot(2, 2, 'cautious', 1800)],
+    [...h(1, 7, 5), ...h(7, 7, 3), { x: 11, y: 7 }, { x: 6, y: 5 }],
     [],
     40000,
     4,
@@ -375,13 +396,23 @@ export const LEVELS: Level[] = [
   stage(
     18,
     '回收试验',
-    '窄路撞毁会留下路障；先选残骸位置，再躲开错峰到来的下一只。',
-    '三种敌人与错位通道，连续离开预警后需规划下一出口。',
-    '分两侧诱导，避免在S形走廊中面对截击者。',
-    '闪避被拐角截断，或在第一条敌人倒下后立刻停住。',
+    '中央残骸能接住下一只，也会封路。三敌错峰，取芯片前留好右侧退路。',
+    '三敌回收场：中央T口适合造墙接力，右侧长路保留第二种解决顺序。',
+    '先在中央口留下残骸诱导侦察者，或绕右侧先解决截击者，再回左侧取芯片。',
+    '第一只撞毁后仍沿中央口撤退，或只看芯片忽略右侧截击。',
     { x: 9, y: 12 },
-    [bot(2, 2), bot(10, 3, 'cautious', 400), bot(6, 3, 'swift', 920)],
-    [...h(1, 5, 6), ...h(7, 9, 5), ...v(4, 10, 2)],
+    [
+      bot(6, 10, 'normal', 1200),
+      bot(2, 4, 'cautious', 1800),
+      bot(10, 3, 'swift', 920),
+    ],
+    [
+      ...h(1, 8, 5),
+      ...h(7, 8, 3),
+      { x: 11, y: 8 },
+      { x: 6, y: 6 },
+      ...v(4, 10, 2),
+    ],
     [],
     50000,
     5,
@@ -521,6 +552,20 @@ export function validateLevel(l: Level): string[] {
     )
   )
     errors.push('出生被关闭门占用');
+  if (l.chip) {
+    const p = l.chip;
+    if (
+      !integer(p.x) ||
+      !integer(p.y) ||
+      solid(l, p) ||
+      !p.title ||
+      !p.memory ||
+      [...spawns, ...gateCells, ...gates.flatMap((g) => g.switches)].some(
+        (c) => c.x === p.x && c.y === p.y,
+      )
+    )
+      errors.push('芯片配置无效');
+  }
   for (const s of l.snakes) {
     if (
       Math.abs(l.apple.x - s.x) + Math.abs(l.apple.y - s.y) <
@@ -587,7 +632,11 @@ export function validateLevel(l: Level): string[] {
         }),
       );
     }
-    if (spawns.some((p) => !accessible.has(`${p.x},${p.y}`)))
+    if (
+      [...spawns, ...(l.chip ? [l.chip] : [])].some(
+        (p) => !accessible.has(`${p.x},${p.y}`),
+      )
+    )
       errors.push('关闭门区域无法通过踏板到达');
   }
   if (visited.size !== (l.width - 2) * (l.height - 2) - l.walls.length)

@@ -25,6 +25,16 @@ export interface Gate {
   switches: Point[];
   initialClosed: boolean;
 }
+export type HighlightId =
+  'wreck-chain' | 'double-decoy' | 'no-dodge' | 'close-call';
+export interface Highlight {
+  id: HighlightId;
+  atMs: number;
+}
+export interface MemoryChip extends Point {
+  title: string;
+  memory: string;
+}
 export interface Level {
   id: number;
   name: string;
@@ -38,6 +48,7 @@ export interface Level {
   walls: Point[];
   gates?: Gate[];
   beaconEnabled?: boolean;
+  chip?: MemoryChip;
   apple: Point;
   facing: Direction;
   snakes: Spawn[];
@@ -58,6 +69,8 @@ export interface Snake extends Point {
   remaining: number;
   body: Point[];
   attackPath: Point[];
+  attackBeacon: number | null;
+  closeEscape: boolean;
 }
 export type GameEvent =
   | { type: 'charge' | 'dash'; snake: number; x: number; y: number }
@@ -68,7 +81,8 @@ export type GameEvent =
       y: number;
       obstacle: 'wall' | 'wreck';
     }
-  | { type: 'dodge' | 'won' | 'lost'; x: number; y: number };
+  | { type: 'dodge' | 'chip' | 'won' | 'lost'; x: number; y: number }
+  | { type: 'highlight'; id: HighlightId; x: number; y: number };
 export interface LossDetails {
   enemy: number;
   kind: 'contact' | 'tracking' | 'dash';
@@ -88,6 +102,9 @@ export interface GameState {
   rechargeMs: number;
   beacon: (Point & { remainingMs: number }) | null;
   beacons: number;
+  chipCollected: boolean;
+  highlights: Highlight[];
+  lureKills: { beacon: number; snake: number }[];
   gates: { id: string; closed: boolean; pending: boolean | null }[];
   wrecks: (Point & { active: boolean })[];
   lossReason: string | null;

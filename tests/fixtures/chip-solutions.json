@@ -1,0 +1,480 @@
+[
+  {
+    "level": 7,
+    "elapsedMs": 2440,
+    "dodges": 1,
+    "beacons": 1,
+    "commands": [
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 11,
+    "elapsedMs": 9840,
+    "dodges": 1,
+    "beacons": 1,
+    "commands": [
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 18,
+    "elapsedMs": 5480,
+    "dodges": 1,
+    "beacons": 2,
+    "commands": [
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left",
+        "beacon": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null,
+        "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ]
+  }
+]

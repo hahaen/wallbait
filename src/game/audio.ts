@@ -23,6 +23,8 @@ export class Sound {
       wall: [100, 45],
       won: [520, 1040],
       lost: [200, 60],
+      chip: [880, 1320],
+      highlight: [660, 990],
     };
     try {
       const ctx = this.context,

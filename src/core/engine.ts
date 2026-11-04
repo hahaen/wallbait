@@ -1,3 +1,4 @@
+import { awardHighlight } from './highlights';
 import {
   BEACON_MS,
   BEACON_CELLS,
@@ -71,6 +72,9 @@ export function createState(level: Level): GameState {
     rechargeMs: 0,
     beacon: null,
     beacons: 0,
+    chipCollected: false,
+    highlights: [],
+    lureKills: [],
     wrecks: [],
     gates: (level.gates ?? []).map((gate) => ({
       id: gate.id,
@@ -97,6 +101,8 @@ export function createState(level: Level): GameState {
       remaining: 0,
       body: [],
       attackPath: [],
+      attackBeacon: null,
+      closeEscape: false,
     })),
   };
 }
@@ -107,6 +113,7 @@ export function setPaused(state: GameState, paused: boolean): void {
 }
 function finish(state: GameState, status: 'won' | 'lost'): void {
   if (state.status !== 'playing') return;
+  if (status === 'won' && state.dodges === 0) awardHighlight(state, 'no-dodge');
   state.status = status;
   state.events.push({ type: status, ...state.apple });
 }
@@ -189,7 +196,25 @@ function moveApple(state: GameState, direction: Direction): boolean {
       head,
       'contact',
     );
-  else enterSwitches(state, previous, next);
+  else {
+    for (const snake of state.snakes) {
+      if (!snake.alive) continue;
+      const wasInside = snake.attackPath.some((p) => same(p, previous));
+      const inside = snake.attackPath.some((p) => same(p, next));
+      if (inside) snake.closeEscape = false;
+      else if (snake.phase === 'charging' && snake.timer <= 160 && wasInside)
+        snake.closeEscape = true;
+    }
+    if (
+      state.level.chip &&
+      !state.chipCollected &&
+      same(next, state.level.chip)
+    ) {
+      state.chipCollected = true;
+      state.events.push({ type: 'chip', ...next });
+    }
+    enterSwitches(state, previous, next);
+  }
   return true;
 }
 /** 追踪目标可以变化；正式锁向后只使用 snake.locked，不再取本目标。 */
@@ -364,6 +389,8 @@ export function step(state: GameState, command: Command): void {
       snake.aimDirection = aim;
       if (aim && snake.aim >= snake.rules.aimMs) {
         snake.phase = 'charging';
+        snake.attackBeacon = state.beacon ? state.beacons : null;
+        snake.closeEscape = false;
         snake.locked = aim;
         snake.facing = aim;
         snake.timer = snake.rules.chargeMs;
@@ -420,6 +447,20 @@ export function step(state: GameState, command: Command): void {
         const next = ahead(snake, snake.locked);
         if (blocked(state, next)) {
           snake.alive = false;
+          if (state.wrecks.some((w) => w.active && same(w, next)))
+            awardHighlight(state, 'wreck-chain');
+          if (snake.attackBeacon !== null) {
+            state.lureKills.push({
+              beacon: snake.attackBeacon,
+              snake: snake.id,
+            });
+            if (
+              state.lureKills.filter((k) => k.beacon === snake.attackBeacon)
+                .length >= 2
+            )
+              awardHighlight(state, 'double-decoy');
+          }
+          if (snake.closeEscape) awardHighlight(state, 'close-call');
           state.events.push({
             type: 'wall',
             snake: snake.id,
@@ -440,6 +481,8 @@ export function step(state: GameState, command: Command): void {
           break;
         }
         if (snake.remaining <= 0) {
+          if (snake.closeEscape) awardHighlight(state, 'close-call');
+          snake.closeEscape = false;
           snake.phase = 'recovering';
           snake.timer = snake.rules.recoverMs;
         }

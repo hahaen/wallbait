@@ -306,6 +306,21 @@ export class Arena {
         }
       }
     }
+    const chip = this.state.level.chip;
+    if (chip && !this.state.chipCollected) {
+      const c = center(chip);
+      g.lineStyle(2, 0xffd486);
+      g.strokeRoundedRect(c.x - 11, c.y - 11, 22, 22, 3);
+      g.fillStyle(0xffd486);
+      g.fillRect(c.x - 6, c.y - 6, 12, 12);
+      g.lineStyle(2, INK);
+      g.lineBetween(c.x - 3, c.y, c.x + 3, c.y);
+      for (const offset of [-6, 0, 6]) {
+        g.lineStyle(1, 0xffd486);
+        g.lineBetween(c.x + offset, c.y - 14, c.x + offset, c.y - 11);
+        g.lineBetween(c.x + offset, c.y + 11, c.x + offset, c.y + 14);
+      }
+    }
     for (const wreck of this.state.wrecks) {
       const c = center(wreck);
       if (wreck.active) {

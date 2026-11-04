@@ -28,6 +28,8 @@ interface Metrics {
   elapsedMs: number;
   dodges: number;
   beacons: number;
+  chipCollected: boolean;
+  highlights: string[];
   movedCells: number;
   inputTurns: number;
   overlapMs: number;
@@ -53,6 +55,8 @@ function measure(replay: Replay): Metrics {
     elapsedMs: 0,
     dodges: 0,
     beacons: 0,
+    chipCollected: false,
+    highlights: [],
     movedCells: 0,
     inputTurns: 0,
     overlapMs: 0,
@@ -135,6 +139,8 @@ function measure(replay: Replay): Metrics {
   result.elapsedMs = state.elapsedMs;
   result.dodges = state.dodges;
   result.beacons = state.beacons;
+  result.chipCollected = state.chipCollected;
+  result.highlights = state.highlights.map((h) => h.id);
   return result;
 }
 
@@ -190,6 +196,12 @@ function document(metrics: Metrics[]): string {
         `敌人：${level.snakes.map((s, i) => `${i + 1}号${kindText[s.kind]}`).join('、')}。机关：${level.gates?.length ? level.gates.map((g) => `${g.id}门（初始${g.initialClosed ? '关闭' : '打开'}）`).join('、') : '无闸门'}。${level.beaconEnabled ? '信标已启用。' : '信标未启用。'}`,
         '',
         `**设计意图：** ${level.intent}`,
+        ...(level.chip
+          ? [
+              '',
+              `**可选芯片：** (${level.chip.x},${level.chip.y})，拾取并通关后归档；主线回放${m.chipCollected ? '已收集' : '未收集'}。完整支线命令见 [芯片回放](../tests/fixtures/chip-solutions.json)。`,
+            ]
+          : []),
         '',
         `**主要决策：** ${level.decision}`,
         '',

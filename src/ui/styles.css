@@ -690,3 +690,79 @@ button.skill.cooling {
     animation: none !important;
   }
 }
+
+.field-notes {
+  grid-column: 1 / -1;
+  min-height: 17px;
+  color: #ffd486;
+  line-height: 17px;
+  text-align: center;
+  font-size: 12px;
+}
+.chip-label,
+.panel p.chip-note {
+  color: #ffd486;
+}
+.panel p.chip-note {
+  font-size: 12px;
+}
+.result-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+.result-highlights span {
+  padding: 5px 8px;
+  border: 1px solid #6b8270;
+  border-radius: 6px;
+  color: #b5f4d7;
+  font-size: 12px;
+}
+.collection-notes {
+  border-top: 1px solid var(--line);
+  margin-top: 20px;
+  padding-top: 12px;
+}
+.collection-notes h2 {
+  font-size: 19px;
+}
+.collection-notes h2 small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.highlight-archive {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.highlight-archive p,
+.memory-card {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.highlight-archive small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+.highlight-archive .earned b {
+  color: var(--mint);
+}
+.memory-card {
+  margin-top: 10px;
+}
+.memory-card b {
+  color: #ffd486;
+}
+.memory-card p {
+  margin: 4px 0 0;
+  color: var(--muted);
+}

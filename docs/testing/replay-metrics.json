@@ -6,6 +6,8 @@
     "elapsedMs": 1020,
     "dodges": 0,
     "beacons": 0,
+    "chipCollected": false,
+    "highlights": ["no-dodge"],
     "movedCells": 1,
     "inputTurns": 0,
     "overlapMs": 0,
@@ -46,6 +48,8 @@
     "elapsedMs": 1660,
     "dodges": 0,
     "beacons": 0,
+    "chipCollected": false,
+    "highlights": ["no-dodge"],
     "movedCells": 5,
     "inputTurns": 0,
     "overlapMs": 0,
@@ -86,6 +90,8 @@
     "elapsedMs": 1220,
     "dodges": 1,
     "beacons": 0,
+    "chipCollected": false,
+    "highlights": [],
     "movedCells": 5,
     "inputTurns": 1,
     "overlapMs": 0,
@@ -126,6 +132,8 @@
     "elapsedMs": 1960,
     "dodges": 2,
     "beacons": 0,
+    "chipCollected": false,
+    "highlights": [],
     "movedCells": 10,
     "inputTurns": 4,
     "overlapMs": 0,
@@ -172,6 +180,8 @@
     "elapsedMs": 4680,
     "dodges": 0,
     "beacons": 2,
+    "chipCollected": false,
+    "highlights": ["no-dodge"],
     "movedCells": 21,
     "inputTurns": 8,
     "overlapMs": 0,
@@ -232,6 +242,8 @@
     "elapsedMs": 2180,
     "dodges": 2,
     "beacons": 0,
+    "chipCollected": false,
+    "highlights": [],
     "movedCells": 13,
     "inputTurns": 5,
     "overlapMs": 420,
@@ -299,6 +311,8 @@
     "elapsedMs": 3520,
     "dodges": 1,
     "beacons": 1,
+    "chipCollected": false,
+    "highlights": [],
     "movedCells": 16,
     "inputTurns": 8,
     "overlapMs": 0,
@@ -347,6 +361,8 @@
     "elapsedMs": 3120,
     "dodges": 1,
     "beacons": 1,
+    "chipCollected": false,
+    "highlights": ["wreck-chain"],
     "movedCells": 7,
     "inputTurns": 4,
     "overlapMs": 0,
@@ -416,6 +432,8 @@
     "elapsedMs": 4440,
     "dodges": 1,
     "beacons": 2,
+    "chipCollected": false,
+    "highlights": [],
     "movedCells": 23,
     "inputTurns": 12,
     "overlapMs": 520,
@@ -497,6 +515,8 @@
     "elapsedMs": 4440,
     "dodges": 2,
     "beacons": 1,
+    "chipCollected": false,
+    "highlights": [],
     "movedCells": 24,
     "inputTurns": 15,
     "overlapMs": 0,
@@ -572,33 +592,30 @@
     "elapsedMs": 4440,
     "dodges": 1,
     "beacons": 2,
-    "movedCells": 16,
-    "inputTurns": 8,
-    "overlapMs": 320,
+    "chipCollected": true,
+    "highlights": [],
+    "movedCells": 19,
+    "inputTurns": 11,
+    "overlapMs": 0,
     "charges": [
       {
         "atMs": 1340,
-        "enemy": 2,
-        "direction": "left"
-      },
-      {
-        "atMs": 2820,
         "enemy": 1,
         "direction": "up"
       },
       {
         "atMs": 3380,
         "enemy": 2,
-        "direction": "up"
+        "direction": "down"
       }
     ],
     "eliminations": [
       {
-        "atMs": 3700,
+        "atMs": 2260,
         "enemy": 1,
         "wall": {
           "x": 6,
-          "y": 0
+          "y": 5
         },
         "obstacle": "wall"
       },
@@ -607,24 +624,24 @@
         "enemy": 2,
         "wall": {
           "x": 5,
-          "y": 0
+          "y": 7
         },
         "obstacle": "wall"
       }
     ],
     "wreckActivations": [
       {
-        "atMs": 4440,
+        "atMs": 2260,
         "position": {
           "x": 6,
-          "y": 1
+          "y": 6
         }
       },
       {
         "atMs": 4440,
         "position": {
           "x": 5,
-          "y": 1
+          "y": 6
         }
       }
     ],
@@ -634,14 +651,14 @@
         "atMs": 500,
         "position": {
           "x": 6,
-          "y": 4
+          "y": 8
         }
       },
       {
         "atMs": 3140,
         "position": {
           "x": 5,
-          "y": 3
+          "y": 4
         }
       }
     ]
@@ -653,6 +670,8 @@
     "elapsedMs": 4440,
     "dodges": 2,
     "beacons": 1,
+    "chipCollected": false,
+    "highlights": [],
     "movedCells": 26,
     "inputTurns": 17,
     "overlapMs": 0,
@@ -733,6 +752,8 @@
     "elapsedMs": 4820,
     "dodges": 0,
     "beacons": 2,
+    "chipCollected": false,
+    "highlights": ["double-decoy", "no-dodge"],
     "movedCells": 20,
     "inputTurns": 9,
     "overlapMs": 1420,
@@ -831,6 +852,8 @@
     "elapsedMs": 4440,
     "dodges": 2,
     "beacons": 1,
+    "chipCollected": false,
+    "highlights": [],
     "movedCells": 26,
     "inputTurns": 17,
     "overlapMs": 0,
@@ -900,6 +923,8 @@
     "elapsedMs": 7560,
     "dodges": 1,
     "beacons": 3,
+    "chipCollected": false,
+    "highlights": ["wreck-chain"],
     "movedCells": 42,
     "inputTurns": 21,
     "overlapMs": 2480,
@@ -1034,6 +1059,8 @@
     "elapsedMs": 4800,
     "dodges": 1,
     "beacons": 2,
+    "chipCollected": false,
+    "highlights": [],
     "movedCells": 27,
     "inputTurns": 12,
     "overlapMs": 0,
@@ -1147,6 +1174,8 @@
     "elapsedMs": 4400,
     "dodges": 2,
     "beacons": 1,
+    "chipCollected": false,
+    "highlights": ["double-decoy"],
     "movedCells": 22,
     "inputTurns": 13,
     "overlapMs": 1020,
@@ -1234,73 +1263,65 @@
     "level": 18,
     "name": "回收试验",
     "status": "won",
-    "elapsedMs": 8080,
+    "elapsedMs": 5500,
     "dodges": 1,
-    "beacons": 3,
-    "movedCells": 41,
-    "inputTurns": 22,
-    "overlapMs": 1340,
+    "beacons": 2,
+    "chipCollected": false,
+    "highlights": [],
+    "movedCells": 31,
+    "inputTurns": 14,
+    "overlapMs": 400,
     "charges": [
       {
-        "atMs": 1560,
+        "atMs": 1040,
         "enemy": 3,
         "direction": "down"
       },
       {
-        "atMs": 1940,
+        "atMs": 2240,
         "enemy": 1,
+        "direction": "right"
+      },
+      {
+        "atMs": 3000,
+        "enemy": 3,
+        "direction": "right"
+      },
+      {
+        "atMs": 3500,
+        "enemy": 2,
         "direction": "down"
       },
       {
-        "atMs": 2460,
-        "enemy": 2,
+        "atMs": 4620,
+        "enemy": 1,
         "direction": "left"
-      },
-      {
-        "atMs": 3420,
-        "enemy": 3,
-        "direction": "down"
-      },
-      {
-        "atMs": 4780,
-        "enemy": 2,
-        "direction": "right"
-      },
-      {
-        "atMs": 5460,
-        "enemy": 1,
-        "direction": "right"
-      },
-      {
-        "atMs": 7100,
-        "enemy": 2,
-        "direction": "right"
       }
     ],
     "eliminations": [
       {
-        "atMs": 4180,
+        "atMs": 3740,
         "enemy": 3,
         "wall": {
-          "x": 8,
-          "y": 9
-        },
-        "obstacle": "wall"
-      },
-      {
-        "atMs": 6380,
-        "enemy": 1,
-        "wall": {
           "x": 12,
-          "y": 7
+          "y": 6
         },
         "obstacle": "wall"
       },
       {
-        "atMs": 8080,
+        "atMs": 4480,
         "enemy": 2,
         "wall": {
-          "x": 12,
+          "x": 6,
+          "y": 6
+        },
+        "obstacle": "wall"
+      },
+      {
+        "atMs": 5500,
+        "enemy": 1,
+        "wall": {
+          "x": 6,
           "y": 6
         },
         "obstacle": "wall"
@@ -1308,23 +1329,23 @@
     ],
     "wreckActivations": [
       {
-        "atMs": 4180,
+        "atMs": 4480,
         "position": {
-          "x": 8,
-          "y": 8
+          "x": 11,
+          "y": 6
         }
       },
       {
-        "atMs": 6380,
+        "atMs": 4480,
         "position": {
-          "x": 11,
-          "y": 7
+          "x": 6,
+          "y": 5
         }
       },
       {
-        "atMs": 8080,
+        "atMs": 5500,
         "position": {
-          "x": 11,
+          "x": 7,
           "y": 6
         }
       }
@@ -1332,24 +1353,17 @@
     "gateChanges": [],
     "beaconPlacements": [
       {
-        "atMs": 740,
+        "atMs": 380,
         "position": {
-          "x": 8,
-          "y": 8
-        }
-      },
-      {
-        "atMs": 3140,
-        "position": {
-          "x": 8,
+          "x": 10,
           "y": 7
         }
       },
       {
-        "atMs": 6140,
+        "atMs": 3260,
         "position": {
-          "x": 11,
-          "y": 6
+          "x": 6,
+          "y": 5
         }
       }
     ]
@@ -1361,6 +1375,8 @@
     "elapsedMs": 5420,
     "dodges": 0,
     "beacons": 3,
+    "chipCollected": false,
+    "highlights": ["wreck-chain", "no-dodge"],
     "movedCells": 28,
     "inputTurns": 9,
     "overlapMs": 1220,
@@ -1475,6 +1491,8 @@
     "elapsedMs": 5740,
     "dodges": 1,
     "beacons": 2,
+    "chipCollected": false,
+    "highlights": [],
     "movedCells": 37,
     "inputTurns": 23,
     "overlapMs": 0,

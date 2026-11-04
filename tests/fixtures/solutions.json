@@ -827,84 +827,84 @@
         "direction": "up"
       },
       {
-        "direction": "up"
+        "direction": "left"
       },
       {
         "direction": "up"
       },
       {
-        "direction": null,
+        "direction": "left",
         "beacon": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
       },
       {
         "direction": "right"
       },
       {
-        "direction": "up"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": "up"
-      },
-      {
         "direction": null
       },
       {
         "direction": null
       },
       {
-        "direction": null
+        "direction": "right"
       },
       {
         "direction": null
       },
       {
-        "direction": null
+        "direction": "down"
       },
       {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "left"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "down",
+        "direction": "up",
         "beacon": true
       },
       {
-        "direction": "up"
+        "direction": "down"
       },
       {
         "direction": "left"
@@ -1768,59 +1768,38 @@
   },
   {
     "level": 18,
-    "elapsedMs": 8080,
+    "elapsedMs": 5500,
     "dodges": 1,
-    "beacons": 3,
+    "beacons": 2,
     "commands": [
       {
-        "direction": "left",
+        "direction": "up",
         "dodge": true
       },
       {
-        "direction": "left"
-      },
-      {
         "direction": "up"
       },
       {
-        "direction": "up"
+        "direction": "right"
       },
       {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "right",
+        "direction": "up",
         "beacon": true
       },
       {
         "direction": "up"
       },
       {
-        "direction": "up"
+        "direction": "left"
       },
       {
-        "direction": "up"
+        "direction": "left"
       },
       {
-        "direction": null
+        "direction": "left"
       },
       {
-        "direction": "down"
-      },
-      {
-        "direction": "down"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "down"
+        "direction": "left"
       },
       {
         "direction": null
@@ -1832,13 +1811,19 @@
         "direction": "left"
       },
       {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
         "direction": "up"
       },
       {
-        "direction": "left"
-      },
-      {
-        "direction": "left"
+        "direction": "up"
       },
       {
         "direction": "right"
@@ -1853,41 +1838,29 @@
         "direction": null
       },
       {
-        "direction": null,
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left",
         "beacon": true
       },
       {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "right"
-      },
-      {
-        "direction": "right"
+        "direction": "down"
       },
       {
         "direction": "down"
@@ -1896,12 +1869,6 @@
         "direction": "right"
       },
       {
-        "direction": "right"
-      },
-      {
-        "direction": "down"
-      },
-      {
         "direction": null
       },
       {
@@ -1909,49 +1876,12 @@
       },
       {
         "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "up"
-      },
-      {
-        "direction": "down",
-        "beacon": true
       },
       {
         "direction": "left"
       },
       {
-        "direction": "left"
-      },
-      {
-        "direction": "down"
-      },
-      {
-        "direction": null
-      },
-      {
-        "direction": "down"
-      },
-      {
-        "direction": "down"
-      },
-      {
-        "direction": "right"
+        "direction": "up"
       },
       {
         "direction": null
@@ -1961,6 +1891,9 @@
       },
       {
         "direction": null
+      },
+      {
+        "direction": "up"
       },
       {
         "direction": null

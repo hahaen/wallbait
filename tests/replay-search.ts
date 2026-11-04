@@ -19,12 +19,15 @@ interface Node {
   state: GameState;
   commands: Command[];
   score: number;
+  wreckHit: boolean;
 }
 function clone(s: GameState): GameState {
   return {
     ...s,
     apple: { ...s.apple },
     events: [],
+    highlights: s.highlights.map((h) => ({ ...h })),
+    lureKills: s.lureKills.map((k) => ({ ...k })),
     beacon: s.beacon ? { ...s.beacon } : null,
     gates: s.gates.map((g) => ({ ...g })),
     wrecks: s.wrecks.map((w) => ({ ...w })),
@@ -45,10 +48,21 @@ function distances(s: GameState): Map<string, number> {
     }
   return map;
 }
-function score(s: GameState): number {
+function score(s: GameState, seekWreck = false, wreckAt?: Point): number {
   let value = 0;
   const path = distances(s);
   let reachable = false;
+  if (seekWreck && !s.highlights.some((h) => h.id === 'wreck-chain')) {
+    let setup = 50;
+    for (const wreck of s.wrecks) {
+      if (wreckAt && (wreck.x !== wreckAt.x || wreck.y !== wreckAt.y)) continue;
+      for (const direction of DIRECTIONS) {
+        const spot = ahead(wreck, direction);
+        setup = Math.min(setup, path.get(key(spot)) ?? 50);
+      }
+    }
+    if (s.wrecks.length) value += 500 - setup * 35;
+  }
   for (const snake of s.snakes) {
     if (!snake.alive) {
       value += 2000;
@@ -63,6 +77,7 @@ function score(s: GameState): number {
     if (snake.phase === 'charging' || snake.phase === 'dashing') {
       let p: Point = snake,
         willHitWall = false,
+        willHitWreck = false,
         danger = false;
       const steps =
         snake.phase === 'charging' ? snake.rules.dashCells : snake.remaining;
@@ -70,11 +85,19 @@ function score(s: GameState): number {
         p = ahead(p, snake.locked);
         if (blocked(s, p)) {
           willHitWall = true;
+          willHitWreck = s.wrecks.some(
+            (w) =>
+              w.active &&
+              w.x === p.x &&
+              w.y === p.y &&
+              (!wreckAt || (p.x === wreckAt.x && p.y === wreckAt.y)),
+          );
           break;
         }
         if (p.x === s.apple.x && p.y === s.apple.y) danger = true;
       }
       value += willHitWall ? 800 : 15;
+      if (seekWreck && willHitWreck) value += 1500;
       value -= danger ? 250 : 0;
       if (willHitWall) value += (snake.rules.chargeMs - snake.timer) / 20;
     } else {
@@ -123,11 +146,25 @@ function score(s: GameState): number {
   return value;
 }
 function fingerprint(s: GameState): string {
-  return `${s.apple.x},${s.apple.y},${s.facing},${s.energy},${Math.ceil(s.rechargeMs / 240)},${s.cooldownMs},${s.moveTimer};${s.beacon ? `${s.beacon.x},${s.beacon.y},${Math.ceil(s.beacon.remainingMs / 120)}` : '-'};${s.gates.map((g) => `${g.closed},${g.pending}`).join(';')};${s.wrecks.map((w) => `${w.x},${w.y},${w.active}`).join(';')};${s.snakes.map((v) => (v.alive ? `${v.x},${v.y},${v.phase},${v.locked},${Math.ceil(v.timer / 120)},${v.aimDirection},${v.aim},${v.remaining}` : 'x')).join(';')}`;
+  return `${s.chipCollected};${s.highlights.map((h) => h.id).join(',')};${s.apple.x},${s.apple.y},${s.facing},${s.energy},${Math.ceil(s.rechargeMs / 240)},${s.cooldownMs},${s.moveTimer};${s.beacon ? `${s.beacon.x},${s.beacon.y},${Math.ceil(s.beacon.remainingMs / 120)}` : '-'};${s.gates.map((g) => `${g.closed},${g.pending}`).join(';')};${s.wrecks.map((w) => `${w.x},${w.y},${w.active}`).join(';')};${s.snakes.map((v) => (v.alive ? `${v.x},${v.y},${v.phase},${v.locked},${Math.ceil(v.timer / 120)},${v.aimDirection},${v.aim},${v.remaining}` : 'x')).join(';')}`;
 }
 /** 测试工具：120ms决策，只通过正常命令推进，生成文件不赋值游戏坐标/状态。 */
-export function findReplay(level: Level): Replay {
-  let beam: Node[] = [{ state: createState(level), commands: [], score: 0 }];
+export function findReplay(
+  level: Level,
+  goal: { chip?: boolean; wreck?: boolean; wreckAt?: Point } = {},
+  prefix: Command[] = [],
+): Replay {
+  const initial = createState(level);
+  for (const c of prefix)
+    for (let i = 0; i < 6; i++)
+      step(initial, {
+        direction: c.direction,
+        dodge: i === 0 && c.dodge,
+        beacon: i === 0 && c.beacon,
+      });
+  let beam: Node[] = [
+    { state: initial, commands: [...prefix], score: 0, wreckHit: false },
+  ];
   const actions: Command[] = [
     { direction: null },
     ...DIRECTIONS.map((direction) => ({ direction })),
@@ -151,15 +188,61 @@ export function findReplay(level: Level): Replay {
         if (command.beacon && (node.state.beacon || node.state.energy === 0))
           continue;
         const state = clone(node.state);
-        for (let i = 0; i < 6; i++)
+        let wreckHit = node.wreckHit;
+        for (let i = 0; i < 6; i++) {
           step(state, {
             direction: command.direction,
             dodge: i === 0 && command.dodge,
             beacon: i === 0 && command.beacon,
           });
+          if (
+            state.events.some(
+              (e) =>
+                e.type === 'wall' &&
+                e.obstacle === 'wreck' &&
+                (!goal.wreckAt ||
+                  (e.x === goal.wreckAt.x && e.y === goal.wreckAt.y)),
+            )
+          )
+            wreckHit = true;
+        }
+        if (goal.wreckAt) {
+          const snake = state.snakes[0]!;
+          if (
+            !snake.alive &&
+            !state.wrecks.some(
+              (w) => w.x === goal.wreckAt!.x && w.y === goal.wreckAt!.y,
+            )
+          )
+            continue;
+          if (
+            snake.alive &&
+            (snake.phase === 'charging' || snake.phase === 'dashing')
+          ) {
+            let p: Point = snake;
+            let wrongWall = false;
+            const count =
+              snake.phase === 'charging'
+                ? snake.rules.dashCells
+                : snake.remaining;
+            for (let i = 0; i < count; i++) {
+              const next = ahead(p, snake.locked);
+              if (blocked(state, next)) {
+                wrongWall = p.x !== goal.wreckAt.x || p.y !== goal.wreckAt.y;
+                break;
+              }
+              p = next;
+            }
+            if (wrongWall) continue;
+          }
+        }
         if (state.status === 'lost') continue;
         const commands = [...node.commands, command];
-        if (state.status === 'won')
+        if (
+          state.status === 'won' &&
+          (!goal.chip || state.chipCollected) &&
+          (!goal.wreck || wreckHit)
+        )
           return {
             level: level.id,
             elapsedMs: state.elapsedMs,
@@ -167,11 +250,24 @@ export function findReplay(level: Level): Replay {
             beacons: state.beacons,
             commands,
           };
-        const k = fingerprint(state),
-          value = score(state),
+        if (state.status === 'won') continue;
+        const chipDistance =
+          goal.chip && level.chip && !state.chipCollected
+            ? (distances(state).get(key(level.chip)) ?? 50)
+            : 0;
+        const k = `${wreckHit}:${fingerprint(state)}`,
+          value =
+            score(state, goal.wreck, goal.wreckAt) +
+            (goal.chip && state.chipCollected ? 1000 : -chipDistance * 20) +
+            (goal.wreck && wreckHit ? 1000 : 0) -
+            (goal.wreckAt && !state.wrecks.length
+              ? (Math.abs(state.apple.x - goal.wreckAt.x) +
+                  Math.abs(state.apple.y - goal.wreckAt.y)) *
+                20
+              : 0),
           old = candidates.get(k);
         if (!old || value > old.score)
-          candidates.set(k, { state, commands, score: value });
+          candidates.set(k, { state, commands, score: value, wreckHit });
       }
     beam = [...candidates.values()]
       .sort((a, b) => b.score - a.score)

@@ -1,6 +1,7 @@
 import { LEVELS } from '../core/levels';
 import { stars } from '../core/engine';
-import type { GameState } from '../core/types';
+import { HIGHLIGHTS } from '../core/highlights';
+import type { GameState, HighlightId } from '../core/types';
 
 export const SAVE_KEY = 'wallbait.save.v2';
 export const LEGACY_SAVE_KEY = 'wallbait.save.v1';
@@ -16,6 +17,7 @@ export interface Save {
   campaign: typeof CAMPAIGN;
   unlocked: number;
   best: Record<string, Best>;
+  collections: Record<string, { chip: boolean; highlights: HighlightId[] }>;
   muted: boolean;
   reducedMotion: boolean;
   legacyCompleted: number;
@@ -29,6 +31,7 @@ export const defaults = (): Save => ({
   campaign: CAMPAIGN,
   unlocked: 1,
   best: {},
+  collections: {},
   muted: false,
   reducedMotion: false,
   legacyCompleted: 0,
@@ -94,6 +97,20 @@ export function readSave(storage: StoragePort): Save {
           };
         }
       }
+    if (record(parsed.collections))
+      for (const level of LEVELS) {
+        const entry = parsed.collections[String(level.id)];
+        if (!save.best[String(level.id)] || !record(entry)) continue;
+        const ids = entry.highlights;
+        const highlights = Array.isArray(ids)
+          ? Object.keys(HIGHLIGHTS).filter((id): id is HighlightId =>
+              ids.includes(id),
+            )
+          : [];
+        const chip = Boolean(level.chip && entry.chip === true);
+        if (chip || highlights.length)
+          save.collections[String(level.id)] = { chip, highlights };
+      }
     // 解锁由连续通关记录恢复，损坏的 unlocked 不会锁死正常存档。
     while (save.unlocked < LEVELS.length && save.best[String(save.unlocked)])
       save.unlocked++;
@@ -118,6 +135,17 @@ export function recordWin(save: Save, state: GameState): void {
     beacons: Math.min(previous?.beacons ?? Infinity, state.beacons),
     stars: Math.max(previous?.stars ?? 0, stars(state)),
   };
+  const collected = save.collections[key];
+  const highlights = [
+    ...new Set([
+      ...(collected?.highlights ?? []),
+      ...state.highlights.map((h) => h.id),
+    ]),
+  ];
+  const chip = Boolean(
+    state.level.chip && (collected?.chip || state.chipCollected),
+  );
+  if (chip || highlights.length) save.collections[key] = { chip, highlights };
   save.unlocked = Math.max(
     save.unlocked,
     Math.min(LEVELS.length, state.level.id + 1),

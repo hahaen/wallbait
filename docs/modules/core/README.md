@@ -15,3 +15,5 @@
 参数与完整规则见[玩法设计](../../game-design.md)，顺序与边界见[架构](../../architecture.md)。验证入口：[基础规则](../../../tests/core.test.ts)、[进阶规则](../../../tests/advanced-core.test.ts)、[关卡命令回放](../../../tests/solutions.test.ts)。执行结果统一记录在[验收文档](../../testing/README.md)。
 
 投掷落点由 `beaconLanding(state)` 计算，规则放置与画面预览共用。残骸在最后头部格生成；与门一样等待所有正式攻击结束，并等待占格角色离开后生效。冲刺撞残骸继续产生撞毁事件，以 `obstacle` 区分墙/门和残骸。新增边界与第八关正常命令接力见[机制测试](../../../tests/wrecks-and-throw.test.ts)。
+
+新增 `chipCollected`、`highlights`、`lureKills`；正式锁向时记录信标序号，位移离开预警通道时记录最后窗口资格，冲刺结束后判定反馈。`highlights.ts` 保持纯规则。芯片只由玩家成功位移拾取，暂停与重开边界同其他规则。

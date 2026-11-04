@@ -1,4 +1,5 @@
 import { createState, setPaused, stars } from '../core/engine';
+import { HIGHLIGHTS } from '../core/highlights';
 import { LEVELS } from '../core/levels';
 import { BEACON_MS, RECHARGE_MS } from '../core/config';
 import type { GameState } from '../core/types';
@@ -111,11 +112,28 @@ export class App {
     </section>`,
     );
   }
+  private collectionNotes(): string {
+    const earned = new Set(
+      Object.values(this.save.collections).flatMap((c) => c.highlights),
+    );
+    const chips = LEVELS.filter((l) => l.chip);
+    const collected = chips.filter(
+      (l) => this.save.collections[String(l.id)]?.chip,
+    ).length;
+    return `<section class="collection-notes" aria-label="试验档案"><h2>试验档案 <small>芯片 ${collected} / ${chips.length} · 精彩操作 ${earned.size} / ${Object.keys(HIGHLIGHTS).length}</small></h2>
+      <div class="highlight-archive">${Object.entries(HIGHLIGHTS)
+        .map(
+          ([id, h]) =>
+            `<p class="${earned.has(id as keyof typeof HIGHLIGHTS) ? 'earned' : ''}"><b>${earned.has(id as keyof typeof HIGHLIGHTS) ? '✓' : '○'} ${h.title}</b><small>${h.description}</small></p>`,
+        )
+        .join('')}</div>
+      ${chips.map((l) => `<article class="memory-card"><b>第 ${l.id} 关 · ${this.save.collections[String(l.id)]?.chip ? l.chip!.title : '待回收芯片'}</b><p>${this.save.collections[String(l.id)]?.chip ? l.chip!.memory : '可选支线，拾取并通关后解锁这段记忆。'}</p></article>`).join('')}</section>`;
+  }
   private levels(): void {
     this.setScreen(
       'levels',
       `<section class="level-screen screen"><header class="page-header">${button('home', '‹ 首页', 'quiet')}<h1 tabindex="-1">选一堵墙</h1><span>${Object.values(this.save.best).reduce((n, b) => n + b.stars, 0)} ★</span></header>
-      <p class="page-intro">四区试炼，逐关解锁。已通关的关卡可自由重玩。</p>
+      <p class="page-intro">四区试炼，逐关解锁。已通关可重玩，回收芯片、收集精彩操作。</p>
       ${[0, 1, 2, 3]
         .map(
           (chapter) =>
@@ -126,12 +144,12 @@ export class App {
               .map((l) => {
                 const best = this.save.best[String(l.id)],
                   locked = l.id > this.save.unlocked;
-                return `<button class="level ${locked ? 'locked' : ''} ${l.id === this.save.unlocked ? 'current' : ''}" data-action="level:${l.id}" ${locked ? 'disabled' : ''} aria-label="第 ${l.id} 关 ${l.name}${locked ? '，未解锁' : `，${best?.stars ?? 0} 星`}"><b>${String(l.id).padStart(2, '0')}</b><span>${l.name}</span><small class="stars">${locked ? '未解锁' : starText(best?.stars ?? 0)}</small></button>`;
+                return `<button class="level ${locked ? 'locked' : ''} ${l.id === this.save.unlocked ? 'current' : ''}" data-action="level:${l.id}" ${locked ? 'disabled' : ''} aria-label="第 ${l.id} 关 ${l.name}${locked ? '，未解锁' : `，${best?.stars ?? 0} 星`}"><b>${String(l.id).padStart(2, '0')}</b><span>${l.name}</span><small class="stars">${locked ? '未解锁' : starText(best?.stars ?? 0)}</small>${l.chip ? `<small class="chip-label">${this.save.collections[String(l.id)]?.chip ? '芯片 ✓' : '芯片 ◇'}</small>` : ''}</button>`;
               })
               .join('')}</div></section>`,
         )
         .join('')}
-      <p class="footnote">过关一星，时间达标一星，闪避次数达标一星。</p></section>`,
+      <p class="footnote">过关一星，时间达标一星，闪避次数达标一星。芯片和精彩操作不影响星级，通关后留档。</p>${this.collectionNotes()}</section>`,
     );
   }
   private start(id: number, brief = true): void {
@@ -140,8 +158,8 @@ export class App {
     this.setScreen(
       'play',
       `<section class="play-screen screen"><header class="play-header"><div><small>第 ${String(id).padStart(2, '0')} / 20 关</small><h1 tabindex="-1">${level.name}</h1></div>${button('pause', 'Ⅱ', 'pause-button')} </header>
-      <div class="hud"><span id="enemy-count"></span><span id="clock">0.0s</span><span id="cooldown" class="ready">电量 ▰▰</span><span id="mechanisms" class="mechanisms"></span></div>
-      <div class="arena-slot"><div id="arena" role="img" aria-label="对局地图：青色机器人阿零、机械追逐者、墙、配对闸门、残骸叉框、信标落点准星与橙色危险通道"><span class="loading">正在摆好墙…</span></div></div>
+      <div class="hud"><span id="enemy-count"></span><span id="clock">0.0s</span><span id="cooldown" class="ready">电量 ▰▰</span><span id="mechanisms" class="mechanisms"></span><span id="field-notes" class="field-notes" role="status" aria-live="polite"></span></div>
+      <div class="arena-slot"><div id="arena" role="img" aria-label="对局地图：青色机器人阿零、机械追逐者、墙、配对闸门、残骸叉框、金色方形芯片、信标落点准星与橙色危险通道"><span class="loading">正在摆好墙…</span></div></div>
       <div class="play-status" id="play-status" aria-live="polite">${level.focus}</div>
       <aside class="loss-inspection" hidden aria-label="失败现场说明"><b id="loss-title" tabindex="-1"></b><p id="loss-advice"></p><small>红圈 ×：碰撞格 · 金色框：致命敌人的路线</small><div>${button('result', '返回结算')}${button('retry', '再试一次', 'primary')}</div></aside>
       <div class="controls"><div class="dpad" aria-label="四向移动"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span aria-hidden="true">移动</span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="skills"><button class="skill dodge" data-dodge aria-label="闪避"><span aria-hidden="true">↟</span><b>闪避</b><small id="dodge-text">1 格电</small></button><button class="skill beacon" data-beacon aria-label="信标" ${level.beaconEnabled ? '' : 'disabled'}><span aria-hidden="true">⌖</span><b>信标</b><small id="beacon-text">${level.beaconEnabled ? '1 格电' : '未启用'}</small></button></div></div>
@@ -194,7 +212,7 @@ export class App {
       this.controls.clear();
       this.game?.resetClock();
       this.dialog(
-        `<p class="result-kicker">第 ${level.id} 关 · ${level.chapter}</p><h2 id="dialog-title">试验准备</h2><p>${level.focus}</p><p class="score-rule">${level.decision}</p>${button('begin', '进入试验', 'primary')}${button('levels', '返回选关', 'text-button')}`,
+        `<p class="result-kicker">第 ${level.id} 关 · ${level.chapter}</p><h2 id="dialog-title">试验准备</h2><p>${level.focus}</p><p class="score-rule">${level.decision}</p>${level.chip ? '<p class="chip-note">可选芯片：经过金色方芯拾取，通关后保存；不影响星级。</p>' : ''}${button('begin', '进入试验', 'primary')}${button('levels', '返回选关', 'text-button')}`,
       );
     }
   }
@@ -259,6 +277,22 @@ export class App {
       ]
         .filter(Boolean)
         .join('  |  '),
+    );
+    const recent = s.highlights
+      .filter((h) => s.elapsedMs - h.atMs < 3000)
+      .at(-1);
+    text(
+      'field-notes',
+      [
+        s.level.chip
+          ? s.chipCollected
+            ? '芯片已携带 · 通关保存'
+            : '◇ 可选芯片待回收'
+          : '',
+        recent ? `✓ ${HIGHLIGHTS[recent.id].title}` : '',
+      ]
+        .filter(Boolean)
+        .join(' ｜ '),
     );
     const danger = dangerText(s);
     const recovering = s.snakes.filter(
@@ -333,6 +367,8 @@ export class App {
     this.dialog(
       `<div class="result-robot ${won ? '' : 'sad'}">${robotArt}</div><p class="result-kicker">${complete ? '试验场全部通过 · 阿零，出厂合格！' : won ? `第 ${s.level.id} 关完成` : '这次，路线被封住了'}</p><h2 id="dialog-title">${complete ? '墙都记住你了！' : won ? '撞墙了吧！' : '再骗它一次'}</h2>
       ${won ? `<div class="result-stars" aria-label="本关 ${stars(s)} 星">${starText(stars(s))}</div><div class="result-stats"><span><b>${seconds(s.elapsedMs)}s</b>通关用时</span><span><b>${s.dodges} / ${s.beacons}</b>闪避 / 信标</span></div><p class="score-rule">${s.elapsedMs <= s.level.parMs ? '✓' : '○'} ${s.level.parMs / 1000} 秒内通关 · ${s.dodges <= s.level.parDodges ? '✓' : '○'} 闪避 ≤${s.level.parDodges} 次</p>` : `<p class="loss-cause">${lossTitle(s)}</p><p>${s.lossReason ?? '碰到追逐者的头部了。'}</p><p class="score-rule">${lossAdvice(s)}</p>`}
+      ${won ? `<div class="result-highlights" aria-label="本局精彩操作">${s.highlights.map((h) => `<span>✓ ${HIGHLIGHTS[h.id].title}</span>`).join('')}</div>` : ''}
+      ${s.level.chip ? `<p class="chip-note">${won && s.chipCollected ? `芯片已归档 · ${s.level.chip.title}<br>${s.level.chip.memory}` : s.chipCollected ? '芯片未带出 · 重试后可再次拾取，通关才保存。' : '可选芯片未拾取 · 可重玩回收，不影响通关与星级。'}</p>` : ''}
       ${this.storageWarning ? '<p class="save-warning">浏览器未能保存，当前进度仍在，刷新后可能丢失。</p>' : ''}
       ${complete ? `<p>你追你的，墙就在那儿。<br>20 关全部解锁，回来把每颗星带走。</p>${button('levels', '自由重玩', 'primary')}` : won ? button('next', '下一关', 'primary') : button('retry', '再试一次', 'primary')}
       ${won ? button('retry', '重试本关') : button('inspect-loss', '查看失败现场')}${button('levels', '返回选关', 'text-button')}`,
@@ -356,7 +392,7 @@ export class App {
   }
   private help(): void {
     this.dialog(
-      `<h2 id="dialog-title">你是阿零，借墙脱身</h2><div class="help-art">${heroArt}</div><ol class="instructions"><li><b>把墙留在它前方。</b>追逐者只冲几格。先引近墙，再对齐；橙色箭头出现后方向和长度锁定。</li><li><b>两格电，两种用途。</b>闪避走两格，无无敌；信标沿朝向投出最多两格，遇障碍停在前方，贴墙落在脚下；准星显示落点，持续 ${BEACON_MS / 1000} 秒。各耗一格电，每 ${RECHARGE_MS / 1000} 秒恢复一格。</li><li><b>踩踏板，切通路。</b>踏板和闸门用同一字母配对。再次走上踏板切换；攻击期间或门口有人时等待执行，不会夹人。</li><li><b>把残骸变成下一堵墙。</b>敌人撞毁后，最后所在格留下残骸。空心叉框表示待生效、仍可通过；其他攻击结束且该格无人后变实心，阻挡所有角色，也能淘汰冲刺敌人。</li></ol><div class="enemy-guide"><p><b class="normal-color">冲锋者 ›</b>直追目标，近墙对齐后侧移。</p><p><b class="swift-color">截击者 ϟ</b>预判你朝向前两格，变向甩开截击。</p><p><b class="cautious-color">侦察者 ◇</b>会识破撞墙路线；留下信标，骗它冒进。</p></div><p>手机：左手方向，右手闪避 / 信标。<br>电脑：WASD / 方向键、空格、E、Esc / P。</p><p class="score-rule">只碰头部会失败，履带不伤人。通关得一星，时间和闪避达标各加一星；超目标也能过关。</p>${button('close', '知道了', 'primary')}`,
+      `<h2 id="dialog-title">你是阿零，借墙脱身</h2><div class="help-art">${heroArt}</div><ol class="instructions"><li><b>把墙留在它前方。</b>追逐者只冲几格。先引近墙，再对齐；橙色箭头出现后方向和长度锁定。</li><li><b>两格电，两种用途。</b>闪避走两格，无无敌；信标沿朝向投出最多两格，遇障碍停在前方，贴墙落在脚下；准星显示落点，持续 ${BEACON_MS / 1000} 秒。各耗一格电，每 ${RECHARGE_MS / 1000} 秒恢复一格。</li><li><b>踩踏板，切通路。</b>踏板和闸门用同一字母配对。再次走上踏板切换；攻击期间或门口有人时等待执行，不会夹人。</li><li><b>把残骸变成下一堵墙。</b>敌人撞毁后，最后所在格留下残骸。空心叉框表示待生效、仍可通过；其他攻击结束且该格无人后变实心，阻挡所有角色，也能淘汰冲刺敌人。</li><li><b>绕远一点，带回记忆。</b>第 7、11、18 关有金色方芯，经过即可拾取，闪避途中也能收集；只有通关才保存，不影响星级。精彩操作同样在通关后留档，选关页可查看。</li></ol><div class="enemy-guide"><p><b class="normal-color">冲锋者 ›</b>直追目标，近墙对齐后侧移。</p><p><b class="swift-color">截击者 ϟ</b>预判你朝向前两格，变向甩开截击。</p><p><b class="cautious-color">侦察者 ◇</b>会识破撞墙路线；留下信标，骗它冒进。</p></div><p>手机：左手方向，右手闪避 / 信标。<br>电脑：WASD / 方向键、空格、E、Esc / P。</p><p class="score-rule">只碰头部会失败，履带不伤人。通关得一星，时间和闪避达标各加一星；超目标也能过关。</p>${button('close', '知道了', 'primary')}`,
     );
   }
   private settings(): void {

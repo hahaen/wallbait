@@ -123,7 +123,7 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 3980,
+          "elapsedMs": 3120,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
@@ -200,7 +200,7 @@
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 5780,
+          "elapsedMs": 3080,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
@@ -352,11 +352,11 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 2660,
+          "elapsedMs": 1940,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 23,
+          "movedCells": 17,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
         },
@@ -429,13 +429,13 @@
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 2400,
+          "elapsedMs": 1820,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 20,
+          "movedCells": 16,
           "gateChanges": 0,
-          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
+          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
         },
         {
           "level": 19,
@@ -581,11 +581,11 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 3140,
+          "elapsedMs": 2780,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 27,
+          "movedCells": 24,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
         },
@@ -658,11 +658,11 @@
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 2060,
+          "elapsedMs": 1460,
           "dodges": 0,
           "beacons": 0,
           "remaining": 3,
-          "movedCells": 18,
+          "movedCells": 13,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
         },
@@ -810,11 +810,11 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 740,
+          "elapsedMs": 6140,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 7,
+          "movedCells": 30,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
         },
@@ -887,13 +887,13 @@
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 10300,
+          "elapsedMs": 6140,
           "dodges": 0,
           "beacons": 0,
-          "remaining": 2,
-          "movedCells": 46,
+          "remaining": 3,
+          "movedCells": 27,
           "gateChanges": 0,
-          "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
+          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
         },
         {
           "level": 19,
@@ -1039,13 +1039,13 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 600,
-          "dodges": 2,
+          "elapsedMs": 6020,
+          "dodges": 4,
           "beacons": 0,
           "remaining": 2,
-          "movedCells": 7,
+          "movedCells": 31,
           "gateChanges": 0,
-          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
+          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
         },
         {
           "level": 12,
@@ -1116,11 +1116,11 @@
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 10220,
-          "dodges": 5,
+          "elapsedMs": 5900,
+          "dodges": 3,
           "beacons": 0,
-          "remaining": 2,
-          "movedCells": 49,
+          "remaining": 3,
+          "movedCells": 26,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
         },
@@ -1268,7 +1268,7 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 4300,
+          "elapsedMs": 5200,
           "dodges": 0,
           "beacons": 0,
           "remaining": 2,
@@ -1345,10 +1345,10 @@
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 5820,
+          "elapsedMs": 4120,
           "dodges": 0,
           "beacons": 0,
-          "remaining": 3,
+          "remaining": 2,
           "movedCells": 1,
           "gateChanges": 0,
           "reason": "仍在锁定的冲刺通道内。看准箭头，横向离开危险格。"
@@ -1497,13 +1497,13 @@
         {
           "level": 11,
           "status": "lost",
-          "elapsedMs": 740,
+          "elapsedMs": 6360,
           "dodges": 0,
-          "beacons": 1,
+          "beacons": 3,
           "remaining": 2,
-          "movedCells": 7,
+          "movedCells": 31,
           "gateChanges": 0,
-          "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
+          "reason": "被追踪中的敌人追上了。绕墙拉开距离，并保留一格电量脱身。"
         },
         {
           "level": 12,
@@ -1574,11 +1574,11 @@
         {
           "level": 18,
           "status": "lost",
-          "elapsedMs": 8660,
+          "elapsedMs": 6140,
           "dodges": 0,
-          "beacons": 4,
-          "remaining": 3,
-          "movedCells": 41,
+          "beacons": 3,
+          "remaining": 2,
+          "movedCells": 27,
           "gateChanges": 0,
           "reason": "撞上了敌人头部。闪避没有无敌时间，也不能穿过敌人。"
         },
