@@ -9,6 +9,7 @@ export interface GameOptions {
   state: GameState;
   command: () => Command;
   onTick: (events: GameEvent[]) => void;
+  onReady: () => void;
   reducedMotion: () => boolean;
 }
 export function createGame(
@@ -21,6 +22,8 @@ export function createGame(
     private arena?: Arena;
     create(): void {
       this.arena = new Arena(this, options.state);
+      this.arena.draw(0, true);
+      options.onReady();
     }
     update(_time: number, delta: number): void {
       if (disposed || !this.arena) return;

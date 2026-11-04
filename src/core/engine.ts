@@ -329,25 +329,28 @@ export function pulseTargets(state: GameState): Snake[] {
     return !blocked(state, ahead(state.apple, direction));
   });
 }
-/** 攻击期间地形冻结；预览和执行共用校验，不移动机关/收藏上的残骸。 */
-export function magnetMove(
-  state: GameState,
-): { from: Point; to: Point } | null {
+type MagnetMove = { from: Point; to: Point };
+type MagnetPreview =
+  | { move: MagnetMove; reason: null }
+  | { move: null; reason: 'attacking' | 'no-wreck' | 'occupied' | 'reserved' };
+/** 提示、预览和执行共用校验；攻击期间不改变地形。 */
+export function magnetPreview(state: GameState): MagnetPreview {
   if (
     state.snakes.some(
       (s) => s.alive && (s.phase === 'charging' || s.phase === 'dashing'),
     )
   )
-    return null;
+    return { move: null, reason: 'attacking' };
   const from = ahead(state.apple, state.facing),
     to = ahead(from, state.facing);
+  if (!state.wrecks.some((w) => w.active && same(w, from)))
+    return { move: null, reason: 'no-wreck' };
   if (
-    !state.wrecks.some((w) => w.active && same(w, from)) ||
     blocked(state, to) ||
     headAt(state, to) ||
     state.wrecks.some((w) => same(w, to))
   )
-    return null;
+    return { move: null, reason: 'occupied' };
   const reserved = (state.level.gates ?? []).flatMap((g) => [
     ...g.cells,
     ...g.switches,
@@ -357,8 +360,11 @@ export function magnetMove(
     (state.level.chip && !state.chipCollected && same(state.level.chip, to)) ||
     (state.beacon && same(state.beacon, to))
   )
-    return null;
-  return { from, to };
+    return { move: null, reason: 'reserved' };
+  return { move: { from, to }, reason: null };
+}
+export function magnetMove(state: GameState): MagnetMove | null {
+  return magnetPreview(state).move;
 }
 export const inInterference = (state: GameState): boolean =>
   state.interference.some(

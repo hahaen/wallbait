@@ -5,6 +5,7 @@ import {
   setPaused,
   warningPath,
   magnetMove,
+  magnetPreview,
   pulseTargets,
   inInterference,
   tacticComplete,
@@ -101,6 +102,28 @@ it('磁推共用预览落点，只移动面前实心残骸，不能在正式攻�
   step(s, { direction: null, utility: true });
   expect(s.energy).toBe(energy);
   expect(s.pushes).toBe(1);
+});
+it('磁推拒绝原因与实际执行一致，无效尝试不消耗电量', () => {
+  const s = arena('magnet');
+  Object.assign(s.snakes[0]!, { x: 2, y: 2, timer: 10000 });
+  s.facing = 'up';
+  expect(magnetPreview(s).reason).toBe('no-wreck');
+  s.wrecks.push({ x: 6, y: 8, active: true });
+  expect(magnetPreview(s).reason).toBeNull();
+  s.level = { ...s.level, walls: [{ x: 6, y: 7 }] };
+  expect(magnetPreview(s).reason).toBe('occupied');
+  s.level = {
+    ...s.level,
+    walls: [],
+    chip: { x: 6, y: 7, title: '芯片', memory: '记忆' },
+  };
+  expect(magnetPreview(s).reason).toBe('reserved');
+  s.snakes[0]!.phase = 'charging';
+  expect(magnetPreview(s).reason).toBe('attacking');
+  step(s, { direction: null, utility: true });
+  expect(s.energy).toBe(2);
+  expect(s.pushes).toBe(0);
+  expect(s.wrecks[0]).toEqual({ x: 6, y: 8, active: true });
 });
 it('磁推拒绝被角色、待生效残骸、机关、信标或未收芯片占用的落点', () => {
   for (const obstacle of [

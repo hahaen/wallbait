@@ -1,4 +1,44 @@
 import type { GameState, Point, Snake, SnakeKind } from '../core/types';
+import {
+  ahead,
+  blocked,
+  inInterference,
+  magnetPreview,
+  pulseTargets,
+} from '../core/engine';
+
+export function utilityFeedback(state: GameState): {
+  ready: boolean;
+  text: string;
+} {
+  if (!state.energy)
+    return {
+      ready: false,
+      text: inInterference(state) ? '干扰停充' : '充电中',
+    };
+  if (state.cooldownMs) return { ready: false, text: '缓冲中' };
+  if (
+    state.utility === 'dodge' &&
+    blocked(state, ahead(state.apple, state.facing))
+  )
+    return { ready: false, text: '前方被挡' };
+  if (state.utility === 'pulse' && !pulseTargets(state).length)
+    return { ready: false, text: '近敌无遮挡' };
+  if (state.utility === 'magnet') {
+    const { reason } = magnetPreview(state);
+    if (reason)
+      return {
+        ready: false,
+        text: {
+          attacking: '待攻击结束',
+          'no-wreck': '面前需残骸',
+          occupied: '落点被占用',
+          reserved: '避开机关等',
+        }[reason],
+      };
+  }
+  return { ready: true, text: '1 格电' };
+}
 
 export const ENEMY_NAMES: Record<SnakeKind, string> = {
   normal: '冲锋者',

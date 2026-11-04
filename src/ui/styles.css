@@ -526,6 +526,40 @@ button.skill.cooling {
   width: 100%;
   margin-top: 12px;
 }
+.panel.preparation[open] {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.brief-content {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px;
+  scroll-padding: 8px;
+}
+.panel-actions {
+  flex-shrink: 0;
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  margin-top: 12px;
+}
+.brief-details {
+  text-align: left;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.brief-details summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 12px 4px;
+}
+.brief-details summary:focus-visible {
+  outline: 3px solid #f9ce77;
+  outline-offset: -3px;
+}
 .panel-symbol {
   font-size: 36px;
   margin: 8px 0;

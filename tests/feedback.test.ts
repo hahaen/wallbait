@@ -6,6 +6,7 @@ import {
   groupEnemies,
   lossAdvice,
   lossTitle,
+  utilityFeedback,
 } from '../src/game/feedback';
 
 describe('多敌预警与失败归因', () => {
@@ -96,6 +97,34 @@ describe('多敌预警与失败归因', () => {
     expect(s.loss).toEqual(snapshot);
     expect(createState(s.level).loss).toBeNull();
   });
+});
+
+it('技能提示区分墙、作用目标、磁推条件和干扰停充', () => {
+  const s = createState({
+    ...LEVELS[10]!,
+    walls: [],
+    gates: [],
+    chip: undefined,
+    apple: { x: 6, y: 9 },
+    snakes: [{ x: 2, y: 2, kind: 'normal' }],
+  });
+  s.facing = 'up';
+  expect(utilityFeedback(s)).toEqual({ ready: true, text: '1 格电' });
+  s.level = { ...s.level, walls: [{ x: 6, y: 8 }] };
+  expect(utilityFeedback(s)).toEqual({ ready: false, text: '前方被挡' });
+  s.utility = 'pulse';
+  expect(utilityFeedback(s)).toEqual({ ready: false, text: '近敌无遮挡' });
+  s.utility = 'magnet';
+  expect(utilityFeedback(s)).toEqual({ ready: false, text: '面前需残骸' });
+  s.level = { ...s.level, walls: [] };
+  s.wrecks.push({ x: 6, y: 8, active: true });
+  expect(utilityFeedback(s).ready).toBe(true);
+  s.snakes[0]!.phase = 'charging';
+  expect(utilityFeedback(s).text).toBe('待攻击结束');
+  s.energy = 0;
+  expect(utilityFeedback(s).text).toBe('充电中');
+  s.interference.push({ ...s.apple, snake: 0, remainingMs: 1000 });
+  expect(utilityFeedback(s)).toEqual({ ready: false, text: '干扰停充' });
 });
 
 it('蓄力排序计入脉冲暂停时间，优先提示实际先发动者', () => {

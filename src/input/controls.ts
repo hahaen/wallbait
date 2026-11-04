@@ -26,6 +26,7 @@ export class Controls {
     window.addEventListener(
       'keydown',
       (event) => {
+        if (event.ctrlKey || event.metaKey || event.altKey) return;
         if (
           (event.code === 'Escape' || event.code === 'KeyP') &&
           !event.repeat
@@ -34,7 +35,25 @@ export class Controls {
           pause();
           return;
         }
-        if (!active() || event.ctrlKey || event.metaKey || event.altKey) return;
+        if (!active()) return;
+        if (event.code === 'Enter') {
+          const button =
+            event.target instanceof HTMLElement
+              ? event.target.closest<HTMLButtonElement>(
+                  '[data-direction], [data-dodge], [data-beacon]',
+                )
+              : null;
+          if (button && root.contains(button) && !button.disabled) {
+            event.preventDefault();
+            if (!event.repeat) {
+              if (button.dataset.direction)
+                this.hold(event.code, button.dataset.direction as Direction);
+              else if (button.hasAttribute('data-dodge')) this.queueDodge();
+              else this.queueBeacon('keyboard');
+            }
+          }
+          return;
+        }
         const direction = KEY_DIRECTION[event.code];
         if (direction || event.code === 'Space' || event.code === 'KeyE')
           event.preventDefault();

@@ -3,8 +3,6 @@ import {
   setPaused,
   stars,
   tacticComplete,
-  pulseTargets,
-  magnetMove,
   inInterference,
 } from '../core/engine';
 import { availableSkills, SKILLS, TACTICS } from '../core/loadout';
@@ -14,7 +12,13 @@ import { BEACON_MS, RECHARGE_MS } from '../core/config';
 import type { GameState, Level, UtilitySkill } from '../core/types';
 import type { createGame } from '../game/createGame';
 import { Sound } from '../game/audio';
-import { dangerText, enemyName, lossAdvice, lossTitle } from '../game/feedback';
+import {
+  dangerText,
+  enemyName,
+  lossAdvice,
+  lossTitle,
+  utilityFeedback,
+} from '../game/feedback';
 import { Controls } from '../input/controls';
 import {
   browserStorage,
@@ -50,6 +54,8 @@ export class App {
   private screen: 'home' | 'levels' | 'play' = 'home';
   private previousFocus?: HTMLElement;
   private inspectingLoss = false;
+  private gameReady = false;
+  private autoStart = false;
   constructor(private root: HTMLElement) {
     this.sound.muted = this.save.muted;
     const signal = this.abort.signal;
@@ -94,6 +100,8 @@ export class App {
     this.game = undefined;
     this.state = undefined;
     this.inspectingLoss = false;
+    this.gameReady = false;
+    this.autoStart = false;
   }
   private persist(): void {
     this.storageWarning = !writeSave(browserStorage, this.save);
@@ -177,7 +185,7 @@ export class App {
       'play',
       `<section class="play-screen screen" data-zone="${Math.floor((id - 1) / 5)}"><header class="play-header"><div><small>第 ${String(id).padStart(2, '0')} / 20 关</small><h1 tabindex="-1">${level.name}</h1></div>${button('pause', 'Ⅱ', 'pause-button')} </header>
       <div class="hud"><span id="enemy-count"></span><span id="clock">0.0s</span><span id="cooldown" class="ready">电量 ▰▰</span><span id="mechanisms" class="mechanisms"></span><span id="field-notes" class="field-notes" role="status" aria-live="polite"></span></div>
-      <div class="arena-slot"><div id="arena" role="img" aria-label="对局地图：青色机器人阿零、机械追逐者、墙、配对闸门、残骸叉框、金色方形芯片、信标落点准星与橙色危险通道"><span class="loading">正在摆好墙…</span></div></div>
+      <div class="arena-slot"><div id="arena" role="img" aria-busy="true" aria-label="对局地图：青色机器人阿零、机械追逐者、墙、配对闸门、残骸叉框、金色方形芯片、信标落点准星与橙色危险通道"><span class="loading">正在摆好墙…</span></div></div>
       <div class="play-status" id="play-status" aria-live="polite">${level.focus}</div>
       <aside class="loss-inspection" hidden aria-label="失败现场说明"><b id="loss-title" tabindex="-1"></b><p id="loss-advice"></p><small>红圈 ×：碰撞格 · 金色框：致命敌人的路线</small><div>${button('result', '返回结算')}${button('retry', '再试一次', 'primary')}</div></aside>
       <div class="controls"><div class="dpad" aria-label="四向移动"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span aria-hidden="true">移动</span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="skills"><button class="skill dodge" data-dodge aria-label="闪避"><span aria-hidden="true">↟</span><b>闪避</b><small id="dodge-text">1 格电</small></button><button class="skill beacon" data-beacon aria-label="信标" ${level.beaconEnabled ? '' : 'disabled'}><span aria-hidden="true">⌖</span><b>信标</b><small id="beacon-text">${level.beaconEnabled ? '1 格电' : '未启用'}</small></button></div></div>
@@ -188,10 +196,11 @@ export class App {
       ?.setAttribute('aria-label', '暂停游戏');
     const state = createState(level, this.save.utility);
     this.state = state;
-    if (brief) setPaused(state, true);
+    setPaused(state, true);
+    this.autoStart = !brief;
     this.controls = new Controls(
       this.root,
-      () => state.status === 'playing' && !state.paused,
+      () => this.gameReady && state.status === 'playing' && !state.paused,
       () =>
         this.inspectingLoss
           ? this.result()
@@ -205,6 +214,20 @@ export class App {
         if (this.state !== state) return;
         this.game = createGame(arena, {
           state,
+          onReady: () => {
+            if (this.state !== state) return;
+            this.gameReady = true;
+            arena.setAttribute('aria-busy', 'false');
+            arena.querySelector('.loading')?.remove();
+            const begin = this.root.querySelector<HTMLButtonElement>(
+              '[data-action="begin"]',
+            );
+            if (begin) {
+              begin.disabled = false;
+              begin.textContent = '进入试验';
+            }
+            if (this.autoStart && !document.hidden) this.resume();
+          },
           command: () => this.controls?.sample() ?? { direction: null },
           reducedMotion: () =>
             this.save.reducedMotion ||
@@ -217,35 +240,34 @@ export class App {
               this.result();
           },
         });
-        arena.querySelector('.loading')?.remove();
       })
       .catch(() => {
         if (this.state !== state) return;
+        this.gameReady = false;
+        this.autoStart = false;
+        setPaused(state, true);
+        this.controls?.clear();
+        arena.setAttribute('aria-busy', 'false');
         this.dialog(
-          `<h2 id="dialog-title">游戏资源还没到齐</h2><p>请检查网络后重新加载本关。</p>${button('retry', '重新加载', 'primary')}${button('levels', '返回选关', 'text-button')}`,
+          `<h2 id="dialog-title">游戏资源还没到齐</h2><p>请检查网络后重新加载页面，已保存的通关记录会保留。</p>${button('reload', '重新加载页面', 'primary')}${button('levels', '返回选关', 'text-button')}`,
         );
       });
     this.refreshUtility();
     this.hud();
-    if (brief) {
-      this.controls.clear();
-      this.game?.resetClock();
-      this.dialog(
-        `<p class="result-kicker">第 ${level.id} 关 · ${level.chapter}</p><h2 id="dialog-title">试验准备</h2><p class="zone-note">${ZONES[Math.floor((id - 1) / 5)]![0]} · ${ZONES[Math.floor((id - 1) / 5)]![1]}</p><p>${level.focus}</p><p class="score-rule">${level.decision}</p>${level.chip ? '<p class="chip-note">可选芯片：经过金色方芯拾取，通关后保存；不影响普通通关；部分关卡将带回芯片作为战术星目标。</p>' : ''}<p class="score-rule">战术星：${TACTICS[level.tactic ?? 'first-lure']}</p>${this.loadout(level)}${button('begin', '进入试验', 'primary')}${button('levels', '返回选关', 'text-button')}`,
-      );
-    }
+    this.dialog(
+      `<div class="brief-content"><p class="result-kicker">第 ${level.id} 关 · ${level.chapter}</p><h2 id="dialog-title">${brief ? '试验准备' : '准备重试'}</h2>${brief ? `<p>${level.focus}</p><p class="score-rule">${level.decision}</p><p class="score-rule">战术星：${TACTICS[level.tactic ?? 'first-lure']}</p>${level.chip ? '<p class="chip-note">可选芯片：经过金色方芯拾取，通关后保存。</p>' : ''}${this.loadout(level)}<details class="brief-details"><summary>区域与操作说明</summary><p class="zone-note">${ZONES[Math.floor((id - 1) / 5)]![0]} · ${ZONES[Math.floor((id - 1) / 5)]![1]}</p><p class="score-rule">${id < 5 ? '空格使用闪避；信标从第5关启用。' : '各用一格电；空格使用所选工具，E投信标。'}第6关解锁脉冲，第9关解锁磁推。</p></details>` : '<p>正在重新摆好试验场，就绪后立即开始。</p>'}</div><div class="panel-actions"><button type="button" data-action="begin" class="primary" disabled>正在准备…</button>${button('levels', '返回选关', 'text-button')}</div>`,
+      'preparation',
+    );
   }
   private loadout(level: Level): string {
-    return `<section class="loadout" aria-label="选择装备"><h3>装备台 <small>固定信标 ＋ 一项工具</small></h3><div class="loadout-options">${availableSkills(
+    return `<section class="loadout" aria-label="选择装备"><h3>装备台 <small>${level.beaconEnabled ? '固定信标 ＋ 一项工具' : '当前仅启用闪避'}</small></h3><div class="loadout-options">${availableSkills(
       level,
     )
       .map(
         (id) =>
           `<button data-action="equip:${id}" aria-pressed="${this.state?.utility === id}"><b>${SKILLS[id].symbol} ${SKILLS[id].name}</b><small>${SKILLS[id].description}</small></button>`,
       )
-      .join(
-        '',
-      )}</div><p class="score-rule">各用一格电；第6关解锁脉冲，第9关解锁磁推。空格使用所选工具，E投信标。</p></section>`;
+      .join('')}</div></section>`;
   }
   private refreshUtility(): void {
     if (!this.state) return;
@@ -284,25 +306,10 @@ export class App {
       'cooldown',
       `电量 ${'▰'.repeat(s.energy)}${'▱'.repeat(2 - s.energy)}${s.energy < 2 ? (inInterference(s) ? ' · 干扰中' : ` · ${seconds(RECHARGE_MS - s.rechargeMs)}s`) : ''}`,
     );
-    const usable =
-      s.utility === 'dodge' ||
-      (s.utility === 'pulse'
-        ? pulseTargets(s).length > 0
-        : Boolean(magnetMove(s)));
-    const dodgeReady = s.energy > 0 && s.cooldownMs === 0 && usable;
+    const utility = utilityFeedback(s);
+    const dodgeReady = utility.ready;
     const beaconReady = s.energy > 0 && !s.beacon && s.level.beaconEnabled;
-    text(
-      'dodge-text',
-      !s.energy
-        ? '充电中'
-        : s.cooldownMs
-          ? '缓冲中'
-          : !usable
-            ? s.utility === 'pulse'
-              ? '需近敌 ≤2格'
-              : '需空闲推移位'
-            : '1 格电',
-    );
+    text('dodge-text', utility.text);
     text(
       'beacon-text',
       !s.level.beaconEnabled
@@ -311,7 +318,9 @@ export class App {
           ? `${seconds(s.beacon.remainingMs)}s`
           : beaconReady
             ? '前投 ≤2格'
-            : '充电中',
+            : inInterference(s)
+              ? '干扰停充'
+              : '充电中',
     );
     this.root
       .querySelector('#cooldown')
@@ -403,6 +412,7 @@ export class App {
     }
   }
   private pause(): void {
+    this.autoStart = false;
     if (!this.state || this.state.status !== 'playing' || this.state.paused)
       return;
     setPaused(this.state, true);
@@ -413,7 +423,8 @@ export class App {
     );
   }
   private resume(): void {
-    if (!this.state?.paused) return;
+    if (!this.state?.paused || !this.gameReady) return;
+    this.autoStart = false;
     this.controls?.clear();
     this.game?.resetClock();
     setPaused(this.state, false);
@@ -521,6 +532,9 @@ export class App {
         break;
       case 'retry':
         if (this.state) this.start(this.state.level.id, false);
+        break;
+      case 'reload':
+        window.location.reload();
         break;
       case 'next':
         if (this.state?.status === 'won') this.start(this.state.level.id + 1);
