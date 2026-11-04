@@ -1,0 +1,60 @@
+import type { GameEvent } from '../core/types';
+
+/** 程序音效，无网络资源。只在用户手势中创建/恢复 AudioContext。 */
+export class Sound {
+  private context?: AudioContext;
+  muted = false;
+  unlock(): void {
+    if (this.muted) return;
+    try {
+      this.context ??= new AudioContext();
+      if (this.context.state === 'suspended')
+        void this.context.resume().catch(() => {});
+    } catch {
+      /* 音频不可用不影响游戏。 */
+    }
+  }
+  play(type: GameEvent['type']): void {
+    if (this.muted || !this.context || this.context.state !== 'running') return;
+    const notes: Record<GameEvent['type'], [number, number]> = {
+      charge: [300, 420],
+      dash: [240, 100],
+      dodge: [600, 1000],
+      wall: [100, 45],
+      won: [520, 1040],
+      lost: [200, 60],
+    };
+    try {
+      const ctx = this.context,
+        oscillator = ctx.createOscillator(),
+        gain = ctx.createGain();
+      const [start, end] = notes[type];
+      const duration = type === 'won' ? 0.4 : 0.14;
+      oscillator.type = type === 'wall' ? 'triangle' : 'sine';
+      oscillator.frequency.setValueAtTime(start, ctx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(
+        end,
+        ctx.currentTime + duration,
+      );
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.015);
+      gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        ctx.currentTime + duration,
+      );
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+      oscillator.onended = () => {
+        oscillator.disconnect();
+        gain.disconnect();
+      };
+      oscillator.start();
+      oscillator.stop(ctx.currentTime + duration);
+    } catch {
+      /* 部分浏览器/音频设备可能拒绝播放。 */
+    }
+  }
+  destroy(): void {
+    void this.context?.close().catch(() => {});
+  }
+}

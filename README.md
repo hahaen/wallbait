@@ -1,82 +1,61 @@
-# 撞墙了么 · wallbait
+# 撞墙了么
 
 **你追你的，墙就在那儿。**
 
-你操控苹果，把追你的蛇引到墙边，在它蓄力冲刺后闪开，让它撞墙。
+一款反向贪吃蛇 H5 游戏：你操控苹果，诱导追逐的蛇蓄力冲刺，侧身闪开，让墙来收场。
 
-## 当前进度
+已实现可玩的四章 **20 关**、普通/迅捷/谨慎三类蛇、地形障碍及双蛇/三蛇挑战。具备首页、选关、对局、暂停、星级结算、全通关、自由重玩、进度与设置保存。纯前端，无后端或登录。
 
-- [x] 游戏名称、宣传语、公开仓库。
-- [x] 手机竖屏视觉概念图。
-- [x] Phaser + TypeScript + Vite 开发骨架、目录规范和 CI 配置。
-- [ ] 首版玩法：一张地图、一条蛇、一个闪避技能。
-- [ ] 手机和电脑体验验收。
-- [ ] 在线试玩部署。
+## 本地试玩
 
-目前运行后显示开发启动页，尚不能游玩。CI 配置会在推送后运行，远端结果需单独核对。
-
-## 本地开发
-
-使用 **Node.js 24.x + npm**，版本提示见 `.nvmrc`。克隆后运行：
+Node.js **24.x**，按锁文件安装：
 
 ```sh
 npm ci
 npm run dev
 ```
 
-打开终端显示的本地地址，默认 `http://127.0.0.1:5173/`。
-同一局域网手机调试时运行 `npm run dev -- --host 0.0.0.0`，使用电脑的局域网 IP 访问。
+打开 [本地试玩](http://127.0.0.1:5173/)。首次进入关卡才加载 Phaser 引擎。
 
-| 命令                | 用途                               |
-| ------------------- | ---------------------------------- |
-| `npm run dev`       | 启动开发服务器                     |
-| `npm run typecheck` | TypeScript 类型检查                |
-| `npm run lint`      | ESLint 检查                        |
-| `npm run format`    | 格式化项目文本文件                 |
-| `npm run check`     | 代码检查、格式检查、类型检查和构建 |
-| `npm run build`     | 产物输出到 `dist/`                 |
-| `npm run preview`   | 本地预览构建产物                   |
+- 电脑：WASD / 方向键移动，空格闪避，Escape / P 暂停。
+- 手机：左下四向按钮，右下闪避，右上暂停；方向与闪避可同时按。
+- 松手停止，闪避两格、冷却 2.2 秒，没有无敌时间。橙色箭头在蓄力开始就锁定，不会偷偷转向。
+- 通过一关得一星，时间达标和闪避次数达标各得一星，可重玩提升。
+- 切后台自动暂停，返回手动继续。存档异常不妨碍游玩。
 
-## 目录
+手机局域网调试可运行 `npm run dev -- --host 0.0.0.0`，用手机访问电脑局域网地址。当前没有线上试玩地址。
 
-```text
-wallbait/
-├── src/
-│   ├── main.ts                # 程序入口、开发热更新清理
-│   ├── core/                  # 纯规则：移动、状态机、碰撞、胜负（待实现）
-│   ├── game/
-│   │   ├── createGame.ts      # Phaser 初始化
-│   │   ├── config.ts          # 画面尺寸、主题参数
-│   │   └── scenes/            # 当前为开发启动场景
-│   ├── input/                 # 键盘和触控 → 统一命令（待实现）
-│   ├── ui/                    # 页面样式；后续 HUD 与操作面板
-│   ├── storage/               # 设置、成绩的本地存档（待实现）
-│   └── assets/                # 经 Vite 打包的美术、音频资源
-├── public/                    # 原样复制到站点的静态文件
-├── tests/                     # 测试计划，随首批规则接入测试框架
-├── docs/
-│   ├── architecture.md       # 模块边界和数据流
-│   ├── game-design.md        # 首版玩法、待验证参数和胜负规则
-│   ├── development.md        # 开发顺序、验收和部署说明
-│   └── design/               # 概念图及其说明
-├── .github/workflows/ci.yml   # 安装、检查、构建；不包含发布
-├── AGENTS.md                  # 后续协作开发约定
-└── package.json               # 依赖和统一命令
+## 验证
+
+```sh
+npm run check
+npx playwright install chromium webkit
+npm run test:e2e
+npm run test:static
 ```
 
-`core/`、`input/`、`storage/` 等目录中的 README 说明预留职责，不表示对应功能已经实现。
+| 命令                       | 内容                                                          |
+| -------------------------- | ------------------------------------------------------------- |
+| `npm run check`            | ESLint、Prettier、Vitest、严格类型检查、生产构建              |
+| `npm test`                 | 规则、20 关固定操作回放、存档异常，共 59 项                   |
+| `npm run test:e2e`         | 桌面 Chromium、手机尺寸 Chromium/WebKit、输入与连续 20 关闯关 |
+| `npm run test:static`      | 生产包在 `/wallbait/` 子路径的资源和完整一局验收              |
+| `npm run replays:generate` | 关卡调整后显式重新搜索操作回放                                |
+| `npm run build`            | 构建到 `dist/`                                                |
+| `npm run preview`          | 本地预览生产产物                                              |
 
-## 技术与文档
+20 关均有可执行获胜回放，浏览器也已通过从第 1 关连续到第 20 关的原生键盘流程。手机尺寸浏览器测试不等于真机：本轮 iPhone 不可连接，ADB 无在线设备，**真机触感与音频听感未验收**。详见[验收证据](docs/testing/README.md)。
 
-单个纯前端项目，采用 Phaser 3、TypeScript、Vite、ESLint 和 Prettier，使用 npm 锁文件固定安装结果。
-首版无需后端、登录或前端 UI 框架。本地存档、自动暂停及 GitHub Pages 发布按开发计划接入。
+## 项目结构
 
-- [开发文档导航](docs/README.md)
-- [玩法设计](docs/game-design.md)
-- [架构设计](docs/architecture.md)
-- [开发与验收计划](docs/development.md)
-- [手机效果图](docs/design/README.md)
+- `src/core/`：纯 TypeScript 网格规则、状态机、碰撞、关卡数据。
+- `src/game/`：Phaser 绘制、固定步驱动、插值、程序音效。
+- `src/input/`：键盘与多点 Pointer Events，统一命令。
+- `src/ui/`：界面流程、HUD、触控区、矢量插画和样式。
+- `src/storage/`：版本化存档、校验和异常降级。
+- `tests/`：单元测试、固定回放、浏览器与静态子路径验收。
+- `docs/`：设计、架构、关卡意图、开发记录和验收截图。
 
-参考：[Phaser 官方文档](https://docs.phaser.io/)、[Vite 官方指南](https://vite.dev/guide/)。
+[文档导航](docs/README.md) · [玩法设计](docs/game-design.md) · [关卡设计](docs/levels.md) · [开发与验收计划](docs/development.md) · [协作规范](CONTRIBUTING.md)
 
-开发、评审、验证与交付请遵循[项目协作规范](CONTRIBUTING.md)。
+本次未部署或公开发布。上线需要重新构建并发布 H5 静态站点；GitHub Actions 当前仅执行检查，不会自动发布 GitHub Pages。未来项目路径 `/wallbait/` 已在本地生产包中验证。

@@ -1,0 +1,1652 @@
+[
+  {
+    "level": 1,
+    "elapsedMs": 1580,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 2,
+    "elapsedMs": 1280,
+    "dodges": 0,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 3,
+    "elapsedMs": 1300,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "down",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 4,
+    "elapsedMs": 1220,
+    "dodges": 0,
+    "commands": [
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 5,
+    "elapsedMs": 3400,
+    "dodges": 0,
+    "commands": [
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 6,
+    "elapsedMs": 1280,
+    "dodges": 0,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 7,
+    "elapsedMs": 1720,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "down",
+        "dodge": true
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 8,
+    "elapsedMs": 1640,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 9,
+    "elapsedMs": 1520,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 10,
+    "elapsedMs": 6800,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down",
+        "dodge": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 11,
+    "elapsedMs": 2280,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 12,
+    "elapsedMs": 2480,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 13,
+    "elapsedMs": 1920,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 14,
+    "elapsedMs": 6580,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 15,
+    "elapsedMs": 2700,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 16,
+    "elapsedMs": 5760,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 17,
+    "elapsedMs": 2560,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 18,
+    "elapsedMs": 4400,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": "down",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 19,
+    "elapsedMs": 4880,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left",
+        "dodge": true
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      }
+    ]
+  },
+  {
+    "level": 20,
+    "elapsedMs": 3540,
+    "dodges": 1,
+    "commands": [
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up",
+        "dodge": true
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "left"
+      },
+      {
+        "direction": "down"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "up"
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": null
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": "right"
+      },
+      {
+        "direction": null
+      }
+    ]
+  }
+]

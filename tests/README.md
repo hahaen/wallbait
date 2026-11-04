@@ -1,15 +1,7 @@
-# 验证计划
+# 验证入口
 
-当前为工程骨架，没有玩法测试，也没有安装测试框架。
-首次实现 `core/` 规则时接入 Vitest，测试只依赖纯 TypeScript，不启动 Phaser。
+- `npm test`：核心规则、20 关固定回放与存档异常。
+- `npm run test:e2e`：桌面 Chromium、手机 Chromium、手机 WebKit 流程。
+- `npm run replays:generate`：关卡修改后显式生成操作解，不能代替正常回放验收。
 
-优先覆盖：
-
-1. 苹果边界与蛇头碰撞。
-2. 蓄力结束后的冲刺锁向、蛇头撞墙获胜。
-3. 冲刺和闪避逐格碰撞，防止高速穿透。
-4. 闪避距离、不可穿墙、冷却不可重复使用。
-5. 同一步内的胜负优先级，以及暂停时冷却和状态计时冻结。
-6. 输入取消与存档损坏等浏览器适配问题。
-
-可玩版本另按 `docs/development.md` 做真机验收，单元测试不能替代手机操作体验。
+浏览器测试需要先执行 `npx playwright install chromium webkit`。完整验收范围及限制见[验收记录](../docs/testing/README.md)。
