@@ -1,4 +1,4 @@
-import atlasUrl from '../assets/characters/bean-mascots.png';
+import atlasUrl from '../assets/characters/bean-mascots.webp';
 
 /** 透明手绘贴图：4×4等分，前11格为角色，其余留空。 */
 export const CHARACTER_ATLAS = atlasUrl;

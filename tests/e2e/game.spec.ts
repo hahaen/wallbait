@@ -30,10 +30,23 @@ test('首页、说明、设置、失败重试、胜利下一关、刷新和选�
     page.getByRole('heading', { name: '你是苹果，借墙脱身' }),
   ).toBeVisible();
   await page.getByRole('button', { name: '知道了' }).click();
-  await page.getByRole('button', { name: '设置', exact: true }).click();
-  await page.getByRole('button', { name: '已开启', exact: true }).click();
-  await expect(page.getByRole('button', { name: '已静音' })).toBeVisible();
+  const settings = page.getByRole('button', { name: '设置', exact: true });
+  await settings.focus();
+  await page.keyboard.press('Enter');
+  const audio = page.getByRole('switch', { name: '游戏音效' });
+  await expect(audio).toBeChecked();
+  await audio.focus();
+  await page.keyboard.press('Enter');
+  await expect(audio).not.toBeChecked();
+  await expect(audio).toHaveText('已静音');
+  await expect(audio).toBeFocused();
+  const motion = page.getByRole('switch', { name: '减少动态效果' });
+  await motion.focus();
+  await page.keyboard.press('Space');
+  await expect(motion).toBeChecked();
+  await expect(motion).toBeFocused();
   await page.getByRole('button', { name: '完成', exact: true }).click();
+  await expect(settings).toBeFocused();
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
   await expect(page.getByRole('heading', { name: '试验准备' })).toBeVisible();
   await expect(page.locator('#clock')).toHaveText('0.0s');
@@ -56,7 +69,8 @@ test('首页、说明、设置、失败重试、胜利下一关、刷新和选�
     page.getByRole('button', { name: '继续挑战 · 第 2 关' }),
   ).toBeVisible();
   await page.getByRole('button', { name: '设置', exact: true }).click();
-  await expect(page.getByRole('button', { name: '已静音' })).toBeVisible();
+  await expect(audio).not.toBeChecked();
+  await expect(motion).toBeChecked();
   await page.getByRole('button', { name: '完成', exact: true }).click();
   await page.getByRole('button', { name: '选择关卡' }).click();
   await expect(page.locator('.level')).toHaveCount(20);
@@ -108,6 +122,16 @@ test('损坏及不可用的存储仍能正常游玩', async ({ page }) => {
       },
     });
   });
+  await page.goto('/');
+  await page.getByRole('button', { name: '设置', exact: true }).click();
+  const audio = page.getByRole('switch', { name: '游戏音效' });
+  await audio.focus();
+  await page.keyboard.press('Enter');
+  await expect(audio).not.toBeChecked();
+  await expect(audio).toBeFocused();
+  await expect(page.getByRole('status')).toHaveText(
+    '保存暂不可用，设置会在本次游玩生效。',
+  );
   await start(page);
   await winFirst(page);
   await expect(page.locator('.save-warning')).toBeVisible();

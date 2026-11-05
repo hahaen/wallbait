@@ -868,6 +868,9 @@ summary:focus-visible {
 .save-warning {
   color: #a03f2d;
 }
+.save-warning:empty {
+  margin: 0;
+}
 .chip-label,
 .panel p.chip-note {
   color: #856420;

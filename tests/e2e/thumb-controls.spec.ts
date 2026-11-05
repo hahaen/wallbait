@@ -156,7 +156,7 @@ test('角色与手机操作区实拍，失败默认不出现技术标记', async
 });
 
 test('角色图集失败时禁止空白开局，重新加载后可恢复', async ({ page }) => {
-  await page.route('**/bean-mascots.png*', (route) =>
+  await page.route('**/bean-mascots.webp*', (route) =>
     route.request().resourceType() === 'script'
       ? route.continue()
       : route.abort('failed'),
@@ -169,7 +169,7 @@ test('角色图集失败时禁止空白开局，重新加载后可恢复', async
   await page.keyboard.press('p');
   await page.keyboard.press('Escape');
   await expect(error).toBeVisible();
-  await page.unroute('**/bean-mascots.png*');
+  await page.unroute('**/bean-mascots.webp*');
   await page.getByRole('button', { name: '重新加载页面' }).click();
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
   await expect(page.locator('[data-action="begin"]')).toBeEnabled();

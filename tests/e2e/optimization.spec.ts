@@ -22,7 +22,12 @@ test('资源就绪前不能用按钮或快捷键开局，就绪后才推进时�
   await expect(page.locator('#arena')).toHaveAttribute('aria-busy', 'false');
   await expect(page.locator('canvas')).toBeVisible();
   await expect(page.locator('#clock')).toHaveText('0.0s');
-  await begin.click();
+  await page.keyboard.press('p');
+  await page.keyboard.press('Escape');
+  await expect(begin).toBeVisible();
+  await expect(page.locator('#clock')).toHaveText('0.0s');
+  await begin.focus();
+  await page.keyboard.press('Enter');
   await expect(page.locator('#clock')).not.toHaveText('0.0s');
 });
 

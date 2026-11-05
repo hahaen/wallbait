@@ -61,6 +61,8 @@ test('首波清空后全览出现两个进场区，走位切换并原地接战',
   await page.keyboard.up('ArrowRight');
   const status = page.locator('#play-status');
   await expect(status).toContainText('可移向另一框换区');
+  const waveHud = page.locator('#enemy-count');
+  await expect(waveHud).toHaveText(/^下波 [0-2]\.\ds$/);
   const initialZones = await waveZonesOnCanvas(page);
   expect(initialZones[0]!.pixels).toBeGreaterThan(8);
   expect(initialZones[1]!.pixels).toBeGreaterThan(8);
@@ -85,12 +87,14 @@ test('首波清空后全览出现两个进场区，走位切换并原地接战',
   await expect(page.getByRole('heading', { name: '歇一口气' })).toBeVisible();
   await expect(page.getByText('完成 1 波 · 撞毁 1 条')).toBeVisible();
   const clock = await page.locator('#clock').textContent();
+  const countdown = await waveHud.textContent();
   await page.waitForTimeout(600);
   await expect(page.locator('#clock')).toHaveText(clock!);
+  await expect(waveHud).toHaveText(countdown!);
   await expect(page.locator('#round-label')).toHaveText('第 1 波');
   await page.getByRole('button', { name: '继续游戏' }).click();
   await expect(page.locator('#round-label')).toHaveText('第 2 波');
-  await expect(page.locator('#enemy-count')).toHaveText('剩余 2 条');
+  await expect(waveHud).toHaveText('剩余 2 条');
   expect((await waveZonesOnCanvas(page)).map((zone) => zone.pixels)).toEqual([
     0, 0,
   ]);

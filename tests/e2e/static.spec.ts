@@ -15,7 +15,14 @@ test('生产包在 /wallbait/ 加载全部资源并完成一局，保存实际�
     if (request.resourceType() === 'script')
       scripts.push(new URL(request.url()).pathname);
   });
+  const atlas = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname.startsWith(
+        '/wallbait/assets/bean-mascots-',
+      ) && response.url().endsWith('.webp'),
+  );
   await page.goto('/wallbait/');
+  expect((await atlas).ok()).toBe(true);
   await page.screenshot({ path: 'test-results/mobile-home.png' });
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
   await expect(page.getByRole('heading', { name: '试验准备' })).toBeVisible();

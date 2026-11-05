@@ -99,7 +99,8 @@ export class App {
       'cancel',
       (event) => {
         event.preventDefault();
-        if (this.state?.paused) this.resume();
+        if (this.root.querySelector('dialog [data-action="resume"]'))
+          this.resume();
         else if (this.screen !== 'play') this.closeDialog();
       },
       { signal, capture: true },
@@ -243,12 +244,12 @@ export class App {
     this.controls = new Controls(
       this.root,
       () => this.gameReady && state.status === 'playing' && !state.paused,
-      () =>
-        this.inspectingLoss
-          ? this.result()
-          : state.paused
-            ? this.resume()
-            : this.pause(),
+      () => {
+        if (this.inspectingLoss) this.result();
+        else if (!state.paused) this.pause();
+        else if (this.root.querySelector('dialog [data-action="resume"]'))
+          this.resume();
+      },
     );
     const arena = this.root.querySelector<HTMLElement>('#arena')!;
     const fail = (): void => {
@@ -350,7 +351,13 @@ export class App {
       if (node && node.textContent !== value) node.textContent = value;
     };
     if (s.endless) text('round-label', `第 ${s.endless.wave} 波`);
-    text('enemy-count', `剩余 ${s.snakes.filter((v) => v.alive).length} 条`);
+    const waveBreak = s.endless?.nextWaveMs ?? 0;
+    text(
+      'enemy-count',
+      waveBreak > 0
+        ? `下波 ${seconds(Math.ceil(waveBreak / 100) * 100)}s`
+        : `剩余 ${s.snakes.filter((v) => v.alive).length} 条`,
+    );
     text('clock', `${seconds(s.elapsedMs)}s`);
     text(
       'cooldown',
@@ -431,7 +438,7 @@ export class App {
         ? '撞墙了！'
         : s.status === 'lost'
           ? '被逮住了，下次再骗它！'
-          : s.endless?.nextWaveMs
+          : waveBreak > 0
             ? waveMessage
             : danger,
     );
@@ -597,8 +604,28 @@ export class App {
   }
   private settings(): void {
     this.dialog(
-      `<h2 id="dialog-title">按你的节奏来</h2><div class="setting-row"><span>游戏音效<small>闪避、撞墙与过关提示</small></span>${button('mute', this.save.muted ? '已静音' : '已开启', 'toggle')}</div><div class="setting-row"><span>减少动态效果<small>关闭震动镜头和位移插值</small></span>${button('motion', this.save.reducedMotion ? '已开启' : '已关闭', 'toggle')}</div><p class="score-rule">进度保存在当前浏览器。</p>${this.storageWarning ? '<p class="save-warning">保存暂不可用，设置会在本次游玩生效。</p>' : ''}${button('close', '完成', 'primary')}`,
+      `<h2 id="dialog-title">按你的节奏来</h2><div class="setting-row"><span><b id="audio-label">游戏音效</b><small>闪避、撞墙与过关提示</small></span><button type="button" data-action="mute" class="toggle" role="switch" aria-labelledby="audio-label"></button></div><div class="setting-row"><span><b id="motion-label">减少动态效果</b><small>关闭震动镜头和位移插值</small></span><button type="button" data-action="motion" class="toggle" role="switch" aria-labelledby="motion-label"></button></div><p class="score-rule">进度保存在当前浏览器。</p><p id="settings-save-warning" class="save-warning" role="status"></p>${button('close', '完成', 'primary')}`,
     );
+    this.refreshSettings();
+  }
+  private refreshSettings(): void {
+    for (const [action, enabled, label] of [
+      ['mute', !this.save.muted, this.save.muted ? '已静音' : '已开启'],
+      [
+        'motion',
+        this.save.reducedMotion,
+        this.save.reducedMotion ? '已开启' : '已关闭',
+      ],
+    ] as const) {
+      const toggle = this.root.querySelector(`[data-action="${action}"]`)!;
+      toggle.setAttribute('aria-checked', String(enabled));
+      toggle.textContent = label;
+    }
+    const warning = this.root.querySelector('#settings-save-warning')!;
+    const message = this.storageWarning
+      ? '保存暂不可用，设置会在本次游玩生效。'
+      : '';
+    if (warning.textContent !== message) warning.textContent = message;
   }
   private act(action: string): void {
     if (action.startsWith('equip:')) {
@@ -679,12 +706,12 @@ export class App {
         this.sound.muted = this.save.muted;
         this.sound.unlock();
         this.persist();
-        this.settings();
+        this.refreshSettings();
         break;
       case 'motion':
         this.save.reducedMotion = !this.save.reducedMotion;
         this.persist();
-        this.settings();
+        this.refreshSettings();
         break;
     }
   }
