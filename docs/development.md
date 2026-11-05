@@ -22,7 +22,7 @@
 
 ## 发布范围
 
-本次授权仅开发、验证、提交、推送。未部署或公开发布；上线需发布 H5 静态站点。没有后端、原生客户端或小程序。
+H5 发布到 [hahaen.xyz/game/wallbait](https://hahaen.xyz/game/wallbait)。开发交付验证通过并推送到 `main` 后按[线上发布流程](deployment.md)发布。下方各轮的发布状态是当时的记录。
 
 ## 验收入口
 

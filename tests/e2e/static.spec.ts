@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('生产包在 /wallbait/ 加载全部资源并完成一局，保存实际截图', async ({
+test('生产包在 /game/wallbait/ 加载全部资源并完成一局，保存实际截图', async ({
   page,
 }) => {
   const failures: string[] = [],
@@ -18,10 +18,10 @@ test('生产包在 /wallbait/ 加载全部资源并完成一局，保存实际�
   const atlas = page.waitForResponse(
     (response) =>
       new URL(response.url()).pathname.startsWith(
-        '/wallbait/assets/bean-mascots-',
+        '/game/wallbait/assets/bean-mascots-',
       ) && response.url().endsWith('.webp'),
   );
-  await page.goto('/wallbait/');
+  await page.goto('/game/wallbait/');
   expect((await atlas).ok()).toBe(true);
   await page.screenshot({ path: 'test-results/mobile-home.png' });
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
@@ -45,9 +45,9 @@ test('生产包在 /wallbait/ 加载全部资源并完成一局，保存实际�
     page.getByRole('button', { name: '继续挑战 · 第 2 关' }),
   ).toBeVisible();
   expect(scripts.length).toBeGreaterThanOrEqual(2);
-  expect(scripts.every((path) => path.startsWith('/wallbait/assets/'))).toBe(
-    true,
-  );
+  expect(
+    scripts.every((path) => path.startsWith('/game/wallbait/assets/')),
+  ).toBe(true);
   expect(failures).toEqual([]);
   expect(errors).toEqual([]);
 });

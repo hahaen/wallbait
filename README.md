@@ -37,7 +37,7 @@ npm run test:static
 | `npm run check`            | ESLint、Prettier、Vitest、严格类型检查、生产构建                              |
 | `npm test`                 | 规则、迁移、20关主线、3条芯片、27条搭配、20条战术、2条能力展示及140轮策略核验 |
 | `npm run test:e2e`         | 桌面/手机尺寸 Chromium、手机尺寸 WebKit、完整流程、触控、连续闯关             |
-| `npm run test:static`      | 生产包 `/wallbait/` 子路径资源、通关与恢复                                    |
+| `npm run test:static`      | 生产包 `/game/wallbait/` 子路径资源、通关与恢复                               |
 | `npm run replays:generate` | 规则/关卡调整后显式重新搜索合法操作解                                         |
 | `npm run build`            | 构建到 `dist/`                                                                |
 
@@ -59,4 +59,4 @@ npm run test:static
 
 [文档导航](docs/README.md) · [玩法设计](docs/game-design.md) · [关卡设计](docs/levels.md) · [架构](docs/architecture.md) · [开发计划](docs/development.md) · [协作规范](CONTRIBUTING.md)
 
-**本次未部署或公开发布。上线需重新构建并发布 H5 静态站点。** GitHub Actions 只执行检查，不自动发布 GitHub Pages。
+[在线试玩](https://hahaen.xyz/game/wallbait) · [线上发布流程](docs/deployment.md)

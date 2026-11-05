@@ -1,0 +1,10 @@
+location = /game/wallbait {
+    absolute_redirect off;
+    return 308 /game/wallbait/$is_args$args;
+}
+
+location ^~ /game/wallbait/ {
+    alias /srv/wallbait/dist/;
+    index index.html;
+    add_header Cache-Control "no-cache";
+}

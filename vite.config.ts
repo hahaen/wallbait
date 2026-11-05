@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  // 静态资源使用相对地址，兼容未来的 GitHub Pages /wallbait/ 子路径。
+  // 静态资源使用相对地址，兼容线上 /game/wallbait/ 子路径。
   base: './',
   server: {
     host: '127.0.0.1',
