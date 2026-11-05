@@ -21,7 +21,9 @@ async function fixture(page: import('@playwright/test').Page): Promise<void> {
   });
 }
 
-test('摇杆拖动四向、斜向防抖、拖出外圈和松手停止', async ({ page }) => {
+test('摇杆保留拖动角度、回中心进入死区、拖出外圈和松手停止', async ({
+  page,
+}) => {
   await fixture(page);
   const sample = () =>
     page.evaluate(() => (window as FixtureWindow).thumbFixture!.sample());
@@ -34,9 +36,13 @@ test('摇杆拖动四向、斜向防抖、拖出外圈和松手停止', async ({
   await page.mouse.move(x + 50, y);
   expect((await sample()).direction).toBe('right');
   await page.mouse.move(x + 50, y + 54);
-  expect((await sample()).direction).toBe('right');
+  const first = (await sample()).movement!;
+  expect(first.y / first.x).toBeCloseTo(54 / 50, 1);
   await page.mouse.move(x + 20, y + 60);
-  expect((await sample()).direction).toBe('down');
+  const second = (await sample()).movement!;
+  expect(second.y / second.x).toBeCloseTo(3, 1);
+  await page.mouse.move(x, y);
+  expect((await sample()).direction).toBeNull();
   await page.mouse.move(x - 150, y);
   expect((await sample()).direction).toBe('left');
   await page.mouse.up();
@@ -63,7 +69,7 @@ test('摇杆和大技能按钮可双指同时用，取消和重置均释放输�
     tool = (await page.locator('#thumb-fixture [data-dodge]').boundingBox())!;
   const a = {
     x: stick.x + stick.width / 2 + 50,
-    y: stick.y + stick.height / 2,
+    y: stick.y + stick.height / 2 - 35,
     id: 1,
   };
   const b = { x: tool.x + tool.width / 2, y: tool.y + tool.height / 2, id: 2 };
@@ -76,11 +82,13 @@ test('摇杆和大技能按钮可双指同时用，取消和重置均释放输�
     type: 'touchStart',
     touchPoints: [a, b],
   });
-  expect(await sample()).toEqual({
+  const combo = await sample();
+  expect(combo).toMatchObject({
     direction: 'right',
     dodge: true,
     beacon: false,
   });
+  expect(combo.movement!.y / combo.movement!.x).toBeCloseTo(-0.7, 1);
   await cdp.send('Input.dispatchTouchEvent', {
     type: 'touchMove',
     touchPoints: [{ ...a, x: stick.x + stick.width / 2, y: stick.y + 10 }, b],

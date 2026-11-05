@@ -1,33 +1,32 @@
-import type { Direction } from '../core/types';
+import type { Direction, Point } from '../core/types';
 
-/** 四向吸附、中心死区与转向滞回。返回的位移只驱动摇杆外观。 */
+/** 保留完整拖动角度，另给出工具朝向和摇杆的显示位移。 */
 export function joystickIntent(
   dx: number,
   dy: number,
   radius: number,
-  previous: Direction | null,
 ): {
   direction: Direction | null;
+  movement: Point | null;
   x: number;
   y: number;
 } {
   const length = Math.hypot(dx, dy);
   if (radius <= 0 || length < radius * 0.18)
-    return { direction: null, x: 0, y: 0 };
-  const horizontal = previous === 'left' || previous === 'right';
-  const vertical = previous === 'up' || previous === 'down';
-  const useHorizontal = horizontal
-    ? Math.abs(dx) * 1.18 >= Math.abs(dy)
-    : vertical
-      ? Math.abs(dx) > Math.abs(dy) * 1.18
-      : Math.abs(dx) >= Math.abs(dy);
-  const direction = useHorizontal
-    ? dx >= 0
-      ? 'right'
-      : 'left'
-    : dy >= 0
-      ? 'down'
-      : 'up';
+    return { direction: null, movement: null, x: 0, y: 0 };
+  const direction =
+    Math.abs(dx) >= Math.abs(dy)
+      ? dx >= 0
+        ? 'right'
+        : 'left'
+      : dy >= 0
+        ? 'down'
+        : 'up';
   const scale = Math.min(length, radius * 0.45) / length;
-  return { direction, x: dx * scale, y: dy * scale };
+  return {
+    direction,
+    movement: { x: dx / length, y: dy / length },
+    x: dx * scale,
+    y: dy * scale,
+  };
 }

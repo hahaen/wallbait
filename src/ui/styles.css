@@ -409,12 +409,12 @@ button.text-button:hover {
   position: relative;
   border-radius: 50%;
   border: 1.5px solid #c9b697;
-  background: radial-gradient(
-    circle at 44% 38%,
-    #fcf0da 12%,
-    #f1e2c6 68%,
-    #e4cfab
-  );
+  background:
+    radial-gradient(circle at 24% 24%, #a98b63 2px, transparent 3px),
+    radial-gradient(circle at 76% 24%, #a98b63 2px, transparent 3px),
+    radial-gradient(circle at 24% 76%, #a98b63 2px, transparent 3px),
+    radial-gradient(circle at 76% 76%, #a98b63 2px, transparent 3px),
+    radial-gradient(circle at 44% 38%, #fcf0da 12%, #f1e2c6 68%, #e4cfab);
   box-shadow:
     inset 0 3px 10px #a58a6220,
     0 3px 0 #d7c2a0;

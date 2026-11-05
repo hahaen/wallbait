@@ -1,12 +1,14 @@
 import Phaser from 'phaser';
 import {
   beaconLanding,
+  same,
   solid,
   magnetMove,
   pulseTargets,
 } from '../../core/engine';
-import { BEACON_MS, VECTOR } from '../../core/config';
+import { BEACON_MS, MOVE_MS, TICK_MS, VECTOR } from '../../core/config';
 import type { GameEvent, GameState, Point, Snake } from '../../core/types';
+import { wallContains } from '../../core/walls';
 import { groupEnemies } from '../feedback';
 import {
   CHARACTER_FRAMES,
@@ -30,6 +32,9 @@ export class Arena {
   private segments = new Map<number, Phaser.GameObjects.Image[]>();
   private heads = new Map<number, Phaser.GameObjects.Image>();
   private fruit: Phaser.GameObjects.Image;
+  private fruitFrom: Point;
+  private fruitTarget: Point;
+  private fruitElapsedMs = 0;
   private endingMs = 0;
   private graphics: Phaser.GameObjects.Graphics;
   private inspection: Phaser.GameObjects.Graphics;
@@ -41,13 +46,18 @@ export class Arena {
     private state: GameState,
   ) {
     const background = scene.add.graphics();
+    const outlines = state.level.wallOutlines ?? [];
+    this.fruitFrom = this.fruitTarget = state.apple;
     for (let y = 0; y < state.level.height; y++) {
       for (let x = 0; x < state.level.width; x++) {
         const px = x * CELL,
           py = y * CELL;
         background.fillStyle((x + y) % 2 ? 0xdfe8bb : 0xe3ebc4);
         background.fillRect(px, py, CELL, CELL);
-        if (solid(state.level, { x, y })) {
+        if (
+          solid(state.level, { x, y }) &&
+          !outlines.some((outline) => wallContains(outline, { x, y }))
+        ) {
           background.fillStyle(0x8a796b);
           background.fillRoundedRect(px + 1, py + 3, 30, 29, 7);
           background.fillStyle(0xb4a496);
@@ -65,6 +75,35 @@ export class Arena {
           background.lineStyle(1, 0xb4c28e, 0.38);
           background.strokeRect(px, py, CELL, CELL);
         }
+      }
+    }
+    for (const outline of outlines) {
+      const points = outline.map(({ x, y }) => ({ x: x * CELL, y: y * CELL }));
+      background.fillStyle(0x8a796b);
+      background.fillPoints(
+        points.map(({ x, y }) => ({ x, y: y + 2 })),
+        true,
+      );
+      background.fillStyle(0xb4a496);
+      background.fillPoints(points, true);
+      background.lineStyle(2.5, INK);
+      background.strokePoints(points, true);
+      background.lineStyle(1.5, 0xd8cbbd, 0.9);
+      for (const [i, a] of points.entries()) {
+        const b = points[(i + 1) % points.length]!;
+        const dx = b.x - a.x,
+          dy = b.y - a.y,
+          length = Math.hypot(dx, dy);
+        if (dx < 10) continue;
+        // 顺时针轮廓的朝上石面有一条向内收的亮边。
+        const insetX = (-dy * 4) / length,
+          insetY = (dx * 4) / length;
+        background.lineBetween(
+          a.x + dx * 0.18 + insetX,
+          a.y + dy * 0.18 + insetY,
+          b.x - dx * 0.18 + insetX,
+          b.y - dy * 0.18 + insetY,
+        );
       }
     }
     for (const gate of state.level.gates ?? []) {
@@ -112,7 +151,8 @@ export class Arena {
   events(events: GameEvent[], reducedMotion: boolean): void {
     for (const event of events) {
       if (event.type === 'lost' || event.type === 'won') this.endingMs = 0;
-      if (event.type === 'dodge') this.positions.delete('apple');
+      if (event.type === 'dodge')
+        this.fruitFrom = this.fruitTarget = this.state.apple;
       if (
         (event.type === 'wall' ||
           event.type === 'dodge' ||
@@ -124,6 +164,28 @@ export class Arena {
       if (event.type === 'wall' && !reducedMotion)
         this.scene.cameras.main.shake(100, 0.004);
     }
+  }
+  private fruitPosition(delta: number, snap: boolean): Point {
+    const next = this.state.apple;
+    if (snap) this.fruitFrom = this.fruitTarget = next;
+    if (!same(next, this.fruitTarget)) {
+      this.fruitFrom = this.fruitTarget;
+      this.fruitTarget = next;
+      this.fruitElapsedMs = 0;
+    }
+    if (same(this.fruitFrom, next)) return center(next);
+    this.fruitElapsedMs += delta;
+    const from = center(this.fruitFrom),
+      to = center(next),
+      distance = Math.hypot(to.x - from.x, to.y - from.y) / CELL;
+    const t = Math.min(
+      1,
+      this.fruitElapsedMs / ((MOVE_MS - TICK_MS) * distance),
+    );
+    return {
+      x: Phaser.Math.Linear(from.x, to.x, t),
+      y: Phaser.Math.Linear(from.y, to.y, t),
+    };
   }
   private position(
     key: string,
@@ -173,12 +235,7 @@ export class Arena {
         g.strokeCircle(head.x, head.y, 19);
       }
     }
-    const fruitPoint = this.position(
-      'apple',
-      this.state.apple,
-      delta,
-      reducedMotion || ended ? 1 : 40,
-    );
+    const fruitPoint = this.fruitPosition(delta, reducedMotion || ended);
     this.apple(fruitPoint, reducedMotion, inspectingLoss);
     this.enemyBadges();
     this.bursts = this.bursts.filter((b) => b.life > 0);

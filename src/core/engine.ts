@@ -1,5 +1,6 @@
 import { awardHighlight } from './highlights';
 import { availableSkills } from './loadout';
+import { crossesWall, wallContains } from './walls';
 import {
   BEACON_MS,
   BEACON_CELLS,
@@ -72,6 +73,7 @@ export function createState(
     apple: { ...level.apple },
     facing: level.facing,
     moveTimer: 0,
+    moveCarry: 0,
     cooldownMs: 0,
     energy: MAX_ENERGY,
     rechargeMs: 0,
@@ -161,6 +163,7 @@ export function createState(
 export function setPaused(state: GameState, paused: boolean): void {
   if (state.status !== 'playing') return;
   state.paused = paused;
+  if (paused) state.moveCarry = 0;
   state.events = [];
 }
 function finish(state: GameState, status: 'won' | 'lost'): void {
@@ -230,8 +233,7 @@ function enterSwitches(state: GameState, previous: Point, next: Point): void {
   }
   applyPendingTerrain(state);
 }
-function moveApple(state: GameState, direction: Direction): boolean {
-  const next = ahead(state.apple, direction);
+function moveApple(state: GameState, next: Point): boolean {
   if (blocked(state, next)) return false;
   const previous = state.apple;
   state.apple = next;
@@ -268,6 +270,51 @@ function moveApple(state: GameState, direction: Direction): boolean {
     enterSwitches(state, previous, next);
   }
   return true;
+}
+function walkApple(
+  state: GameState,
+  direction: Direction,
+  movement?: Point,
+): void {
+  const primary = ahead(state.apple, direction);
+  state.moveTimer = MOVE_MS;
+  if (!movement?.x || !movement.y) {
+    moveApple(state, primary);
+    return;
+  }
+  const horizontal = primary.x !== state.apple.x;
+  const major = horizontal ? movement.x : movement.y;
+  const minor = horizontal ? movement.y : movement.x;
+  state.moveCarry += minor / Math.abs(major);
+  if (Math.abs(state.moveCarry) < 0.5) {
+    moveApple(state, primary);
+    return;
+  }
+  const offset = Math.sign(state.moveCarry);
+  const secondary = {
+    x: state.apple.x + (horizontal ? 0 : offset),
+    y: state.apple.y + (horizontal ? offset : 0),
+  };
+  state.moveCarry -= offset;
+  const diagonal = {
+    x: horizontal ? primary.x : secondary.x,
+    y: horizontal ? secondary.y : primary.y,
+  };
+  const outlines = state.level.wallOutlines ?? [];
+  // 方墙和动态障碍挡住墙角；斜墙按实际边线判断，挡住时沿空侧滑动。
+  const sideClear = (point: Point): boolean =>
+    !blocked(state, point) ||
+    outlines.some((outline) => wallContains(outline, point));
+  if (
+    sideClear(primary) &&
+    sideClear(secondary) &&
+    !outlines.some((outline) => crossesWall(outline, state.apple, diagonal)) &&
+    moveApple(state, diagonal)
+  ) {
+    state.moveTimer = Math.ceil((MOVE_MS * Math.SQRT2) / TICK_MS) * TICK_MS;
+    return;
+  }
+  if (!moveApple(state, primary)) moveApple(state, secondary);
 }
 /** 追踪目标可以变化；冲刺开始后只使用 snake.locked，不再取本目标。 */
 export function targetFor(state: GameState, snake: Snake): Point {
@@ -460,6 +507,8 @@ export function step(state: GameState, command: Command): void {
     if (state.beacon.remainingMs <= 0) state.beacon = null;
   }
   applyPendingTerrain(state);
+  if (!command.movement || command.direction !== state.facing)
+    state.moveCarry = 0;
   if (command.direction) state.facing = command.direction;
   const head = headAt(state, state.apple);
   if (head) {
@@ -485,8 +534,9 @@ export function step(state: GameState, command: Command): void {
     dodged = true;
     state.events.push({ type: 'dodge', ...state.apple });
     for (let i = 0; i < DODGE_CELLS && state.status === 'playing'; i++) {
-      if (!moveApple(state, state.facing)) break;
+      if (!moveApple(state, ahead(state.apple, state.facing))) break;
     }
+    state.moveCarry = 0;
     state.moveTimer = MOVE_MS;
   }
   if (state.status !== 'playing') return;
@@ -532,8 +582,7 @@ export function step(state: GameState, command: Command): void {
     state.beacon = { ...beaconLanding(state), remainingMs: BEACON_MS };
   }
   if (command.direction && !dodged && state.moveTimer === 0) {
-    moveApple(state, command.direction);
-    state.moveTimer = MOVE_MS;
+    walkApple(state, command.direction, command.movement);
   }
   if (state.status !== 'playing') return;
 

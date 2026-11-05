@@ -50,6 +50,7 @@ export interface Level {
   width: number;
   height: number;
   walls: Point[];
+  wallOutlines?: Point[][];
   gates?: Gate[];
   beaconEnabled?: boolean;
   chip?: MemoryChip;
@@ -112,6 +113,7 @@ export interface GameState {
   apple: Point;
   facing: Direction;
   moveTimer: number;
+  moveCarry: number;
   cooldownMs: number;
   energy: number;
   rechargeMs: number;
@@ -139,6 +141,8 @@ export interface GameState {
 }
 export interface Command {
   direction: Direction | null;
+  /** 普通移动的二维意图；direction 仍给出主轴与工具朝向。 */
+  movement?: Point;
   dodge?: boolean;
   utility?: boolean;
   beacon?: boolean;

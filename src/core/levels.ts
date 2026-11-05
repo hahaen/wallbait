@@ -1,6 +1,7 @@
 import { ahead, solid } from './engine';
 import { DIRECTIONS, SNAKE_RULES, TICK_MS } from './config';
 import type { Level, MemoryChip, Point, Spawn, Tactic } from './types';
+import { wallContains } from './walls';
 
 const h = (x: number, y: number, n: number): Point[] =>
   Array.from({ length: n }, (_, i) => ({ x: x + i, y }));
@@ -21,6 +22,44 @@ const gate = (
 ) => ({ id, cells, switches, initialClosed });
 const chapters = ['唤醒试验场', '改变追逐路线', '分配注意力', '最后的试验'];
 const partition = (y: number) => [...h(1, y, 5), ...h(7, y, 5)];
+const outline = (vertices: [number, number][]): Point[] =>
+  vertices.map(([x, y]) => ({ x, y }));
+const wallOutlines: Record<number, Point[][]> = {
+  1: [
+    outline([
+      [8.05, 13.91],
+      [8.08, 13.46],
+      [8.57, 13.05],
+      [8.94, 13.28],
+      [8.96, 13.91],
+    ]),
+  ],
+  7: [
+    outline([
+      [6.05, 4.44],
+      [6.68, 4.05],
+      [6.95, 4.29],
+      [6.95, 8.05],
+      [9.84, 8.05],
+      [9.95, 8.51],
+      [9.59, 8.93],
+      [6.26, 8.93],
+      [6.05, 8.61],
+    ]),
+  ],
+  14: [
+    outline([
+      [5.05, 6.8],
+      [5.79, 6.04],
+      [7.42, 6.04],
+      [7.94, 6.38],
+      [7.94, 8.29],
+      [7.21, 8.94],
+      [5.58, 8.94],
+      [5.05, 8.56],
+    ]),
+  ],
+};
 const chips: Record<number, MemoryChip> = {
   7: {
     x: 2,
@@ -67,6 +106,16 @@ function stage(
     20: [0, 1, 2],
   };
   for (const index of enhanced[id] ?? []) snakes[index]!.elite = true;
+  const width = 13,
+    height = 15;
+  const outlines = wallOutlines[id];
+  if (outlines)
+    for (let y = 1; y < height - 1; y++)
+      for (let x = 1; x < width - 1; x++) {
+        const cell = { x, y };
+        if (outlines.some((shape) => wallContains(shape, cell)))
+          walls.push(cell);
+      }
   return {
     id,
     name,
@@ -75,12 +124,13 @@ function stage(
     intent,
     decision,
     failure,
-    width: 13,
-    height: 15,
+    width,
+    height,
     apple,
     facing: 'up',
     snakes: snakes.map((s) => ({ ...s, delayMs: (s.delayMs ?? 0) + 700 })),
     walls,
+    ...(outlines ? { wallOutlines: outlines } : {}),
     gates,
     beaconEnabled: id >= 5,
     ...(chips[id] ? { chip: chips[id] } : {}),
@@ -128,7 +178,7 @@ export const LEVELS: Level[] = [
     '太早走开导致冲空，或沿蛇头方向逃跑。',
     { x: 8, y: 12 },
     [bot(8, 9)],
-    [{ x: 8, y: 13 }],
+    [],
     [],
     18000,
     2,
@@ -233,7 +283,7 @@ export const LEVELS: Level[] = [
     '隔墙放信标吸引不到冲刺，或闪避被转角挡住。',
     { x: 9, y: 11 },
     [bot(3, 4, 'cautious')],
-    [...v(6, 4, 5), ...h(7, 8, 3), ...h(2, 11, 3)],
+    h(2, 11, 3),
     [],
     36000,
     4,
@@ -358,9 +408,6 @@ export const LEVELS: Level[] = [
     { x: 9, y: 11 },
     [bot(2, 3, 'cautious'), bot(10, 3, 'swift', 600)],
     [
-      ...h(5, 6, 3),
-      ...h(5, 7, 3),
-      ...h(5, 8, 3),
       { x: 9, y: 4 },
       { x: 3, y: 10 },
     ],

@@ -51,6 +51,55 @@ describe('移动与闪避', () => {
     ticks(s, 10, { direction: 'up' });
     expect(s.apple.y).toBe(10);
   });
+  it('按摇杆斜率分配直步与斜步，斜步按距离延长间隔，松手不继续走', () => {
+    const s = make();
+    const shallow: Command = {
+      direction: 'right',
+      movement: { x: 1, y: -1 / 3 },
+    };
+    step(s, shallow);
+    expect(s.apple).toEqual({ x: 7, y: 10 });
+    ticks(s, MOVE_MS / TICK_MS, shallow);
+    expect(s.apple).toEqual({ x: 8, y: 9 });
+    expect(s.moveTimer).toBeGreaterThan(MOVE_MS);
+    ticks(s, s.moveTimer / TICK_MS, shallow);
+    expect(s.apple).toEqual({ x: 9, y: 9 });
+    ticks(s, 20);
+    expect(s.apple).toEqual({ x: 9, y: 9 });
+    expect(s.moveCarry).toBe(0);
+  });
+  it('斜走遇方墙沿空侧滑动，遇到目标格蛇头立即判负', () => {
+    const diagonal: Command = { direction: 'right', movement: { x: 1, y: -1 } };
+    const s = make();
+    s.level = { ...s.level, walls: [{ x: 7, y: 10 }] };
+    step(s, diagonal);
+    expect(s.apple).toEqual({ x: 6, y: 9 });
+    const b = make();
+    Object.assign(b.snakes[0]!, { x: 7, y: 9 });
+    step(b, diagonal);
+    expect(b.loss).toMatchObject({ kind: 'contact', cell: { x: 7, y: 9 } });
+  });
+  it('可绕过斜墙切掉的角，仍会被石墙主体挡住', () => {
+    const s = createState({ ...LEVELS[0]!, apple: { x: 7, y: 13 } });
+    step(s, { direction: 'right', movement: { x: 1, y: -1 } });
+    expect(s.apple).toEqual({ x: 8, y: 12 });
+    ticks(s, s.moveTimer / TICK_MS, { direction: 'down' });
+    expect(s.apple).toEqual({ x: 8, y: 12 });
+    const b = createState({
+      ...LEVELS[0]!,
+      apple: { x: 7, y: 13 },
+      wallOutlines: [
+        [
+          { x: 8, y: 13 },
+          { x: 9, y: 13 },
+          { x: 9, y: 14 },
+          { x: 8, y: 14 },
+        ],
+      ],
+    });
+    step(b, { direction: 'right', movement: { x: 1, y: -1 } });
+    expect(b.apple).toEqual({ x: 7, y: 12 });
+  });
   it('闪避两格、冷却不能连用，当前方向优先且静止沿最后朝向', () => {
     const s = make();
     step(s, { direction: 'left', dodge: true });

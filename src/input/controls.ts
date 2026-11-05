@@ -1,4 +1,5 @@
-import type { Command, Direction } from '../core/types';
+import { VECTOR } from '../core/config';
+import type { Command, Direction, Point } from '../core/types';
 import { joystickIntent } from './joystick';
 
 const KEY_DIRECTION: Record<string, Direction> = {
@@ -11,8 +12,9 @@ const KEY_DIRECTION: Record<string, Direction> = {
   ArrowLeft: 'left',
   KeyA: 'left',
 };
+type MoveIntent = { direction: Direction; movement?: Point };
 export class Controls {
-  private held = new Map<string, Direction>();
+  private held = new Map<string, MoveIntent>();
   private dodge = false;
   private beacon = false;
   private dodgeSource: string | null = null;
@@ -23,8 +25,8 @@ export class Controls {
   private stickPointer: number | null = null;
   private stickDirection: Direction | null = null;
   private stickBounds?: DOMRect;
-  private tap: { source: string; direction: Direction } | null = null;
-  private dodgeDirection: Direction | null = null;
+  private tap: { source: string; intent: MoveIntent } | null = null;
+  private dodgeIntent: MoveIntent | null = null;
   private abort = new AbortController();
   constructor(root: HTMLElement, active: () => boolean, pause: () => void) {
     const signal = this.abort.signal;
@@ -193,24 +195,28 @@ export class Controls {
       event.clientX - bounds.x - bounds.width / 2,
       event.clientY - bounds.y - bounds.height / 2,
       Math.min(bounds.width, bounds.height) / 2,
-      this.stickDirection,
     );
     stick.style.setProperty('--stick-x', `${intent.x}px`);
     stick.style.setProperty('--stick-y', `${intent.y}px`);
-    if (intent.direction === this.stickDirection) return;
     const source = `pointer${event.pointerId}`;
-    this.held.delete(source);
-    if (this.tap?.source === source) this.tap = null;
-    this.stickDirection = intent.direction;
-    this.pointerButton(
-      event.pointerId,
-      intent.direction
-        ? stick.querySelector<HTMLButtonElement>(
-            `[data-direction="${intent.direction}"]`,
-          )!
-        : undefined,
-    );
-    if (intent.direction) this.hold(source, intent.direction);
+    if (intent.direction !== this.stickDirection) {
+      this.stickDirection = intent.direction;
+      this.pointerButton(
+        event.pointerId,
+        intent.direction
+          ? stick.querySelector<HTMLButtonElement>(
+              `[data-direction="${intent.direction}"]`,
+            )!
+          : undefined,
+      );
+    }
+    if (intent.direction && intent.movement) {
+      const { x, y } = intent.movement;
+      this.hold(source, intent.direction, x && y ? intent.movement : undefined);
+    } else {
+      this.held.delete(source);
+      if (this.tap?.source === source) this.tap = null;
+    }
   }
   private resetStick(): void {
     this.stickPointer = null;
@@ -221,11 +227,10 @@ export class Controls {
     this.stick?.style.setProperty('--stick-y', '0px');
   }
   sample(): Command {
-    const directions = [...this.held.values()];
+    const intent = this.dodge ? this.dodgeIntent : this.moveIntent();
     const result = {
-      direction: this.dodge
-        ? this.dodgeDirection
-        : (directions.at(-1) ?? this.tap?.direction ?? null),
+      direction: null,
+      ...intent,
       dodge: this.dodge,
       beacon: this.beacon,
     };
@@ -234,10 +239,30 @@ export class Controls {
     this.tap = null;
     return result;
   }
-  private hold(source: string, direction: Direction): void {
+  private moveIntent(): MoveIntent | null {
+    const entries = [...this.held].reverse();
+    const latest = entries[0];
+    if (!latest) return this.tap?.intent ?? null;
+    const [source, intent] = latest;
+    if (!KEY_DIRECTION[source]) return intent;
+    const { x, y } = VECTOR[intent.direction];
+    const perpendicular = entries.find(
+      ([key, other]) =>
+        KEY_DIRECTION[key] &&
+        VECTOR[other.direction].x * x + VECTOR[other.direction].y * y === 0,
+    );
+    if (!perpendicular) return intent;
+    const other = VECTOR[perpendicular[1].direction];
+    return {
+      direction: intent.direction,
+      movement: { x: x + other.x, y: y + other.y },
+    };
+  }
+  private hold(source: string, direction: Direction, movement?: Point): void {
+    const intent = movement ? { direction, movement } : { direction };
     this.held.delete(source);
-    this.held.set(source, direction);
-    this.tap = { source, direction };
+    this.held.set(source, intent);
+    this.tap = { source, intent: this.moveIntent()! };
   }
   private pointerButton(id: number, button?: HTMLButtonElement): void {
     const previous = this.pointers.get(id);
@@ -252,8 +277,7 @@ export class Controls {
   private queueDodge(source = 'keyboard'): void {
     this.dodge = true;
     this.dodgeSource = source;
-    this.dodgeDirection =
-      [...this.held.values()].at(-1) ?? this.tap?.direction ?? null;
+    this.dodgeIntent = this.moveIntent();
   }
   private queueBeacon(source: string): void {
     this.beacon = true;
@@ -263,7 +287,7 @@ export class Controls {
     this.held.clear();
     this.dodge = false;
     this.beacon = false;
-    this.dodgeDirection = null;
+    this.dodgeIntent = null;
     this.dodgeSource = null;
     this.beaconSource = null;
     this.tap = null;

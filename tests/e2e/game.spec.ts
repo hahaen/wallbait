@@ -179,7 +179,7 @@ test('真实浏览器多点触控移动与闪避同时按、取消后释放', as
   await expect(page.locator('.pressed')).toHaveCount(0);
 });
 
-test('输入边界：最近方向优先、快速松手不丢闪避朝向、销毁释放', async ({
+test('输入边界：垂直方向键组合斜走、快速松手不丢闪避朝向、销毁释放', async ({
   page,
 }) => {
   await page.goto('/');
@@ -212,7 +212,10 @@ test('输入边界：最近方向优先、快速松手不丢闪避朝向、销�
     const destroyed = controls.sample();
     return { latest, fallback, quickDodge, stopped, cleared, destroyed };
   });
-  expect(result.latest.direction).toBe('up');
+  expect(result.latest).toMatchObject({
+    direction: 'up',
+    movement: { x: 1, y: -1 },
+  });
   expect(result.fallback.direction).toBe('right');
   expect(result.quickDodge).toEqual({
     direction: 'right',

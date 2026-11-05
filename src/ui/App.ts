@@ -196,7 +196,7 @@ export class App {
       <div class="arena-slot"><div id="arena" role="img" aria-busy="true" aria-label="对局地图：红苹果、三种蛇、石墙、字母闸门、残骸与可选收藏"><span class="loading">正在摆好墙…</span></div></div>
       <div class="field-info"><span id="mechanisms" class="mechanisms"></span><span id="field-notes" class="field-notes" role="status" aria-live="polite"></span><span class="play-status" id="play-status" aria-live="polite"></span></div>
       <aside class="loss-inspection" hidden aria-label="失败现场说明"><b id="loss-title" tabindex="-1"></b><p id="loss-advice"></p><small>红圈 ×：碰撞格 · 金色框：致命敌人的路线</small><div>${button('result', '返回结算')}${button('retry', '再试一次', 'primary')}</div></aside>
-      <div class="controls"><div class="dpad joystick" data-joystick role="group" aria-label="移动摇杆"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span class="stick-knob" aria-hidden="true"></span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="skills"><button class="skill dodge" data-dodge aria-label="闪避"><span class="skill-symbol" aria-hidden="true">↟</span><b>闪避</b><small id="dodge-text">1 格电</small></button><button class="skill beacon" data-beacon aria-label="信标" ${level.beaconEnabled ? '' : 'disabled'}><span aria-hidden="true">${beaconIcon}</span><b>信标</b><small id="beacon-text">${level.beaconEnabled ? '1 格电' : '未启用'}</small></button></div></div>
+      <div class="controls"><div class="dpad joystick" data-joystick role="group" aria-label="全向移动摇杆"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span class="stick-knob" aria-hidden="true"></span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="skills"><button class="skill dodge" data-dodge aria-label="闪避"><span class="skill-symbol" aria-hidden="true">↟</span><b>闪避</b><small id="dodge-text">1 格电</small></button><button class="skill beacon" data-beacon aria-label="信标" ${level.beaconEnabled ? '' : 'disabled'}><span aria-hidden="true">${beaconIcon}</span><b>信标</b><small id="beacon-text">${level.beaconEnabled ? '1 格电' : '未启用'}</small></button></div></div>
       <footer class="play-footer"><span>方向键 / WASD · 空格闪避 · E 信标 · P 暂停</span></footer></section>`,
     );
     this.root
@@ -512,7 +512,7 @@ export class App {
       `<h2 id="dialog-title">你是苹果，借墙脱身</h2><div class="help-art">${heroArt}</div>
       <ol class="instructions"><li><b>引到墙边。</b>蛇冲出后不会转弯。</li><li><b>横向闪开。</b>普通走位或闪避都行，别碰蛇头。</li><li><b>全撞墙，就过关。</b>蛇身不伤人。</li></ol>
       <details class="brief-details"><summary>技能与机关</summary><p>闪避走两格；信标朝前投出，骗蛇追它。共用两格电，每 ${RECHARGE_MS / 1000} 秒恢复一格。</p><p>第6关可选脉冲，暂停近处的蛇；第9关可选磁推，推开面前残骸。</p><p>踩字母踏板切换同字母门。空心残骸可通过，实心残骸会挡路。</p><p>嫩绿直追，奶黄预判，浅紫用信标骗。小星星表示强化。</p></details>
-      <details class="brief-details"><summary>按键与收藏</summary><p>方向键 / WASD 移动，空格用工具，E 放信标，P 暂停。</p><p>过关、时间、本关目标各一星。收藏通关后保存，选关页可查看。</p></details>${button('close', '知道了', 'primary')}`,
+      <details class="brief-details"><summary>按键与收藏</summary><p>拖摇杆自由走位，方向键 / WASD 可组合斜走。空格用工具，E 放信标，P 暂停。</p><p>过关、时间、本关目标各一星。收藏通关后保存，选关页可查看。</p></details>${button('close', '知道了', 'primary')}`,
     );
   }
   private settings(): void {
