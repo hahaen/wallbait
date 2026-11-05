@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { COOLDOWN_MS, MOVE_MS, TICK_MS } from '../src/core/config';
 import { createState, setPaused, stars, step } from '../src/core/engine';
-import { LEVELS, validateLevel } from '../src/core/levels';
+import { LEVELS, validateLevel } from './fixtures/levels';
 import type { Command, GameState } from '../src/core/types';
 
 const make = (): GameState =>

@@ -4,6 +4,7 @@ import type {
   Command,
   EndlessScore,
   GameState,
+  EndlessState,
   Level,
   Point,
   SnakeKind,
@@ -12,7 +13,6 @@ import type {
   WaveRegion,
 } from './types';
 
-export const ENDLESS_UNLOCK = 6; // 第 5 关通关后。
 const WAVE_BREAK_MS = 2400;
 const SPAWN_GRACE_MS = 900;
 const MIN_SPAWN_DISTANCE = 6; // 在三类蛇的直冲触发范围之外。
@@ -43,6 +43,7 @@ export const ENDLESS_MAP: Level = {
   facing: 'up',
   snakes: firstWave,
   beaconEnabled: true,
+  utilitySkills: ['dodge', 'pulse', 'magnet'],
   parMs: 1,
   parDodges: 0,
   walls: [
@@ -195,19 +196,17 @@ function randomFor(seed: number, wave: number): () => number {
 export function createEndless(
   seed: number,
   utility: UtilitySkill,
-  unlocked: number,
-): GameState {
-  const utilitySkills: UtilitySkill[] = ['dodge', 'pulse'];
-  if (unlocked >= 9) utilitySkills.push('magnet');
-  const state = createState({ ...ENDLESS_MAP, utilitySkills }, utility);
-  state.endless = {
-    seed: seed >>> 0,
-    wave: 1,
-    cleared: 0,
-    defeated: 0,
-    nextWaveMs: 0,
+): EndlessState {
+  return {
+    ...createState(ENDLESS_MAP, utility),
+    endless: {
+      seed: seed >>> 0,
+      wave: 1,
+      cleared: 0,
+      defeated: 0,
+      nextWaveMs: 0,
+    },
   };
-  return state;
 }
 
 function nextSpawns(
@@ -277,9 +276,9 @@ function nextSpawns(
   return spawns;
 }
 
-export function stepEndless(state: GameState, command: Command): void {
+export function stepEndless(state: EndlessState, command: Command): void {
   const run = state.endless;
-  if (!run || state.paused || state.status !== 'playing') return;
+  if (state.paused || state.status !== 'playing') return;
   step(state, command);
   run.defeated += state.events.filter((event) => event.type === 'wall').length;
   if (state.status !== 'playing') return;

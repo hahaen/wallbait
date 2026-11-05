@@ -135,16 +135,14 @@ test('角色与手机操作区实拍，失败默认不出现技术标记', async
   await page.screenshot({
     path: `test-results/characters-play-${info.project.name}.png`,
   });
-  await page.clock.runFor(500);
-  await expect(page.locator('.play-screen')).toHaveClass(/ending/);
-  await expect(page.locator('dialog')).toHaveCount(0);
+  await page.clock.runFor(5300);
   await expect(page.locator('#play-status')).toHaveText(
     '被逮住了，下次再骗它！',
   );
   await page.screenshot({
     path: `test-results/characters-caught-${info.project.name}.png`,
   });
-  await page.clock.runFor(1400);
+  await page.getByText('更多选择', { exact: true }).click({ force: true });
   await page
     .getByRole('button', { name: '查看失败现场' })
     .click({ force: true });

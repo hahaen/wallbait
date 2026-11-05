@@ -1,7 +1,13 @@
-import { ahead, solid } from './engine';
-import { DIRECTIONS, SNAKE_RULES, TICK_MS } from './config';
-import type { Level, MemoryChip, Point, Spawn, Tactic } from './types';
-import { wallContains } from './walls';
+import { ahead, solid } from '../../src/core/engine';
+import { DIRECTIONS, SNAKE_RULES, TICK_MS } from '../../src/core/config';
+import type {
+  Level,
+  MemoryChip,
+  Point,
+  Spawn,
+  Tactic,
+} from '../../src/core/types';
+import { wallContains } from '../../src/core/walls';
 
 const h = (x: number, y: number, n: number): Point[] =>
   Array.from({ length: n }, (_, i) => ({ x: x + i, y }));

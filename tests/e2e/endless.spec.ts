@@ -1,43 +1,16 @@
 import { expect, test, type Page } from '@playwright/test';
 
-async function unlock(page: Page): Promise<void> {
-  await page.addInitScript(() => {
-    if (localStorage.getItem('wallbait.save.v2')) return;
-    localStorage.setItem(
-      'wallbait.save.v2',
-      JSON.stringify({
-        version: 2,
-        campaign: 'foundry-v2',
-        muted: true,
-        reducedMotion: true,
-        best: Object.fromEntries(
-          Array.from({ length: 8 }, (_, i) => [
-            i + 1,
-            { stars: 1, timeMs: 1000, dodges: 0, beacons: 0 },
-          ]),
-        ),
-      }),
-    );
-  });
-}
-
-test('第 5 关前首页展示解锁条件', async ({ page }) => {
-  await page.goto('/');
-  await expect(
-    page.getByRole('button', { name: '无尽挑战 · 第 5 关后解锁' }),
-  ).toBeDisabled();
-});
-
 test('首波清空后全览出现两个进场区，走位切换并原地接战', async ({
   page,
 }, info) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await unlock(page);
   await page.goto('/');
-  await page.getByRole('button', { name: '无尽挑战', exact: true }).click();
+  await page.getByRole('button', { name: '开始游戏', exact: true }).click();
   await expect(page.getByText('回环石园 · 55 × 61 格')).toBeVisible();
-  await expect(page.getByRole('button', { name: /磁推/ })).toBeVisible();
+  await expect(
+    page.getByRole('dialog').getByRole('button', { name: /磁推/ }),
+  ).toBeVisible();
   await page.getByRole('button', { name: '开始挑战' }).click();
   const canvas = page.locator('canvas');
   const original = await canvas.elementHandle();
@@ -196,9 +169,8 @@ async function applesOnCanvas(
 test('镜头跟随到地图边界，左上全览标出苹果的实际移动', async ({
   page,
 }, info) => {
-  await unlock(page);
   await page.goto('/');
-  await page.getByRole('button', { name: '无尽挑战', exact: true }).click();
+  await page.getByRole('button', { name: '开始游戏', exact: true }).click();
   await page.getByRole('button', { name: '开始挑战' }).click();
   const start = await applesOnCanvas(page);
   expect(start.world.pixels).toBeGreaterThan(60);

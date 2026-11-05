@@ -15,7 +15,7 @@ test('资源就绪前不能用按钮或快捷键开局，就绪后才推进时�
   await expect(begin).toBeDisabled();
   await page.keyboard.press('p');
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('heading', { name: '试验准备' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '无尽挑战' })).toBeVisible();
   await expect(page.locator('#clock')).toHaveText('0.0s');
   release();
   await expect(begin).toBeEnabled();
@@ -52,7 +52,7 @@ test('加载失败保持冻结，快捷键不能关闭错误，重新加载页�
   await expect(page.locator('canvas')).toBeVisible();
 });
 
-test('离开加载中的关卡后，迟到的资源不会复活旧场景', async ({ page }) => {
+test('离开加载中的无尽地图后，迟到的资源不会复活旧场景', async ({ page }) => {
   let release!: () => void;
   const pending = new Promise<void>((resolve) => {
     release = resolve;
@@ -63,7 +63,7 @@ test('离开加载中的关卡后，迟到的资源不会复活旧场景', async
   });
   await page.goto('/');
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
-  await page.getByRole('button', { name: '返回选关' }).click();
+  await page.getByRole('button', { name: '返回首页' }).click();
   const response = page.waitForResponse('**/src/game/createGame.ts*');
   release();
   await response;
@@ -72,30 +72,16 @@ test('离开加载中的关卡后，迟到的资源不会复活旧场景', async
     const path = '/src/game/createGame.ts';
     await import(path);
   });
-  await expect(page.getByRole('heading', { name: '选一堵墙' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: '撞墙了么', exact: true }),
+  ).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
 });
 
-test('后期准备页在小屏、横屏和放大文字下始终保留开始与返回入口', async ({
+test('无尽准备页在小屏、横屏和放大文字下始终保留开始与返回入口', async ({
   page,
 }, info) => {
   test.setTimeout(120000);
-  await page.addInitScript(() =>
-    localStorage.setItem(
-      'wallbait.save.v2',
-      JSON.stringify({
-        version: 2,
-        campaign: 'foundry-v2',
-        reducedMotion: true,
-        best: Object.fromEntries(
-          Array.from({ length: 10 }, (_, i) => [
-            String(i + 1),
-            { timeMs: 10000, dodges: 0, beacons: 0, stars: 1 },
-          ]),
-        ),
-      }),
-    ),
-  );
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const size of [
     { width: 320, height: 568 },
@@ -105,7 +91,7 @@ test('后期准备页在小屏、横屏和放大文字下始终保留开始与�
   ]) {
     await page.setViewportSize(size);
     await page.goto('/');
-    await page.getByRole('button', { name: '继续挑战 · 第 11 关' }).click();
+    await page.getByRole('button', { name: '开始游戏' }).click();
     await expect(page.locator('[data-action="begin"]')).toBeEnabled();
     await page.evaluate(() => {
       document.documentElement.style.fontSize = '125%';
@@ -113,7 +99,7 @@ test('后期准备页在小屏、横屏和放大文字下始终保留开始与�
     await page.locator('summary').click();
     for (const selector of [
       '[data-action="begin"]',
-      '.panel-actions [data-action="levels"]',
+      '.panel-actions [data-action="home"]',
     ]) {
       const bounds = (await page.locator(selector).boundingBox())!;
       expect(bounds.y).toBeGreaterThanOrEqual(0);
@@ -192,17 +178,4 @@ test('聚焦后的方向、工具与信标支持 Enter，修饰键不会误触�
   expect(result.utility.dodge).toBe(true);
   expect(result.beacon.beacon).toBe(true);
   expect(result.pauses).toBe(0);
-  await page.clock.install({ time: new Date('2026-11-04T04:00:00Z') });
-  await page.clock.pauseAt(new Date('2026-11-04T04:00:01Z'));
-  await page
-    .getByRole('button', { name: '开始游戏', exact: true })
-    .click({ force: true });
-  await expect(page.locator('[data-action="begin"]')).toBeEnabled();
-  await page.locator('[data-action="begin"]').click({ force: true });
-  await page.clock.runFor(916);
-  await page.getByRole('button', { name: '向右移动' }).focus();
-  await page.keyboard.press('Enter');
-  await page.clock.runFor(2000);
-  await expect(page.getByRole('heading', { name: '撞墙了吧！' })).toBeVisible();
-  await expect(page.locator('.result-stats')).toContainText('0 / 0');
 });

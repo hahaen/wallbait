@@ -165,3 +165,5 @@ export interface Command {
   utility?: boolean;
   beacon?: boolean;
 }
+
+export type EndlessState = GameState & { endless: EndlessProgress };

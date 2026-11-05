@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createState, step } from '../src/core/engine';
-import { LEVELS } from '../src/core/levels';
+import { LEVELS } from './fixtures/levels';
 import {
   dangerText,
   groupEnemies,

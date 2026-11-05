@@ -162,25 +162,12 @@ button.text-button:hover {
   display: block;
   width: 100%;
 }
-.home-pitch {
-  font-size: 18px;
-  font-weight: 800;
-  margin: 12px 0 6px;
-}
-.home-instruction {
-  color: var(--muted);
-  font-size: 14px;
-  margin: 0 0 24px;
-}
 .home-actions {
   display: grid;
   gap: 14px;
 }
-.endless-entry:not(:disabled) {
-  background: #e3ebc4;
-}
 .endless-best {
-  margin: -6px 0 0;
+  margin: 0;
   color: var(--muted);
   font-size: 12px;
 }
@@ -188,103 +175,6 @@ button.text-button:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-}
-.home-footer {
-  margin-top: auto;
-  padding-top: 28px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--muted);
-}
-.legacy-note {
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.5;
-  margin: 12px 0 0;
-}
-.stars {
-  color: #91671f;
-  letter-spacing: 2px;
-}
-.level-screen {
-  overflow-y: auto;
-}
-.page-header {
-  display: flex;
-  gap: 8px;
-  justify-content: space-between;
-  align-items: center;
-}
-.page-header h1 {
-  font-size: 26px;
-  margin: 0;
-  font-weight: 900;
-  transform: rotate(-2deg);
-}
-.page-header .quiet {
-  padding-left: 0;
-}
-.page-intro {
-  font-size: 14px;
-  color: var(--muted);
-  margin: 14px 0 28px;
-  line-height: 1.6;
-}
-.chapter {
-  margin: 0 0 28px;
-}
-.chapter h2 {
-  font-size: 18px;
-  margin: 0 0 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.chapter h2 > span {
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 600;
-}
-.level-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
-}
-.level {
-  min-height: 94px;
-  padding: 10px 2px;
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-.level b {
-  font-size: 24px;
-}
-.level span {
-  font-size: 12px;
-  line-height: 1.4;
-  font-weight: 700;
-}
-.level small {
-  font-size: 11px;
-  letter-spacing: 0;
-}
-.level.current {
-  background: #dfecb5;
-  box-shadow: 0 4px 0 #a8bb72;
-}
-.level.locked {
-  background: #ece3d4;
-  border-color: #b8ab98;
-  box-shadow: none;
-}
-.footnote {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.8;
 }
 .play-screen {
   display: grid;
@@ -603,9 +493,6 @@ button.beacon {
 .beacon small:empty {
   display: none;
 }
-button.beacon:disabled {
-  visibility: hidden;
-}
 button.skill.cooling {
   background: #e7dbc5;
   border-color: #b4a181;
@@ -701,7 +588,6 @@ button.skill.cooling {
   margin-top: 12px;
 }
 .panel.preparation[open],
-.panel.win[open],
 .panel.lose[open] {
   display: flex;
   flex-direction: column;
@@ -742,11 +628,6 @@ summary {
 summary:focus-visible {
   outline-offset: -3px;
 }
-.panel-symbol {
-  font-size: 36px;
-  margin: 8px 0;
-  color: #8a9c49;
-}
 .result-apple {
   width: 78px;
   margin: 0 auto;
@@ -762,13 +643,6 @@ summary:focus-visible {
   margin: 0;
   font-size: 12px;
   color: var(--muted);
-}
-.result-stars {
-  color: #d89b28;
-  -webkit-text-stroke: 1px #815c2b;
-  font-size: 36px;
-  letter-spacing: 6px;
-  line-height: 1.5;
 }
 .result-stats {
   display: flex;
@@ -787,18 +661,9 @@ summary:focus-visible {
   font-size: 20px;
   color: var(--ink);
 }
-.panel p.result-time {
-  font-size: 15px;
-  margin: 8px 0;
-  color: var(--muted);
-}
 .panel p.score-rule {
   font-size: 12px;
   color: var(--muted);
-}
-.loss-cause {
-  color: #a03f2d;
-  font-weight: 700;
 }
 .result-options {
   text-align: left;
@@ -825,27 +690,6 @@ summary:focus-visible {
 .instructions li {
   margin-bottom: 12px;
 }
-.enemy-guide {
-  text-align: left;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-.enemy-guide p {
-  margin: 12px 0;
-  font-size: 13px;
-}
-.enemy-guide b {
-  display: block;
-}
-.normal-color {
-  color: #56712a;
-}
-.swift-color {
-  color: #956021;
-}
-.cautious-color {
-  color: #7a598d;
-}
 .setting-row {
   display: flex;
   justify-content: space-between;
@@ -870,70 +714,6 @@ summary:focus-visible {
 }
 .save-warning:empty {
   margin: 0;
-}
-.chip-label,
-.panel p.chip-note {
-  color: #856420;
-}
-.panel p.chip-note {
-  font-size: 12px;
-}
-.result-highlights {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px;
-}
-.result-highlights span {
-  color: #596b30;
-  font-size: 12px;
-}
-.collection-notes {
-  border-top: 1px solid var(--line);
-  margin-top: 24px;
-  padding-top: 12px;
-}
-.collection-notes h2 {
-  font-size: 19px;
-}
-.collection-notes h2 small {
-  display: block;
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 500;
-}
-.highlight-archive {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-.highlight-archive p,
-.memory-card {
-  margin: 0;
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 13px;
-  line-height: 1.6;
-  background: #f1e7d5;
-}
-.highlight-archive small {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-}
-.highlight-archive .earned b {
-  color: #56712a;
-}
-.memory-card {
-  margin-top: 10px;
-}
-.memory-card b {
-  color: #856420;
-}
-.memory-card p {
-  margin: 4px 0 0;
-  color: var(--muted);
 }
 .loadout h3 {
   margin: 12px 0 8px;
@@ -968,12 +748,6 @@ summary:focus-visible {
   line-height: 1.5;
   color: var(--muted);
 }
-.zone-note {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.6;
-  margin: 0 0 12px;
-}
 @media (pointer: coarse) {
   .play-footer {
     display: none;
@@ -991,12 +765,6 @@ summary:focus-visible {
   .joystick {
     width: 152px;
     height: 152px;
-  }
-  .level-grid {
-    gap: 5px;
-  }
-  .level span {
-    font-size: 11px;
   }
 }
 @media (max-width: 340px) {
@@ -1051,15 +819,6 @@ summary:focus-visible {
   .hero-art {
     max-width: 310px;
     margin-top: 8px;
-  }
-  .home-instruction {
-    margin-bottom: 16px;
-  }
-  .home-footer {
-    padding-top: 20px;
-  }
-  .home-pitch {
-    margin-top: 4px;
   }
 }
 @media (max-height: 500px) and (min-width: 600px) {

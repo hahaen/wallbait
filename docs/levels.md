@@ -1,6 +1,6 @@
 # 20 关设计与可复现通关方案
 
-本文件由 [回放报告器](../tests/replay-report.test.ts) 读取 [关卡配置](../src/core/levels.ts) 与 [命令文件](../tests/fixtures/solutions.json) 生成。四章各五关，地图为 13 × 15 格；名字、设计意图、决策和失败原因以关卡配置为准。
+以下是已退出游戏的普通关卡，仅用于规则回归。本文件由 [回放报告器](../tests/replay-report.test.ts) 读取 [关卡配置](../tests/fixtures/levels.ts) 与 [命令文件](../tests/fixtures/solutions.json) 生成。四章各五关，地图为 13 × 15 格；名字、设计意图、决策和失败原因以关卡配置为准。
 
 以下是自动搜索得到的高效可行解，不是人类首玩成绩，也不是最优解证明。正常出生后只发送玩家命令，从不修改坐标、敌人状态或胜负。回放证明可解；难度与手感由实际试玩另行判断，结果见 [验收记录](testing/README.md)。
 

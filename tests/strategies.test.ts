@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { afterAll, expect, it } from 'vitest';
-import { LEVELS } from '../src/core/levels';
+import { LEVELS } from './fixtures/levels';
 import { runStrategy, STRATEGIES, STRATEGY_LIMIT_MS } from './strategies';
 import type { StrategyId, StrategyResult } from './strategies';
 

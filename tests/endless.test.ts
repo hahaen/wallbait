@@ -7,17 +7,17 @@ import {
   ENDLESS_MAP,
   stepEndless,
 } from '../src/core/endless';
-import { validateLevel } from '../src/core/levels';
-import type { GameState, Point, WaveRegion } from '../src/core/types';
+import { validateLevel } from './fixtures/levels';
+import type { EndlessState, Point, WaveRegion } from '../src/core/types';
 import { defaults, readSave, writeSave } from '../src/storage/save';
 
 const idle = { direction: null };
 const inRegion = (p: Point, r: WaveRegion): boolean =>
   p.x >= r.x && p.x < r.x + r.width && p.y >= r.y && p.y < r.y + r.height;
-const tick = (state: GameState, count: number): void => {
+const tick = (state: EndlessState, count: number): void => {
   for (let i = 0; i < count; i++) stepEndless(state, idle);
 };
-const nextWave = (state: GameState): void => {
+const nextWave = (state: EndlessState): void => {
   // 将存活蛇安排在撞墙前一格，使用真实撞击与波次推进。
   for (const [i, snake] of state.snakes.entries()) {
     if (!snake.alive) continue;
@@ -30,14 +30,14 @@ const nextWave = (state: GameState): void => {
     });
   }
   stepEndless(state, idle);
-  tick(state, state.endless!.nextWaveMs / TICK_MS);
+  tick(state, state.endless.nextWaveMs / TICK_MS);
 };
 
 describe('无尽挑战', () => {
   it('地图尺寸正确，两组闸门任意开合时，所有可走格仍连通', () => {
     expect(ENDLESS_MAP).toMatchObject({ width: 55, height: 61 });
     expect(validateLevel(ENDLESS_MAP)).toEqual([]);
-    const state = createEndless(12, 'dodge', 6);
+    const state = createEndless(12, 'dodge');
     for (const mask of [0, 1, 2, 3]) {
       state.gates.forEach(
         (gate, i) => (gate.closed = Boolean(mask & (1 << i))),
@@ -52,7 +52,7 @@ describe('无尽挑战', () => {
   });
 
   it('正常诱撞首波后，可以留守或走到另一区接战，波间状态连续', () => {
-    const state = createEndless(12, 'dodge', 6);
+    const state = createEndless(12, 'dodge');
     const level = state.level;
     const gate = state.gates[0]!;
     gate.closed = true;
@@ -66,7 +66,7 @@ describe('无尽挑战', () => {
     stepEndless(state, { direction: 'down', beacon: true });
     expect(state.beacon).toMatchObject({ x: 27, y: 30 });
     stepEndless(state, { direction: 'right', dodge: true });
-    for (let i = 0; i < 150 && !state.endless!.nextWaveMs; i++)
+    for (let i = 0; i < 150 && !state.endless.nextWaveMs; i++)
       stepEndless(state, idle);
     expect(state.status).toBe('playing');
     expect(state.endless).toMatchObject({
@@ -82,7 +82,7 @@ describe('无尽挑战', () => {
       wave: 1,
     });
 
-    const choice = state.endless!.waveChoice!;
+    const choice = state.endless.waveChoice!;
     const [stayRegion, moveRegion] = choice.regions;
     expect(choice.selected).toBe(0);
     expect(stayRegion).not.toEqual(moveRegion);
@@ -90,14 +90,14 @@ describe('无尽挑战', () => {
 
     setPaused(state, true);
     const snapshot = structuredClone(state);
-    const gapTicks = snapshot.endless!.nextWaveMs / TICK_MS;
+    const gapTicks = snapshot.endless.nextWaveMs / TICK_MS;
     tick(state, gapTicks + 1);
     expect(state).toEqual(snapshot);
     setPaused(state, false);
 
     const stay = structuredClone(state);
     tick(stay, gapTicks);
-    expect(stay.endless?.wave).toBe(2);
+    expect(stay.endless.wave).toBe(2);
     expect(stay.apple).toEqual(snapshot.apple);
     expect(stay.snakes).toHaveLength(2);
     expect(stay.snakes.every((snake) => inRegion(snake, stayRegion))).toBe(
@@ -106,12 +106,12 @@ describe('无尽挑战', () => {
 
     for (let i = 0; i < 32; i++) stepEndless(state, { direction: 'right' });
     expect(choice.selected).toBe(1);
-    expect(choice.regions).toEqual(snapshot.endless!.waveChoice!.regions);
+    expect(choice.regions).toEqual(snapshot.endless.waveChoice!.regions);
     tick(state, gapTicks - 32);
     expect(state.snakes.every((snake) => inRegion(snake, moveRegion))).toBe(
       true,
     );
-    expect(state.endless?.waveChoice).toBeUndefined();
+    expect(state.endless.waveChoice).toBeUndefined();
     expect(state.level).toBe(level);
     expect(state.apple.x).toBeGreaterThan(snapshot.apple.x);
     expect(state.gates[0]).toBe(gate);
@@ -143,8 +143,8 @@ describe('无尽挑战', () => {
       { x: 36, y: 31 },
       { x: 10, y: 48 },
     ]) {
-      const a = createEndless(45, 'magnet', 9);
-      const b = createEndless(45, 'magnet', 9);
+      const a = createEndless(45, 'magnet');
+      const b = createEndless(45, 'magnet');
       for (const state of [a, b]) {
         state.apple = { ...apple };
         state.gates[0]!.closed = apple.x !== 36;
@@ -152,8 +152,8 @@ describe('无尽挑战', () => {
       for (let wave = 2; wave <= 15; wave++) {
         nextWave(a);
         nextWave(b);
-        expect(a.endless?.wave).toBe(wave);
-        expect(a.endless?.cleared).toBe(wave - 1);
+        expect(a.endless.wave).toBe(wave);
+        expect(a.endless.cleared).toBe(wave - 1);
         expect(a.snakes).toEqual(b.snakes);
         expect(a.snakes.length).toBeGreaterThanOrEqual(2);
         expect(a.snakes.length).toBeLessThanOrEqual(3);
@@ -179,7 +179,7 @@ describe('无尽挑战', () => {
   });
 
   it('同刻被抓与最后一蛇撞墙时按失败结算，不增加完成波数', () => {
-    const state = createEndless(10, 'dodge', 6);
+    const state = createEndless(10, 'dodge');
     nextWave(state);
     Object.assign(state.snakes[0]!, {
       x: 27,
@@ -210,7 +210,7 @@ describe('无尽挑战', () => {
   });
 
   it('撞墙残骸不会封死边角的最后一条退路', () => {
-    const state = createEndless(12, 'dodge', 6);
+    const state = createEndless(12, 'dodge');
     state.apple = { x: 1, y: 1 };
     state.wrecks.push({ x: 2, y: 1, active: true, wave: 1 });
     Object.assign(state.snakes[0]!, {
@@ -221,12 +221,12 @@ describe('无尽挑战', () => {
       timer: 0,
     });
     stepEndless(state, idle);
-    expect(state.endless?.cleared).toBe(1);
+    expect(state.endless.cleared).toBe(1);
     expect(state.wrecks).toEqual([{ x: 2, y: 1, active: true, wave: 1 }]);
     expect(blocked(state, { x: 1, y: 2 })).toBe(false);
   });
 
-  it('个人纪录与主线独立保存，按波数、撞毁数比较，并忽略坏值', () => {
+  it('个人纪录按波数、撞毁数比较，并忽略坏值', () => {
     const best = { cleared: 5, defeated: 13 };
     expect(beatsEndlessScore({ cleared: 6, defeated: 12 }, best)).toBe(true);
     expect(beatsEndlessScore({ cleared: 5, defeated: 14 }, best)).toBe(true);
@@ -242,8 +242,6 @@ describe('无尽挑战', () => {
     expect(readSave(storage).endlessBest).toBeUndefined();
     expect(writeSave(storage, { ...defaults(), endlessBest: best })).toBe(true);
     expect(readSave(storage)).toMatchObject({
-      unlocked: 1,
-      best: {},
       endlessBest: best,
     });
     writeSave(storage, {

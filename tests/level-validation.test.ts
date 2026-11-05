@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { LEVELS, validateLevel } from '../src/core/levels';
+import { LEVELS, validateLevel } from './fixtures/levels';
 
 it('拒绝门墙重叠、重复编号、出生门和禁用信标的侦察蛇', () => {
   const base = structuredClone(LEVELS[3]!);

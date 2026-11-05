@@ -11,37 +11,20 @@ async function startFrozen(page: Page): Promise<void> {
     .getByRole('button', { name: '开始游戏', exact: true })
     .click({ force: true });
   await expect(page.locator('canvas')).toBeVisible();
-  await page.getByRole('button', { name: '进入试验' }).click({ force: true });
-  await page.clock.runFor(916);
-}
-
-for (const mode of ['keyboard', 'pointer'] as const) {
-  test(`${mode} 快速点按在下一规则步移动一格并完成侧撤`, async ({ page }) => {
-    await startFrozen(page);
-    await expect(page.locator('#play-status')).toContainText('1号冲锋蛇直冲');
-    if (mode === 'keyboard') await page.keyboard.press('ArrowRight');
-    else
-      await page
-        .getByRole('button', { name: '向右移动' })
-        .click({ force: true });
-    await page.clock.runFor(2000);
-    await expect(
-      page.getByRole('heading', { name: '撞墙了吧！' }),
-    ).toBeVisible();
-    await expect(page.locator('.result-stats')).toContainText('0 / 0');
-  });
+  await page.getByRole('button', { name: '开始挑战' }).click({ force: true });
 }
 
 test('失败现场可查看、冻结、返回结算和快速重试', async ({ page }, info) => {
   await startFrozen(page);
-  await page.clock.runFor(2200);
-  await expect(page.locator('.loss-cause')).toHaveText('1号冲锋蛇 · 冲刺命中');
+  await page.clock.runFor(6000);
+  await page.getByText('更多选择', { exact: true }).click({ force: true });
   await page
     .getByRole('button', { name: '查看失败现场' })
     .click({ force: true });
   await expect(page.locator('dialog')).toHaveCount(0);
   await expect(page.locator('.loss-inspection')).toBeVisible();
-  await expect(page.locator('#loss-advice')).toContainText('横向');
+  await expect(page.locator('#loss-title')).toContainText('1号冲锋蛇');
+  await expect(page.locator('#loss-advice')).not.toBeEmpty();
   await expect(page.locator('.controls')).toBeHidden();
   const clock = await page.locator('#clock').textContent();
   await page.keyboard.press('ArrowRight');
@@ -56,11 +39,13 @@ test('失败现场可查看、冻结、返回结算和快速重试', async ({ pa
   });
   await page.getByRole('button', { name: '返回结算' }).click({ force: true });
   await expect(page.getByRole('heading', { name: '再骗它一次' })).toBeVisible();
+  await page.getByText('更多选择', { exact: true }).click({ force: true });
   await page
     .getByRole('button', { name: '查看失败现场' })
     .click({ force: true });
   await page.keyboard.press('Escape');
   await expect(page.getByRole('heading', { name: '再骗它一次' })).toBeVisible();
+  await page.getByText('更多选择', { exact: true }).click({ force: true });
   await page
     .getByRole('button', { name: '查看失败现场' })
     .click({ force: true });

@@ -11,7 +11,7 @@ import {
   tacticComplete,
   stars,
 } from '../src/core/engine';
-import { LEVELS } from '../src/core/levels';
+import { LEVELS } from './fixtures/levels';
 import { availableSkills } from '../src/core/loadout';
 import type { GameState, SnakeKind, UtilitySkill } from '../src/core/types';
 

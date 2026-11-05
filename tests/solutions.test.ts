@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { expect, it } from 'vitest';
 import { createState, step } from '../src/core/engine';
-import { LEVELS } from '../src/core/levels';
+import { LEVELS } from './fixtures/levels';
 import { findReplay } from './replay-search';
 import type { Replay } from './replay-search';
 

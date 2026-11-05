@@ -1,34 +1,13 @@
-import { LEVELS } from '../core/levels';
-import { stars } from '../core/engine';
-import { HIGHLIGHTS } from '../core/highlights';
-import type {
-  EndlessScore,
-  GameState,
-  HighlightId,
-  UtilitySkill,
-} from '../core/types';
+import type { EndlessScore, UtilitySkill } from '../core/types';
 
-export const CURRENT_SCORING = 'chase-v2';
-export const SAVE_KEY = 'wallbait.save.v2';
-export const LEGACY_SAVE_KEY = 'wallbait.save.v1';
-export const CAMPAIGN = 'foundry-v2';
-export interface Best {
-  timeMs: number;
-  dodges: number;
-  beacons: number;
-  stars: number;
-  scoring?: 'tactics-v1' | typeof CURRENT_SCORING;
-  legacyStars?: number;
-}
+export const SAVE_KEY = 'wallbait.save.v3';
+const PREVIOUS_SAVE_KEY = 'wallbait.save.v2';
+const LEGACY_SAVE_KEY = 'wallbait.save.v1';
+
 export interface Save {
-  version: 2;
-  campaign: typeof CAMPAIGN;
-  unlocked: number;
-  best: Record<string, Best>;
-  collections: Record<string, { chip: boolean; highlights: HighlightId[] }>;
+  version: 3;
   muted: boolean;
   reducedMotion: boolean;
-  legacyCompleted: number;
   utility: UtilitySkill;
   endlessBest?: EndlessScore;
 }
@@ -37,20 +16,15 @@ export interface StoragePort {
   setItem(key: string, value: string): void;
 }
 export const defaults = (): Save => ({
-  version: 2,
-  campaign: CAMPAIGN,
-  unlocked: 1,
-  best: {},
-  collections: {},
+  version: 3,
   muted: false,
   reducedMotion: false,
-  legacyCompleted: 0,
   utility: 'dodge',
 });
-const record = (v: unknown): v is Record<string, unknown> =>
-  typeof v === 'object' && v !== null && !Array.isArray(v);
-const integer = (v: unknown, min: number, max: number): v is number =>
-  typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max;
+const record = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+const count = (value: unknown, min: number): value is number =>
+  typeof value === 'number' && Number.isSafeInteger(value) && value >= min;
 function readObject(
   storage: StoragePort,
   key: string,
@@ -62,91 +36,37 @@ function readObject(
     return null;
   }
 }
-function validLegacyBest(
-  value: unknown,
-): value is Pick<Best, 'timeMs' | 'dodges' | 'stars'> &
-  Record<string, unknown> {
-  return (
-    record(value) &&
-    integer(value.timeMs, 20, 86400000) &&
-    integer(value.dodges, 0, 100000) &&
-    integer(value.stars, 1, 3)
-  );
+function readSettings(save: Save, data: Record<string, unknown>): void {
+  save.muted = data.muted === true;
+  save.reducedMotion = data.reducedMotion === true;
+}
+function readEndlessSave(save: Save, data: Record<string, unknown>): Save {
+  readSettings(save, data);
+  if (data.utility === 'pulse' || data.utility === 'magnet')
+    save.utility = data.utility;
+  const best = data.endlessBest;
+  if (
+    record(best) &&
+    count(best.cleared, 0) &&
+    count(best.defeated, 1) &&
+    best.defeated >= best.cleared &&
+    best.defeated <= 3 * (best.cleared + 1)
+  )
+    save.endlessBest = { cleared: best.cleared, defeated: best.defeated };
+  return save;
 }
 export function readSave(storage: StoragePort): Save {
   const save = defaults();
-  // 只读旧键，不覆盖、不删除；旧版成绩不能用于新关卡解锁或评分。
+  const current = readObject(storage, SAVE_KEY);
+  if (current?.version === 3) return readEndlessSave(save, current);
+
+  // 从旧键继承设置与无尽纪录，普通关卡记录留在原存档。
+  const previous = readObject(storage, PREVIOUS_SAVE_KEY);
+  if (previous?.version === 2 && previous.campaign === 'foundry-v2')
+    return readEndlessSave(save, previous);
+
   const legacy = readObject(storage, LEGACY_SAVE_KEY);
-  if (legacy?.version === 1) {
-    save.muted = legacy.muted === true;
-    save.reducedMotion = legacy.reducedMotion === true;
-    if (record(legacy.best)) {
-      const legacyBest = legacy.best;
-      save.legacyCompleted = LEVELS.filter((level) =>
-        validLegacyBest(legacyBest[String(level.id)]),
-      ).length;
-    }
-  }
-  const parsed = readObject(storage, SAVE_KEY);
-  if (parsed?.version === 2 && parsed.campaign === CAMPAIGN) {
-    if (parsed.utility === 'pulse' || parsed.utility === 'magnet')
-      save.utility = parsed.utility;
-    const endless = parsed.endlessBest;
-    if (
-      record(endless) &&
-      integer(endless.cleared, 0, Number.MAX_SAFE_INTEGER) &&
-      integer(endless.defeated, 1, Number.MAX_SAFE_INTEGER) &&
-      endless.defeated >= endless.cleared &&
-      endless.defeated <= 3 * (endless.cleared + 1)
-    )
-      save.endlessBest = {
-        cleared: endless.cleared,
-        defeated: endless.defeated,
-      };
-    save.muted = parsed.muted === true;
-    save.reducedMotion = parsed.reducedMotion === true;
-    if (integer(parsed.legacyCompleted, 0, LEVELS.length))
-      save.legacyCompleted = Math.max(
-        save.legacyCompleted,
-        parsed.legacyCompleted,
-      );
-    if (record(parsed.best))
-      for (const level of LEVELS) {
-        const best = parsed.best[String(level.id)];
-        if (validLegacyBest(best) && integer(best.beacons, 0, 100000)) {
-          save.best[String(level.id)] = {
-            timeMs: best.timeMs,
-            dodges: best.dodges,
-            beacons: best.beacons,
-            stars: best.stars,
-            ...(best.scoring === 'tactics-v1' ||
-            best.scoring === CURRENT_SCORING
-              ? { scoring: best.scoring }
-              : {}),
-            ...(integer(best.legacyStars, 1, 3)
-              ? { legacyStars: best.legacyStars }
-              : {}),
-          };
-        }
-      }
-    if (record(parsed.collections))
-      for (const level of LEVELS) {
-        const entry = parsed.collections[String(level.id)];
-        if (!save.best[String(level.id)] || !record(entry)) continue;
-        const ids = entry.highlights;
-        const highlights = Array.isArray(ids)
-          ? Object.keys(HIGHLIGHTS).filter((id): id is HighlightId =>
-              ids.includes(id),
-            )
-          : [];
-        const chip = Boolean(level.chip && entry.chip === true);
-        if (chip || highlights.length)
-          save.collections[String(level.id)] = { chip, highlights };
-      }
-    // 解锁由连续通关记录恢复，损坏的 unlocked 不会锁死正常存档。
-    while (save.unlocked < LEVELS.length && save.best[String(save.unlocked)])
-      save.unlocked++;
-  }
+  if (legacy?.version === 1) readSettings(save, legacy);
   return save;
 }
 export function writeSave(storage: StoragePort, save: Save): boolean {
@@ -156,39 +76,6 @@ export function writeSave(storage: StoragePort, save: Save): boolean {
   } catch {
     return false;
   }
-}
-export function recordWin(save: Save, state: GameState): void {
-  if (state.status !== 'won') return;
-  const key = String(state.level.id),
-    old = save.best[key],
-    previous = old?.scoring === CURRENT_SCORING ? old : undefined,
-    historicalStars = Math.max(
-      old?.legacyStars ?? 0,
-      old?.scoring === CURRENT_SCORING ? 0 : (old?.stars ?? 0),
-    );
-  save.best[key] = {
-    timeMs: Math.min(previous?.timeMs ?? Infinity, state.elapsedMs),
-    dodges: Math.min(previous?.dodges ?? Infinity, state.dodges),
-    beacons: Math.min(previous?.beacons ?? Infinity, state.beacons),
-    stars: Math.max(previous?.stars ?? 0, stars(state)),
-    scoring: CURRENT_SCORING,
-    ...(historicalStars ? { legacyStars: historicalStars } : {}),
-  };
-  const collected = save.collections[key];
-  const highlights = [
-    ...new Set([
-      ...(collected?.highlights ?? []),
-      ...state.highlights.map((h) => h.id),
-    ]),
-  ];
-  const chip = Boolean(
-    state.level.chip && (collected?.chip || state.chipCollected),
-  );
-  if (chip || highlights.length) save.collections[key] = { chip, highlights };
-  save.unlocked = Math.max(
-    save.unlocked,
-    Math.min(LEVELS.length, state.level.id + 1),
-  );
 }
 // 访问 localStorage 属性本身也可能抛错，因此放在惰性边界内。
 export const browserStorage: StoragePort = {

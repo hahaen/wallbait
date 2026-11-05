@@ -6,14 +6,7 @@ import {
   stars,
   step,
 } from '../src/core/engine';
-import { LEVELS, validateLevel } from '../src/core/levels';
-import {
-  defaults,
-  readSave,
-  recordWin,
-  SAVE_KEY,
-  writeSave,
-} from '../src/storage/save';
+import { LEVELS, validateLevel } from './fixtures/levels';
 import type { GameState, Level } from '../src/core/types';
 
 const lab = (extra: Partial<Level> = {}): GameState =>
@@ -217,58 +210,6 @@ describe('精彩操作的实际事件归因', () => {
     expect(s.highlights[0]?.id).toBe('close-call');
     expect(createState(s.level).highlights).toEqual([]);
   });
-});
-
-it('芯片和称号只在胜利保存，较差重玩不覆盖，旧档兼容并过滤损坏数据', () => {
-  const data = new Map<string, string>();
-  const storage = {
-    getItem: (k: string) => data.get(k) ?? null,
-    setItem: (k: string, v: string) => {
-      data.set(k, v);
-    },
-  };
-  const save = defaults(),
-    s = lab();
-  step(s, { direction: 'up' });
-  s.highlights = [{ id: 'close-call', atMs: s.elapsedMs }];
-  s.status = 'lost';
-  recordWin(save, s);
-  expect(save.collections).toEqual({});
-  s.status = 'won';
-  recordWin(save, s);
-  s.chipCollected = false;
-  s.highlights = [{ id: 'wreck-chain', atMs: 2000 }];
-  recordWin(save, s);
-  expect(save.collections['7']).toEqual({
-    chip: true,
-    highlights: ['close-call', 'wreck-chain'],
-  });
-  expect(writeSave(storage, save)).toBe(true);
-  expect(readSave(storage).collections['7']).toEqual({
-    chip: true,
-    highlights: ['wreck-chain', 'close-call'],
-  });
-  data.set(
-    SAVE_KEY,
-    JSON.stringify({
-      ...save,
-      collections: {
-        7: {
-          chip: true,
-          highlights: ['close-call', 'unknown', 'close-call', null],
-        },
-        18: { chip: true, highlights: ['no-dodge'] },
-        99: { chip: true },
-        1: { chip: true },
-      },
-    }),
-  );
-  expect(readSave(storage).collections).toEqual({
-    7: { chip: true, highlights: ['close-call'] },
-  });
-  data.set(SAVE_KEY, JSON.stringify({ ...save, collections: undefined }));
-  expect(readSave(storage).best).toEqual(save.best);
-  expect(readSave(storage).collections).toEqual({});
 });
 
 it.each([11, 18])(

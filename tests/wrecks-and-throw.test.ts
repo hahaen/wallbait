@@ -10,7 +10,7 @@ import {
   targetFor,
   warningPath,
 } from '../src/core/engine';
-import { LEVELS } from '../src/core/levels';
+import { LEVELS } from './fixtures/levels';
 import type { Command, GameState, Level } from '../src/core/types';
 
 function arena(overrides: Partial<Level> = {}): GameState {

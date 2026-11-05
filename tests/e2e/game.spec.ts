@@ -5,23 +5,9 @@ async function start(page: Page): Promise<void> {
   await page.goto('/');
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
   await expect(page.locator('canvas')).toBeVisible();
-  await page.getByRole('button', { name: '进入试验', exact: true }).click();
+  await page.getByRole('button', { name: '开始挑战', exact: true }).click();
 }
-async function winFirst(page: Page): Promise<void> {
-  await page.waitForFunction(
-    () => document.querySelector('#play-status')?.textContent?.includes('直冲'),
-    null,
-    { polling: 'raf', timeout: 10000 },
-  );
-  await page.keyboard.down('ArrowRight');
-  await page.keyboard.press('Space');
-  await page.keyboard.up('ArrowRight');
-  await expect(page.getByRole('heading', { name: '撞墙了吧！' })).toBeVisible({
-    timeout: 10000,
-  });
-}
-
-test('首页、说明、设置、失败重试、胜利下一关、刷新和选关', async ({ page }) => {
+test('空存档直接进入无尽，装备与设置刷新后恢复', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
@@ -48,36 +34,27 @@ test('首页、说明、设置、失败重试、胜利下一关、刷新和选�
   await page.getByRole('button', { name: '完成', exact: true }).click();
   await expect(settings).toBeFocused();
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '试验准备' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '无尽挑战' })).toBeVisible();
   await expect(page.locator('#clock')).toHaveText('0.0s');
-  await page.waitForTimeout(350);
-  await expect(page.locator('#clock')).toHaveText('0.0s');
-  await page.getByRole('button', { name: '进入试验' }).click();
-  await expect(page.getByRole('heading', { name: '再骗它一次' })).toBeVisible({
-    timeout: 15000,
-  });
-  await page.getByRole('button', { name: '再试一次', exact: true }).click();
-  await winFirst(page);
-  await expect(page.locator('.result-stars')).toHaveAttribute(
-    'aria-label',
-    '本关 3 星',
-  );
-  await page.getByRole('button', { name: '下一关', exact: true }).click();
-  await expect(page.locator('.level-name')).toHaveText('还差一步');
+  const equipment = page.getByRole('region', { name: '选择装备' });
+  await expect(page.locator('.loadout-options button')).toHaveCount(3);
+  await expect(equipment).toBeVisible();
+  const magnet = page.getByRole('dialog').getByRole('button', { name: /磁推/ });
+  await magnet.click();
+  await expect(magnet).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: '开始挑战' }).click();
+  await expect(page.locator('#round-label')).toHaveText('第 1 波');
+  await expect(page.locator('.level-name')).toHaveText('回环石园');
+  await expect(page.getByRole('button', { name: '磁推' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '信标' })).toBeEnabled();
   await page.reload();
-  await expect(
-    page.getByRole('button', { name: '继续挑战 · 第 2 关' }),
-  ).toBeVisible();
+  await expect(page.getByRole('button', { name: '选择关卡' })).toHaveCount(0);
   await page.getByRole('button', { name: '设置', exact: true }).click();
   await expect(audio).not.toBeChecked();
   await expect(motion).toBeChecked();
   await page.getByRole('button', { name: '完成', exact: true }).click();
-  await page.getByRole('button', { name: '选择关卡' }).click();
-  await expect(page.locator('.level')).toHaveCount(20);
-  await expect(page.locator('[data-action="level:2"]')).toBeEnabled();
-  await expect(page.locator('[data-action="level:3"]')).toBeDisabled();
-  await page.locator('[data-action="level:1"]').click();
-  await expect(page.locator('.level-name')).toHaveText('借墙脱身');
+  await page.getByRole('button', { name: '开始游戏', exact: true }).click();
+  await expect(magnet).toHaveAttribute('aria-pressed', 'true');
   expect(errors).toEqual([]);
 });
 
@@ -98,23 +75,25 @@ test('暂停冻结时间与冷却、后台暂停、连续重开无重复监听',
   await page.evaluate(() => window.dispatchEvent(new Event('blur')));
   await expect(page.getByRole('heading', { name: '歇一口气' })).toBeVisible();
   for (let i = 0; i < 4; i++) {
-    await page.getByRole('button', { name: '重新挑战' }).click();
+    await page.getByRole('button', { name: '重试同一局' }).click();
     await expect(page.locator('#arena')).toHaveAttribute('aria-busy', 'false');
     await expect(page.locator('dialog')).toHaveCount(0);
     await page.keyboard.press('Escape');
     await expect(page.locator('dialog')).toHaveCount(1);
     await expect(page.getByRole('heading', { name: '歇一口气' })).toBeVisible();
   }
-  await page.getByRole('button', { name: '返回选关' }).click();
-  await expect(page.getByRole('heading', { name: '选一堵墙' })).toBeVisible();
+  await page.getByRole('button', { name: '返回首页' }).click();
+  await expect(
+    page.getByRole('heading', { name: '撞墙了么', exact: true }),
+  ).toBeVisible();
 });
 
 test('损坏及不可用的存储仍能正常游玩', async ({ page }) => {
   await page.addInitScript(() =>
-    localStorage.setItem('wallbait.save.v2', '{bad'),
+    localStorage.setItem('wallbait.save.v3', '{bad'),
   );
   await start(page);
-  await winFirst(page);
+  await expect(page.locator('#round-label')).toHaveText('第 1 波');
   await page.addInitScript(() => {
     Object.defineProperty(window, 'localStorage', {
       get() {
@@ -133,10 +112,13 @@ test('损坏及不可用的存储仍能正常游玩', async ({ page }) => {
     '保存暂不可用，设置会在本次游玩生效。',
   );
   await start(page);
-  await winFirst(page);
-  await expect(page.locator('.save-warning')).toBeVisible();
-  await page.getByRole('button', { name: '下一关', exact: true }).click();
-  await expect(page.locator('.level-name')).toHaveText('还差一步');
+  await expect(page.locator('#round-label')).toHaveText('第 1 波');
+  await expect(page.getByRole('heading', { name: '再骗它一次' })).toBeVisible({
+    timeout: 15000,
+  });
+  await page.getByRole('button', { name: '再来一局', exact: true }).click();
+  await expect(page.locator('#round-label')).toHaveText('第 1 波');
+  await expect(page.locator('dialog')).toHaveCount(0);
 });
 
 test('地图与触控区无重叠、竖屏安全空间', async ({ page }) => {

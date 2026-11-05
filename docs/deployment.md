@@ -8,4 +8,4 @@
 
 服务器只接收构建产物。`/home/hahaen/game/wallbait/dist` 指向当前发布目录，切换时一次更新链接，`releases/` 保留当前和上一次发布。共享 Nginx 容器将 `/home/hahaen/game/wallbait` 只读挂载到 `/srv/wallbait`，在 `hahaen.xyz` 的 HTTPS `server` 中包含[游戏路由](../deploy/nginx/wallbait.locations)。日常发布只更新游戏产物，无需重载 Nginx。
 
-更新 Nginx 路由时先用 `nginx -t` 验证，再重载。线上交互抽查可运行 `WALLBAIT_STATIC_ORIGIN=https://hahaen.xyz npx playwright test --config playwright.static.config.ts`，覆盖进关、通关、刷新后读取进度及资源加载。
+更新 Nginx 路由时先用 `nginx -t` 验证，再重载。线上交互抽查可运行 `WALLBAIT_STATIC_ORIGIN=https://hahaen.xyz npx playwright test --config playwright.static.config.ts`，覆盖无尽开局、被抓结算、刷新后读取纪录和装备，以及子路径资源加载。
