@@ -301,7 +301,7 @@ export class App {
     this.hud();
     if (endless) {
       this.dialog(
-        `<div class="brief-content"><p class="result-kicker">${level.name} · ${level.width} × ${level.height} 格</p><h2 id="dialog-title">${brief ? '无尽挑战' : '准备重试'}</h2>${brief ? `<p>${level.focus}</p>${this.loadout(level)}<details class="brief-details"><summary>规则与纪录</summary><p>地图全程不换，镜头跟随苹果。被抓时结算：先比完成波数，同波比撞毁数。</p><p>左上小地图的红点是苹果，方框是当前视野。场边箭头指向屏幕外的蛇。旧残骸会在几波后碎掉。</p></details>` : '<p>就绪后立即重试同一局。</p>'}</div><div class="panel-actions"><button type="button" data-action="begin" class="primary" disabled>正在准备…</button>${back}</div>`,
+        `<div class="brief-content"><p class="result-kicker">${level.name} · ${level.width} × ${level.height} 格</p><h2 id="dialog-title">${brief ? '无尽挑战' : '准备重试'}</h2>${brief ? `<p>${level.focus}</p>${this.loadout(level)}<details class="brief-details"><summary>规则与纪录</summary><p>地图全程不换，镜头跟随苹果。被抓时结算：先比完成波数，同波比撞毁数。</p><p>小地图红点是苹果。波间出现两个进场区，粗框是当前选择。留守或朝另一个区走，就能决定从哪边接战。旧残骸会在几波后碎掉。</p></details>` : '<p>就绪后立即重试同一局。</p>'}</div><div class="panel-actions"><button type="button" data-action="begin" class="primary" disabled>正在准备…</button>${back}</div>`,
         'preparation',
       );
       return;
@@ -419,6 +419,12 @@ export class App {
         .join(' ｜ '),
     );
     const danger = dangerText(s);
+    const choice = s.endless?.waveChoice;
+    const waveMessage = choice
+      ? choice.selected === 0
+        ? '本波清空 · 可移向另一框换区'
+        : '本波清空 · 已选转场区'
+      : '本波清空 · 下一波将至';
     text(
       'play-status',
       s.status === 'won'
@@ -426,7 +432,7 @@ export class App {
         : s.status === 'lost'
           ? '被逮住了，下次再骗它！'
           : s.endless?.nextWaveMs
-            ? '本波清空 · 下一波将至'
+            ? waveMessage
             : danger,
     );
     this.root

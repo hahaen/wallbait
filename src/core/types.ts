@@ -109,10 +109,18 @@ export interface EndlessScore {
   cleared: number;
   defeated: number;
 }
+export interface WaveRegion extends Point {
+  width: number;
+  height: number;
+}
 export interface EndlessProgress extends EndlessScore {
   seed: number;
   wave: number;
   nextWaveMs: number;
+  waveChoice?: {
+    regions: [WaveRegion, WaveRegion];
+    selected: 0 | 1;
+  };
 }
 export interface GameState {
   level: Level;

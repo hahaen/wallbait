@@ -28,7 +28,7 @@ test('第 5 关前首页展示解锁条件', async ({ page }) => {
   ).toBeDisabled();
 });
 
-test('走位、贴墙投信标、原地进入第二波、暂停与本地纪录', async ({
+test('首波清空后全览出现两个进场区，走位切换并原地接战', async ({
   page,
 }, info) => {
   const errors: string[] = [];
@@ -59,15 +59,41 @@ test('走位、贴墙投信标、原地进入第二波、暂停与本地纪录',
   await page.keyboard.down('ArrowRight');
   await page.waitForTimeout(700);
   await page.keyboard.up('ArrowRight');
-  await expect(page.locator('#play-status')).toContainText('本波清空');
+  const status = page.locator('#play-status');
+  await expect(status).toContainText('可移向另一框换区');
+  const initialZones = await waveZonesOnCanvas(page);
+  expect(initialZones[0]!.pixels).toBeGreaterThan(8);
+  expect(initialZones[1]!.pixels).toBeGreaterThan(8);
+  const dx = initialZones[1]!.x - initialZones[0]!.x;
+  const dy = initialZones[1]!.y - initialZones[0]!.y;
+  const direction =
+    Math.abs(dx) > Math.abs(dy)
+      ? dx < 0
+        ? 'ArrowLeft'
+        : 'ArrowRight'
+      : dy < 0
+        ? 'ArrowUp'
+        : 'ArrowDown';
+  await page.keyboard.down(direction);
+  await expect(status).toContainText('已选转场区', { timeout: 1500 });
+  await page.keyboard.up(direction);
+  const changedZones = await waveZonesOnCanvas(page);
+  expect(changedZones[0]!.x).toBeCloseTo(initialZones[1]!.x, 2);
+  expect(changedZones[0]!.y).toBeCloseTo(initialZones[1]!.y, 2);
+  await page.screenshot({ path: info.outputPath('endless-wave-choice.png') });
   await page.keyboard.press('p');
   await expect(page.getByRole('heading', { name: '歇一口气' })).toBeVisible();
   await expect(page.getByText('完成 1 波 · 撞毁 1 条')).toBeVisible();
-  await page.waitForTimeout(1300);
+  const clock = await page.locator('#clock').textContent();
+  await page.waitForTimeout(600);
+  await expect(page.locator('#clock')).toHaveText(clock!);
   await expect(page.locator('#round-label')).toHaveText('第 1 波');
   await page.getByRole('button', { name: '继续游戏' }).click();
   await expect(page.locator('#round-label')).toHaveText('第 2 波');
   await expect(page.locator('#enemy-count')).toHaveText('剩余 2 条');
+  expect((await waveZonesOnCanvas(page)).map((zone) => zone.pixels)).toEqual([
+    0, 0,
+  ]);
   expect(
     await original!.evaluate(
       (node) => node === document.querySelector('canvas'),
@@ -89,6 +115,44 @@ test('走位、贴墙投信标、原地进入第二波、暂停与本地纪录',
 });
 
 type Marker = { x: number; y: number; pixels: number };
+
+async function waveZonesOnCanvas(page: Page): Promise<Marker[]> {
+  const image = (await page.locator('canvas').screenshot()).toString('base64');
+  return page.evaluate(async (source) => {
+    const image = new Image();
+    image.src = `data:image/png;base64,${source}`;
+    await image.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = image.width;
+    canvas.height = image.height;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(image, 0, 0);
+    const width = Math.floor(image.width * 0.22);
+    const height = Math.floor(image.height * 0.21);
+    const rgba = ctx.getImageData(0, 0, width, height).data;
+    return [true, false].map((selected) => {
+      let x = 0,
+        y = 0,
+        pixels = 0;
+      for (let i = 0; i < rgba.length; i += 4) {
+        const [r, g, b] = [rgba[i]!, rgba[i + 1]!, rgba[i + 2]!];
+        // 桌面缩放会混合边缘像素，用色相区分粗紫框与细蓝框。
+        const matches = selected
+          ? b > r + 5 && r > g + 20 && g < 145
+          : b > g + 4 && g > r + 8;
+        if (!matches) continue;
+        x += (i / 4) % width;
+        y += Math.floor(i / 4 / width);
+        pixels++;
+      }
+      return {
+        x: x / pixels / image.width,
+        y: y / pixels / image.height,
+        pixels,
+      };
+    });
+  }, image);
+}
 
 async function applesOnCanvas(
   page: Page,

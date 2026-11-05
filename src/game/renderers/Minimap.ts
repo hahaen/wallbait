@@ -50,6 +50,7 @@ export class Minimap {
 
   draw(fruit: Point, left: number, top: number): void {
     const g = this.markers;
+    const choice = this.state.endless?.waveChoice;
     g.clear();
     const overlaps = (x: number, y: number): boolean =>
       x + 22 >= inset &&
@@ -76,8 +77,20 @@ export class Minimap {
 
     const x = origin + left * scale;
     const y = origin + top * scale;
-    g.lineStyle(1, 0x59462f);
+    g.lineStyle(1, 0x59462f, choice ? 0.35 : 1);
     g.strokeRect(x, y, VIEWPORT.width * scale, VIEWPORT.height * scale);
+    choice?.regions.forEach((region, i) => {
+      const selected = i === choice.selected;
+      const color = selected ? 0x6a3f83 : 0x486473;
+      const x = origin + region.x * tile + 1;
+      const y = origin + region.y * tile + 1;
+      const width = region.width * tile - 2;
+      const height = region.height * tile - 2;
+      g.fillStyle(color, selected ? 0.3 : 0.12);
+      g.fillRect(x, y, width, height);
+      g.lineStyle(selected ? 2.15 : 1.35, color);
+      g.strokeRect(x, y, width, height);
+    });
     for (const snake of this.state.snakes) {
       if (!snake.alive) continue;
       const x = (snake.x + 0.5) * CELL;
@@ -91,6 +104,6 @@ export class Minimap {
     g.fillStyle(0xc93425);
     g.fillCircle(origin + fruit.x * scale, origin + fruit.y * scale, 2.8);
     this.ground.setAlpha(faded ? 0.16 : 1);
-    g.setAlpha(faded ? 0.16 : 1);
+    g.setAlpha(faded && !choice ? 0.16 : 1);
   }
 }

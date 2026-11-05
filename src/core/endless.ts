@@ -9,10 +9,11 @@ import type {
   SnakeKind,
   Spawn,
   UtilitySkill,
+  WaveRegion,
 } from './types';
 
 export const ENDLESS_UNLOCK = 6; // 第 5 关通关后。
-const WAVE_BREAK_MS = 1200;
+const WAVE_BREAK_MS = 2400;
 const SPAWN_GRACE_MS = 900;
 const MIN_SPAWN_DISTANCE = 6; // 在三类蛇的直冲触发范围之外。
 const WRECK_WAVES = 3;
@@ -34,7 +35,7 @@ export const ENDLESS_MAP: Level = {
   id: 21,
   name: '回环石园',
   chapter: '无尽挑战',
-  focus: '清完一波，下一波从附近进场。旧残骸还能用来诱蛇。',
+  focus: '清完一波，可以留守，也可以走向小地图上的另一个进场区。',
   intent: '用固定大地图的环路和残骸持续创造新的撞墙机会。',
   width: 55,
   height: 61,
@@ -128,6 +129,52 @@ const entrances = [2, 8, 14, 20, 26, 32, 38, 44, 50, 53].flatMap((x) =>
 );
 const taxi = (a: Point, b: Point): number =>
   Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+const regionDivisions = 5;
+const regionEdge = (size: number, n: number): number =>
+  1 + Math.floor(((size - 2) * n) / regionDivisions);
+const waveRegions: WaveRegion[] = Array.from(
+  { length: regionDivisions * regionDivisions },
+  (_, i) => {
+    const col = i % regionDivisions;
+    const row = Math.floor(i / regionDivisions);
+    const x = regionEdge(ENDLESS_MAP.width, col);
+    const y = regionEdge(ENDLESS_MAP.height, row);
+    return {
+      x,
+      y,
+      width: regionEdge(ENDLESS_MAP.width, col + 1) - x,
+      height: regionEdge(ENDLESS_MAP.height, row + 1) - y,
+    };
+  },
+);
+function distanceToRegion(p: Point, region: WaveRegion): number {
+  return (
+    Math.max(region.x - p.x, 0, p.x - (region.x + region.width - 1)) +
+    Math.max(region.y - p.y, 0, p.y - (region.y + region.height - 1))
+  );
+}
+function pickWaveRegions(
+  state: GameState,
+): [WaveRegion, WaveRegion] | undefined {
+  const { width } = state.level;
+  const distances = routeDistances(state, state.apple);
+  const nearby = waveRegions.map((region) => {
+    let nearest = Infinity;
+    let hasSpawn = false;
+    for (let y = region.y; y < region.y + region.height; y++)
+      for (let x = region.x; x < region.x + region.width; x++) {
+        const distance = distances[y * width + x]!;
+        if (distance < 0) continue;
+        nearest = Math.min(nearest, distance);
+        if (taxi(state.apple, { x, y }) >= MIN_SPAWN_DISTANCE) hasSpawn = true;
+      }
+    return { region, nearest, hasSpawn };
+  });
+  const [first, second] = nearby
+    .filter((entry) => entry.hasSpawn)
+    .sort((a, b) => a.nearest - b.nearest);
+  return first && second ? [first.region, second.region] : undefined;
+}
 const lateWaves: SnakeKind[][] = [
   ['normal', 'swift'],
   ['swift', 'cautious'],
@@ -163,7 +210,12 @@ export function createEndless(
   return state;
 }
 
-function nextSpawns(state: GameState, wave: number, seed: number): Spawn[] {
+function nextSpawns(
+  state: GameState,
+  wave: number,
+  seed: number,
+  region?: WaveRegion,
+): Spawn[] {
   const random = randomFor(seed, wave);
   const { width, height, gates } = state.level;
   const reserved = (gates ?? []).flatMap((gate) => [
@@ -178,7 +230,13 @@ function nextSpawns(state: GameState, wave: number, seed: number): Spawn[] {
     !reserved.some((cell) => same(p, cell)) &&
     !state.wrecks.some((wreck) => same(p, wreck)) &&
     !(state.beacon && same(p, state.beacon));
-  const candidates = entrances.filter((p) => distance(p) <= 14 && safe(p));
+  const candidates = entrances.filter(
+    (p) =>
+      (!region || distanceToRegion(p, region) === 0) &&
+      distance(p) <= 14 &&
+      safe(p),
+  );
+  const area = region ?? { x: 1, y: 1, width: width - 2, height: height - 2 };
   const spawns: Spawn[] = [];
   const kinds: SnakeKind[] =
     wave === 2
@@ -194,8 +252,8 @@ function nextSpawns(state: GameState, wave: number, seed: number): Spawn[] {
     // 在边角或入口被残骸占据时，改用邻近可达的空地。
     if (!choices.length) {
       choices = [];
-      for (let y = 1; y < height - 1; y++)
-        for (let x = 1; x < width - 1; x++) {
+      for (let y = area.y; y < area.y + area.height; y++)
+        for (let x = area.x; x < area.x + area.width; x++) {
           const p = { x, y };
           if (safe(p) && spread(p)) choices.push(p);
         }
@@ -226,13 +284,35 @@ export function stepEndless(state: GameState, command: Command): void {
   run.defeated += state.events.filter((event) => event.type === 'wall').length;
   if (state.status !== 'playing') return;
   if (run.nextWaveMs > 0) {
+    const choice = run.waveChoice;
+    if (choice) {
+      const other = choice.selected === 0 ? 1 : 0;
+      if (
+        distanceToRegion(state.apple, choice.regions[other]) <
+        distanceToRegion(state.apple, choice.regions[choice.selected])
+      )
+        choice.selected = other;
+    }
     run.nextWaveMs = Math.max(0, run.nextWaveMs - TICK_MS);
     if (run.nextWaveMs > 0) return;
     const wave = run.wave + 1;
     state.wrecks = state.wrecks.filter(
       (w) => wave - (w.wave ?? wave) < WRECK_WAVES,
     );
-    let spawns = nextSpawns(state, wave, run.seed);
+    let spawns = nextSpawns(
+      state,
+      wave,
+      run.seed,
+      choice?.regions[choice.selected],
+    );
+    if (!spawns.length && choice)
+      spawns = nextSpawns(
+        state,
+        wave,
+        run.seed,
+        choice.regions[choice.selected === 0 ? 1 : 0],
+      );
+    if (!spawns.length) spawns = nextSpawns(state, wave, run.seed);
     // 极端残局下提前清走最旧残骸，避免待在封闭角落时整局卡住。
     while (!spawns.length && state.wrecks.length) {
       state.wrecks.shift();
@@ -243,12 +323,15 @@ export function stepEndless(state: GameState, command: Command): void {
       return;
     }
     run.wave = wave;
+    delete run.waveChoice;
     state.lureKills = [];
     state.eliminations = [];
     spawnSnakes(state, spawns);
   } else if (state.snakes.every((snake) => !snake.alive)) {
     run.cleared++;
     run.nextWaveMs = WAVE_BREAK_MS;
+    const regions = pickWaveRegions(state);
+    if (regions) run.waveChoice = { regions, selected: 0 };
   }
 }
 
