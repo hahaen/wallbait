@@ -8,6 +8,11 @@ import {
 import { availableSkills, SKILLS, TACTICS } from '../core/loadout';
 import { HIGHLIGHTS } from '../core/highlights';
 import { LEVELS } from '../core/levels';
+import {
+  beatsEndlessScore,
+  createEndless,
+  ENDLESS_UNLOCK,
+} from '../core/endless';
 import { RECHARGE_MS } from '../core/config';
 import type { GameState, Level, UtilitySkill } from '../core/types';
 import type { createGame } from '../game/createGame';
@@ -59,6 +64,7 @@ export class App {
   private autoStart = false;
   private resultTimer?: number;
   private resultPending = false;
+  private endlessRecord = false;
   constructor(private root: HTMLElement) {
     this.sound.muted = this.save.muted;
     const signal = this.abort.signal;
@@ -104,6 +110,7 @@ export class App {
     window.clearTimeout(this.resultTimer);
     this.resultTimer = undefined;
     this.resultPending = false;
+    this.endlessRecord = false;
     this.controls?.destroy();
     this.controls = undefined;
     this.game?.destroy();
@@ -132,6 +139,7 @@ export class App {
       (sum, b) => sum + currentStars(b),
       0,
     );
+    const best = this.save.endlessBest;
     this.setScreen(
       'home',
       `<section class="home screen">
@@ -140,6 +148,12 @@ export class App {
       <p class="tagline">你追你的，墙就在那儿。</p>
       <div class="hero-art">${heroArt}</div>
       <div class="home-actions">${button(completed ? 'continue' : 'start', completed ? `继续挑战 · 第 ${this.save.unlocked} 关` : '开始游戏', 'primary')}
+      ${
+        this.save.unlocked >= ENDLESS_UNLOCK
+          ? button('endless', '无尽挑战', 'endless-entry')
+          : '<button type="button" class="endless-entry" disabled>无尽挑战 · 第 5 关后解锁</button>'
+      }
+      ${best ? `<p class="endless-best">无尽纪录 · 完成 ${best.cleared} 波 · 撞毁 ${best.defeated} 条</p>` : ''}
       <div class="action-row">${button('levels', '选择关卡')}${button('help', '怎么玩')}</div>
       ${completed ? button('start', '从第一关开始', 'text-button') : ''}</div>
       ${this.save.legacyCompleted ? `<p class="legacy-note">旧版 ${this.save.legacyCompleted} 关记录已保留，进阶挑战重新计分。</p>` : ''}<footer class="home-footer"><span>${completed === 20 ? '20 关已通关，自由重玩' : `已通关 ${completed} / 20`}</span><span class="stars">${totalStars} / 60 ★</span></footer>
@@ -188,12 +202,33 @@ export class App {
   }
   private start(id: number, brief = true): void {
     if (id < 1 || id > this.save.unlocked) return;
-    const level = LEVELS[id - 1]!;
+    this.play(createState(LEVELS[id - 1]!, this.save.utility), brief);
+  }
+  private startEndless(
+    seed = Math.floor(Math.random() * 0x100000000),
+    brief = true,
+  ): void {
+    if (this.save.unlocked < ENDLESS_UNLOCK) return;
+    this.play(
+      createEndless(seed, this.save.utility, this.save.unlocked),
+      brief,
+    );
+  }
+  private restart(brief: boolean): void {
+    if (this.state?.endless) this.startEndless(this.state.endless.seed, brief);
+    else if (this.state) this.start(this.state.level.id, brief);
+  }
+  private play(state: GameState, brief: boolean): void {
+    const { level, endless } = state;
+    const id = level.id;
+    const back = endless
+      ? button('home', '返回首页', 'text-button')
+      : button('levels', '返回选关', 'text-button');
     this.setScreen(
       'play',
-      `<section class="play-screen screen" data-zone="${Math.floor((id - 1) / 5)}"><header class="play-header"><div><small>第 ${String(id).padStart(2, '0')} 关 / 20</small><h1 tabindex="-1">撞墙了么</h1><small class="level-name">${level.name}</small></div>${button('pause', 'Ⅱ', 'pause-button')} </header>
+      `<section class="play-screen screen" data-zone="${endless ? 0 : Math.floor((id - 1) / 5)}"><header class="play-header"><div><small id="round-label"${endless ? ' aria-live="polite"' : ''}>${endless ? '第 1 波' : `第 ${String(id).padStart(2, '0')} 关 / 20`}</small><h1 tabindex="-1">撞墙了么</h1><small class="level-name">${level.name}</small></div>${button('pause', 'Ⅱ', 'pause-button')} </header>
       <div class="hud"><span id="enemy-count"></span><span id="clock">0.0s</span><span id="cooldown" class="ready">电量 ▰▰</span></div>
-      <div class="arena-slot"><div id="arena" role="img" aria-busy="true" aria-label="对局地图：红苹果、三种蛇、石墙、字母闸门、残骸与可选收藏"><span class="loading">正在摆好墙…</span></div></div>
+      <div class="arena-slot"><div id="arena" role="img" aria-busy="true" aria-label="${endless ? '无尽地图：镜头跟随红苹果' : '对局地图：红苹果、三种蛇、石墙、字母闸门、残骸与可选收藏'}"><span class="loading">正在摆好墙…</span></div></div>
       <div class="field-info"><span id="mechanisms" class="mechanisms"></span><span id="field-notes" class="field-notes" role="status" aria-live="polite"></span><span class="play-status" id="play-status" aria-live="polite"></span></div>
       <aside class="loss-inspection" hidden aria-label="失败现场说明"><b id="loss-title" tabindex="-1"></b><p id="loss-advice"></p><small>红圈 ×：碰撞格 · 金色框：致命敌人的路线</small><div>${button('result', '返回结算')}${button('retry', '再试一次', 'primary')}</div></aside>
       <div class="controls"><div class="dpad joystick" data-joystick role="group" aria-label="全向移动摇杆"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span class="stick-knob" aria-hidden="true"></span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="skills"><button class="skill dodge" data-dodge aria-label="闪避"><span class="skill-symbol" aria-hidden="true">↟</span><b>闪避</b><small id="dodge-text">1 格电</small></button><button class="skill beacon" data-beacon aria-label="信标" ${level.beaconEnabled ? '' : 'disabled'}><span aria-hidden="true">${beaconIcon}</span><b>信标</b><small id="beacon-text">${level.beaconEnabled ? '1 格电' : '未启用'}</small></button></div></div>
@@ -202,7 +237,6 @@ export class App {
     this.root
       .querySelector('[data-action="pause"]')
       ?.setAttribute('aria-label', '暂停游戏');
-    const state = createState(level, this.save.utility);
     this.state = state;
     setPaused(state, true);
     this.autoStart = !brief;
@@ -225,7 +259,7 @@ export class App {
       this.controls?.clear();
       arena.setAttribute('aria-busy', 'false');
       this.dialog(
-        `<h2 id="dialog-title">游戏还没准备好</h2><p>重新加载试试，已存进度会保留。</p>${button('reload', '重新加载页面', 'primary')}${button('levels', '返回选关', 'text-button')}`,
+        `<h2 id="dialog-title">游戏还没准备好</h2><p>重新加载试试，已存进度会保留。</p>${button('reload', '重新加载页面', 'primary')}${back}`,
       );
     };
     void import('../game/createGame')
@@ -245,7 +279,7 @@ export class App {
             );
             if (begin) {
               begin.disabled = false;
-              begin.textContent = '进入试验';
+              begin.textContent = endless ? '开始挑战' : '进入试验';
             }
             if (this.autoStart && !document.hidden) this.resume();
           },
@@ -265,6 +299,13 @@ export class App {
       .catch(fail);
     this.refreshUtility();
     this.hud();
+    if (endless) {
+      this.dialog(
+        `<div class="brief-content"><p class="result-kicker">${level.name} · ${level.width} × ${level.height} 格</p><h2 id="dialog-title">${brief ? '无尽挑战' : '准备重试'}</h2>${brief ? `<p>${level.focus}</p>${this.loadout(level)}<details class="brief-details"><summary>规则与纪录</summary><p>地图全程不换，镜头跟随苹果。被抓时结算：先比完成波数，同波比撞毁数。</p><p>场边小箭头指向已经进场、还在屏幕外的蛇。旧残骸会在几波后碎掉。</p></details>` : '<p>就绪后立即重试同一局。</p>'}</div><div class="panel-actions"><button type="button" data-action="begin" class="primary" disabled>正在准备…</button>${back}</div>`,
+        'preparation',
+      );
+      return;
+    }
     this.dialog(
       `<div class="brief-content"><p class="result-kicker">第 ${level.id} 关 · ${level.name}</p><h2 id="dialog-title">${brief ? '试验准备' : '准备重试'}</h2>${brief ? `<p>${level.focus}</p>${level.chip ? '<p class="chip-note">◇ 可选收藏，通关后保存。</p>' : ''}${availableSkills(level).length > 1 ? this.loadout(level) : ''}<details class="brief-details"><summary>目标与操作</summary><p>目标 ${level.parMs / 1000} 秒 · ${TACTICS[level.tactic ?? 'first-lure']}</p><p>${level.decision ?? '把蛇引到墙边，再横向闪开。'}</p><p class="zone-note">${ZONES[Math.floor((id - 1) / 5)]![0]} · ${ZONES[Math.floor((id - 1) / 5)]![1]}</p><p class="score-rule">${id < 5 ? '空格使用闪避；信标从第5关启用。' : '各用一格电；空格使用所选工具，E投信标。'}第6关解锁脉冲，第9关解锁磁推。</p></details>` : '<p>正在重新摆好试验场，就绪后立即开始。</p>'}</div><div class="panel-actions"><button type="button" data-action="begin" class="primary" disabled>正在准备…</button>${button('levels', '返回选关', 'text-button')}</div>`,
       'preparation',
@@ -308,6 +349,7 @@ export class App {
       const node = this.root.querySelector(`#${id}`);
       if (node && node.textContent !== value) node.textContent = value;
     };
+    if (s.endless) text('round-label', `第 ${s.endless.wave} 波`);
     text('enemy-count', `剩余 ${s.snakes.filter((v) => v.alive).length} 条`);
     text('clock', `${seconds(s.elapsedMs)}s`);
     text(
@@ -383,7 +425,9 @@ export class App {
         ? '撞墙了！'
         : s.status === 'lost'
           ? '被逮住了，下次再骗它！'
-          : danger,
+          : s.endless?.nextWaveMs
+            ? '本波清空 · 下一波将至'
+            : danger,
     );
     this.root
       .querySelector('#play-status')
@@ -420,6 +464,13 @@ export class App {
     setPaused(this.state, true);
     this.controls?.clear();
     this.game?.resetClock();
+    const run = this.state.endless;
+    if (run) {
+      this.dialog(
+        `<h2 id="dialog-title">歇一口气</h2><p>完成 ${run.cleared} 波 · 撞毁 ${run.defeated} 条</p>${button('resume', '继续游戏', 'primary')}${button('retry', '重试同一局')}${button('loadout', '更换装备并重开')}${button('home', '返回首页', 'text-button')}`,
+      );
+      return;
+    }
     this.dialog(
       `<h2 id="dialog-title">歇一口气</h2><details class="brief-details"><summary>目标与操作</summary><p>${this.state.level.focus}</p><p>目标 ${this.state.level.parMs / 1000} 秒 · ${TACTICS[this.state.level.tactic ?? 'first-lure']}</p><p>方向键 / WASD 移动，空格使用${SKILLS[this.state.utility].name}，E 放信标。两个工具共用电量，每 3 秒恢复一格。</p><p>门的字母与踏板配对；空心残骸可通过，实心残骸会挡路。</p></details>${button('resume', '继续游戏', 'primary')}${button('retry', '重新挑战')}${button('loadout', '更换装备并重开')}${button('levels', '返回选关', 'text-button')}`,
     );
@@ -439,6 +490,16 @@ export class App {
     this.resultPending = true;
     if (s.status === 'won') {
       recordWin(this.save, s);
+      this.persist();
+    } else if (
+      s.endless &&
+      beatsEndlessScore(s.endless, this.save.endlessBest)
+    ) {
+      this.endlessRecord = true;
+      this.save.endlessBest = {
+        cleared: s.endless.cleared,
+        defeated: s.endless.defeated,
+      };
       this.persist();
     }
     this.root.querySelector('.play-screen')?.classList.add('ending');
@@ -479,6 +540,19 @@ export class App {
       ?.classList.remove('inspecting', 'ending');
     const inspection = this.root.querySelector<HTMLElement>('.loss-inspection');
     if (inspection) inspection.hidden = true;
+    if (s.endless) {
+      const best = this.save.endlessBest;
+      this.dialog(
+        `<div class="result-content"><div class="result-apple sad">${appleArt}</div><p class="result-kicker">无尽挑战</p><h2 id="dialog-title">${this.endlessRecord ? '新的无尽纪录！' : '再骗它一次'}</h2>
+        <div class="result-stats"><span><b>${s.endless.cleared}</b>完成波数</span><span><b>${s.endless.defeated}</b>撞毁蛇数</span></div>
+        ${best && !this.endlessRecord ? `<p>个人纪录 · ${best.cleared} 波 / ${best.defeated} 条</p>` : ''}
+        ${this.storageWarning ? '<p class="save-warning">保存暂不可用，刷新前请保留页面。</p>' : ''}
+        <details class="result-options"><summary>更多选择</summary>${button('inspect-loss', '查看失败现场')}${button('loadout', '更换装备')}</details></div>
+        <div class="panel-actions">${button('endless-new', '再来一局', 'primary')}<div class="action-row">${button('retry', '重试同一局')}${button('home', '返回首页', 'text-button')}</div></div>`,
+        'lose',
+      );
+      return;
+    }
     this.dialog(
       `<div class="result-content"><div class="result-apple ${won ? '' : 'sad'}">${appleArt}</div><p class="result-kicker">${complete ? '二十关，全都撞过了！' : won ? `第 ${s.level.id} 关完成` : '差一点，就闪开了'}</p><h2 id="dialog-title">${complete ? '墙都记住你了！' : won ? '撞墙了吧！' : '再骗它一次'}</h2>
       ${won ? `<div class="result-stars" aria-label="本关 ${stars(s)} 星">${starText(stars(s))}</div><p class="result-time">${seconds(s.elapsedMs)} 秒 · ${s.snakes.length} 条蛇全撞墙</p>` : `<p class="loss-cause">${lossTitle(s)}</p><p>${lossAdvice(s)}</p>`}
@@ -567,11 +641,17 @@ export class App {
       case 'resume':
         this.resume();
         break;
+      case 'endless':
+        this.startEndless();
+        break;
+      case 'endless-new':
+        this.startEndless(undefined, false);
+        break;
       case 'loadout':
-        if (this.state) this.start(this.state.level.id, true);
+        this.restart(true);
         break;
       case 'retry':
-        if (this.state) this.start(this.state.level.id, false);
+        this.restart(false);
         break;
       case 'reload':
         window.location.reload();

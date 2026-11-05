@@ -105,8 +105,18 @@ export interface LossDetails {
   cell: Point;
   path: Point[];
 }
+export interface EndlessScore {
+  cleared: number;
+  defeated: number;
+}
+export interface EndlessProgress extends EndlessScore {
+  seed: number;
+  wave: number;
+  nextWaveMs: number;
+}
 export interface GameState {
   level: Level;
+  endless?: EndlessProgress;
   status: 'playing' | 'won' | 'lost';
   paused: boolean;
   elapsedMs: number;
@@ -123,7 +133,7 @@ export interface GameState {
   highlights: Highlight[];
   lureKills: { beacon: number; snake: number }[];
   gates: { id: string; closed: boolean; pending: boolean | null }[];
-  wrecks: (Point & { active: boolean })[];
+  wrecks: (Point & { active: boolean; wave?: number })[];
   lossReason: string | null;
   loss: LossDetails | null;
   dodges: number;

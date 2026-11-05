@@ -176,6 +176,14 @@ button.text-button:hover {
   display: grid;
   gap: 14px;
 }
+.endless-entry:not(:disabled) {
+  background: #e3ebc4;
+}
+.endless-best {
+  margin: -6px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
 .action-row {
   display: grid;
   grid-template-columns: 1fr 1fr;

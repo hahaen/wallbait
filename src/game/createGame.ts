@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { TICK_MS } from '../core/config';
 import { step } from '../core/engine';
+import { stepEndless } from '../core/endless';
 import type { Command, GameEvent, GameState } from '../core/types';
 import { Arena } from './renderers/Arena';
 import { VIEWPORT } from './config';
@@ -20,6 +21,7 @@ export function createGame(
   options: GameOptions,
 ): { destroy(): void; resetClock(): void } {
   const renderScale = Math.min(window.devicePixelRatio || 1, 3);
+  const advance = options.state.endless ? stepEndless : step;
   let accumulator = 0,
     disposed = false;
   class PlayScene extends Phaser.Scene {
@@ -65,7 +67,7 @@ export function createGame(
         !state.paused &&
         state.status === 'playing'
       ) {
-        step(state, options.command());
+        advance(state, options.command());
         accumulator -= TICK_MS;
         this.arena.events(state.events, options.reducedMotion());
         options.onTick(state.events);

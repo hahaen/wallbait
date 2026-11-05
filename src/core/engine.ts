@@ -22,6 +22,7 @@ import type {
   LossDetails,
   Point,
   Snake,
+  Spawn,
   UtilitySkill,
 } from './types';
 
@@ -101,31 +102,36 @@ export function createState(
     eliminations: [],
     interference: [],
     events: [],
-    snakes: level.snakes.map((spawn, id) => ({
-      x: spawn.x,
-      y: spawn.y,
-      id,
-      kind: spawn.kind,
-      rules: { ...SNAKE_RULES[spawn.kind], ...spawn.rules },
-      phase: spawn.delayMs ? 'recovering' : 'tracking',
-      alive: true,
-      facing: 'down',
-      locked: 'down',
-      timer: spawn.delayMs ?? 0,
-      aim: 0,
-      aimDirection: null,
-      remaining: 0,
-      body: [],
-      attackPath: [],
-      attackBeacon: null,
-      closeEscape: false,
-      elite: spawn.elite === true,
-      stunMs: 0,
-      abilityCooldownMs: spawn.kind === 'cautious' ? 1600 : 0,
-      followup: false,
-      abilityTarget: null,
-    })),
+    snakes: [],
   };
+  spawnSnakes(state, level.snakes);
+  return state;
+}
+export function spawnSnakes(state: GameState, spawns: readonly Spawn[]): void {
+  state.snakes = spawns.map((spawn, id) => ({
+    x: spawn.x,
+    y: spawn.y,
+    id,
+    kind: spawn.kind,
+    rules: { ...SNAKE_RULES[spawn.kind], ...spawn.rules },
+    phase: spawn.delayMs ? 'recovering' : 'tracking',
+    alive: true,
+    facing: 'down',
+    locked: 'down',
+    timer: spawn.delayMs ?? 0,
+    aim: 0,
+    aimDirection: null,
+    remaining: 0,
+    body: [],
+    attackPath: [],
+    attackBeacon: null,
+    closeEscape: false,
+    elite: spawn.elite === true,
+    stunMs: 0,
+    abilityCooldownMs: spawn.kind === 'cautious' ? 1600 : 0,
+    followup: false,
+    abilityTarget: null,
+  }));
   // 蛇身只作表现；从出生格向后铺开，避开墙、门和其他角色。
   for (const snake of state.snakes) {
     const target = state.apple;
@@ -158,7 +164,6 @@ export function createState(
       point = next;
     }
   }
-  return state;
 }
 export function setPaused(state: GameState, paused: boolean): void {
   if (state.status !== 'playing') return;
@@ -199,9 +204,15 @@ function hitPlayer(
 function applyPendingTerrain(state: GameState): void {
   // 直冲期间冻结地形，机关与残骸在攻击结束后安全生效。
   if (state.snakes.some((s) => s.alive && s.phase === 'dashing')) return;
-  for (const wreck of state.wrecks) {
+  for (let i = 0; i < state.wrecks.length; i++) {
+    const wreck = state.wrecks[i]!;
     if (!wreck.active && !same(state.apple, wreck) && !headAt(state, wreck)) {
       wreck.active = true;
+      // 单图持续刷波时，残骸不能封死任一区域。
+      if (state.endless && !routesConnected(state)) {
+        state.wrecks.splice(i--, 1);
+        continue;
+      }
       // 信标若被新残骸覆盖，不能继续产生不可达目标。
       if (state.beacon && same(state.beacon, wreck)) state.beacon = null;
     }
@@ -214,7 +225,12 @@ function applyPendingTerrain(state: GameState): void {
       gate.cells.some((p) => same(state.apple, p) || headAt(state, p))
     )
       continue;
+    const previous = current.closed;
     current.closed = current.pending;
+    if (state.endless && current.closed && !routesConnected(state)) {
+      current.closed = previous;
+      continue;
+    }
     current.pending = null;
     state.gateChanges++;
   }
@@ -363,26 +379,59 @@ export function aimDirection(state: GameState, snake: Snake): Direction | null {
   }
   return direction;
 }
-// 从目标做 BFS，追踪只选择可通行格；不以碰墙代替寻路。
-function distances(state: GameState, target: Point): Map<string, number> {
-  // 信标可以留在随后关闭的门格内；不可从不可通行的目标反向寻出穿门路线。
-  if (blocked(state, target)) return new Map();
-  const result = new Map<string, number>([[key(target), 0]]);
-  const queue = [target];
-  for (let i = 0; i < queue.length; i++) {
+// 从目标做 BFS。用格索引与动态地形快照，大地图上也无需为每次探格遍历墙。
+export function routeDistances(
+  state: GameState,
+  target: Point,
+  move?: MagnetMove,
+): Int32Array {
+  const { width, height, walls, gates } = state.level;
+  const size = width * height;
+  const result = new Int32Array(size).fill(-1);
+  // -2 是障碍，-1 是尚不可达；后者用来识别被新地形封死的区域。
+  result.fill(-2, 0, width);
+  result.fill(-2, size - width);
+  for (let y = 1; y < height - 1; y++) {
+    result[y * width] = -2;
+    result[y * width + width - 1] = -2;
+  }
+  for (const p of walls) result[p.y * width + p.x] = -2;
+  for (const w of state.wrecks)
+    if (w.active && (!move || !same(w, move.from)))
+      result[w.y * width + w.x] = -2;
+  if (move) result[move.to.y * width + move.to.x] = -2;
+  for (const gate of gates ?? [])
+    if (state.gates.some((g) => g.id === gate.id && g.closed))
+      for (const p of gate.cells) result[p.y * width + p.x] = -2;
+  if (
+    target.x <= 0 ||
+    target.x >= width - 1 ||
+    target.y <= 0 ||
+    target.y >= height - 1
+  )
+    return result;
+  const start = target.y * width + target.x;
+  if (result[start] !== -1) return result;
+  const queue = new Int32Array(size);
+  const offsets = [-width, 1, width, -1];
+  let end = 1;
+  queue[0] = start;
+  result[start] = 0;
+  for (let i = 0; i < end; i++) {
     const current = queue[i]!;
-    for (const d of DIRECTIONS) {
-      const next = ahead(current, d),
-        k = key(next);
-      if (!blocked(state, next) && !result.has(k)) {
-        result.set(k, result.get(key(current))! + 1);
-        queue.push(next);
-      }
+    const distance = result[current]! + 1;
+    for (const offset of offsets) {
+      const next = current + offset;
+      if (result[next] !== -1) continue;
+      result[next] = distance;
+      queue[end++] = next;
     }
   }
   return result;
 }
-const key = (p: Point): string => `${p.x},${p.y}`;
+function routesConnected(state: GameState, move?: MagnetMove): boolean {
+  return !routeDistances(state, state.apple, move).includes(-1);
+}
 function moveSnake(snake: Snake, next: Point): void {
   snake.body.unshift({ x: snake.x, y: snake.y });
   snake.body.length = Math.min(4, snake.body.length);
@@ -409,7 +458,10 @@ export function pulseTargets(state: GameState): Snake[] {
 type MagnetMove = { from: Point; to: Point };
 type MagnetPreview =
   | { move: MagnetMove; reason: null }
-  | { move: null; reason: 'attacking' | 'no-wreck' | 'occupied' | 'reserved' };
+  | {
+      move: null;
+      reason: 'attacking' | 'no-wreck' | 'occupied' | 'reserved' | 'cuts-route';
+    };
 /** 提示、预览和执行共用校验；攻击期间不改变地形。 */
 export function magnetPreview(state: GameState): MagnetPreview {
   if (state.snakes.some((s) => s.alive && s.phase === 'dashing'))
@@ -434,7 +486,10 @@ export function magnetPreview(state: GameState): MagnetPreview {
     (state.beacon && same(state.beacon, to))
   )
     return { move: null, reason: 'reserved' };
-  return { move: { from, to }, reason: null };
+  const move = { from, to };
+  if (state.endless && !routesConnected(state, move))
+    return { move: null, reason: 'cuts-route' };
+  return { move, reason: null };
 }
 export function magnetMove(state: GameState): MagnetMove | null {
   return magnetPreview(state).move;
@@ -586,7 +641,8 @@ export function step(state: GameState, command: Command): void {
   }
   if (state.status !== 'playing') return;
 
-  const paths = new Map<string, Map<string, number>>();
+  const paths = new Map<number, Int32Array>();
+  const index = (p: Point): number => p.y * state.level.width + p.x;
   let collision:
     { snake: Snake; kind: 'tracking' | 'dash'; path: Point[] } | undefined;
   for (const snake of state.snakes) {
@@ -668,20 +724,22 @@ export function step(state: GameState, command: Command): void {
       snake.timer -= TICK_MS;
       if (snake.timer <= 0) {
         const target = targetFor(state, snake);
-        let path = paths.get(key(target));
+        const targetCell = index(target);
+        let path = paths.get(targetCell);
         if (!path) {
-          path = distances(state, target);
-          paths.set(key(target), path);
+          path = routeDistances(state, target);
+          paths.set(targetCell, path);
         }
-        let best = path.get(key(snake)) ?? Infinity;
+        const distanceToSnake = path[index(snake)]!;
+        let best = distanceToSnake < 0 ? Infinity : distanceToSnake;
         let chosen: Direction | undefined;
         const keepDistance = snake.kind === 'cautious' && !state.beacon;
         const retreat = keepDistance && best < 2;
         for (const direction of DIRECTIONS) {
           const next = ahead(snake, direction),
-            distance = path.get(key(next));
+            distance = path[index(next)]!;
           if (
-            distance !== undefined &&
+            distance >= 0 &&
             (retreat ? distance > best && distance <= 2 : distance < best) &&
             (!keepDistance || retreat || distance >= 2)
           ) {
@@ -732,7 +790,12 @@ export function step(state: GameState, command: Command): void {
               : 'wall',
           });
           if (!state.wrecks.some((w) => same(w, snake)))
-            state.wrecks.push({ x: snake.x, y: snake.y, active: false });
+            state.wrecks.push({
+              x: snake.x,
+              y: snake.y,
+              active: false,
+              ...(state.endless ? { wave: state.endless.wave } : {}),
+            });
           break;
         }
         moveSnake(snake, next);
@@ -773,7 +836,8 @@ export function step(state: GameState, command: Command): void {
     );
   if (state.status === 'playing') {
     applyPendingTerrain(state);
-    if (state.snakes.every((s) => !s.alive)) finish(state, 'won');
+    if (!state.endless && state.snakes.every((s) => !s.alive))
+      finish(state, 'won');
   }
 }
 

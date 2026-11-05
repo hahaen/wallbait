@@ -34,6 +34,7 @@ export function utilityFeedback(state: GameState): {
           'no-wreck': '面前需残骸',
           occupied: '落点被占用',
           reserved: '避开机关等',
+          'cuts-route': '会堵死通路',
         }[reason],
       };
   }

@@ -1,7 +1,12 @@
 import { LEVELS } from '../core/levels';
 import { stars } from '../core/engine';
 import { HIGHLIGHTS } from '../core/highlights';
-import type { GameState, HighlightId, UtilitySkill } from '../core/types';
+import type {
+  EndlessScore,
+  GameState,
+  HighlightId,
+  UtilitySkill,
+} from '../core/types';
 
 export const CURRENT_SCORING = 'chase-v2';
 export const SAVE_KEY = 'wallbait.save.v2';
@@ -25,6 +30,7 @@ export interface Save {
   reducedMotion: boolean;
   legacyCompleted: number;
   utility: UtilitySkill;
+  endlessBest?: EndlessScore;
 }
 export interface StoragePort {
   getItem(key: string): string | null;
@@ -85,6 +91,18 @@ export function readSave(storage: StoragePort): Save {
   if (parsed?.version === 2 && parsed.campaign === CAMPAIGN) {
     if (parsed.utility === 'pulse' || parsed.utility === 'magnet')
       save.utility = parsed.utility;
+    const endless = parsed.endlessBest;
+    if (
+      record(endless) &&
+      integer(endless.cleared, 0, Number.MAX_SAFE_INTEGER) &&
+      integer(endless.defeated, 1, Number.MAX_SAFE_INTEGER) &&
+      endless.defeated >= endless.cleared &&
+      endless.defeated <= 3 * (endless.cleared + 1)
+    )
+      save.endlessBest = {
+        cleared: endless.cleared,
+        defeated: endless.defeated,
+      };
     save.muted = parsed.muted === true;
     save.reducedMotion = parsed.reducedMotion === true;
     if (integer(parsed.legacyCompleted, 0, LEVELS.length))

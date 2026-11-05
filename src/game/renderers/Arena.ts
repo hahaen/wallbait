@@ -10,14 +10,14 @@ import { BEACON_MS, MOVE_MS, TICK_MS, VECTOR } from '../../core/config';
 import type { GameEvent, GameState, Point, Snake } from '../../core/types';
 import { wallContains } from '../../core/walls';
 import { groupEnemies } from '../feedback';
+import { CELL, VIEWPORT } from '../config';
 import {
   CHARACTER_FRAMES,
   APPLE_FRAME,
   CAUGHT_APPLE_FRAME,
 } from '../characters';
 
-const CELL = 32,
-  INK = 0x3d2c24;
+const INK = 0x3d2c24;
 const center = (p: Point): Point => ({
   x: (p.x + 0.5) * CELL,
   y: (p.y + 0.5) * CELL,
@@ -31,6 +31,7 @@ interface Burst extends Point {
 export class Arena {
   private segments = new Map<number, Phaser.GameObjects.Image[]>();
   private heads = new Map<number, Phaser.GameObjects.Image>();
+  private snakes?: Snake[];
   private fruit: Phaser.GameObjects.Image;
   private fruitFrom: Point;
   private fruitTarget: Point;
@@ -106,6 +107,16 @@ export class Arena {
         );
       }
     }
+    if (state.endless) {
+      // 一局只绘制一次静态大地图，逐帧仅移动贴图和绘制动态物体。
+      background.generateTexture(
+        'endless-ground',
+        state.level.width * CELL,
+        state.level.height * CELL,
+      );
+      background.destroy();
+      scene.add.image(0, 0, 'endless-ground').setOrigin(0).setDepth(-1);
+    }
     for (const gate of state.level.gates ?? []) {
       for (const p of [...gate.cells, ...gate.switches]) {
         scene.add
@@ -128,11 +139,22 @@ export class Arena {
       .image(0, 0, 'characters', APPLE_FRAME)
       .setDisplaySize(48, 48)
       .setDepth(2);
-    for (const snake of state.snakes) {
+    this.draw(100, true);
+  }
+  private syncSnakes(): void {
+    if (this.snakes === this.state.snakes) return;
+    for (const head of this.heads.values()) head.destroy();
+    for (const segments of this.segments.values())
+      for (const segment of segments) segment.destroy();
+    this.heads.clear();
+    this.segments.clear();
+    this.positions.clear();
+    this.snakes = this.state.snakes;
+    for (const snake of this.snakes) {
       this.segments.set(
         snake.id,
         Array.from({ length: 4 }, () =>
-          scene.add
+          this.scene.add
             .image(0, 0, 'characters', CHARACTER_FRAMES[snake.kind].body)
             .setDepth(0.8)
             .setVisible(false),
@@ -140,13 +162,12 @@ export class Arena {
       );
       this.heads.set(
         snake.id,
-        scene.add
+        this.scene.add
           .image(0, 0, 'characters', CHARACTER_FRAMES[snake.kind].head)
           .setDisplaySize(56, 56)
           .setDepth(1),
       );
     }
-    this.draw(100, true);
   }
   events(events: GameEvent[], reducedMotion: boolean): void {
     for (const event of events) {
@@ -204,6 +225,7 @@ export class Arena {
     return result;
   }
   draw(delta: number, reducedMotion: boolean, inspectingLoss = false): void {
+    this.syncSnakes();
     const ended = this.state.status !== 'playing';
     if (ended) this.endingMs += delta;
     const g = this.graphics;
@@ -236,6 +258,7 @@ export class Arena {
       }
     }
     const fruitPoint = this.fruitPosition(delta, reducedMotion || ended);
+    if (this.state.endless) this.followFruit(fruitPoint, !ended);
     this.apple(fruitPoint, reducedMotion, inspectingLoss);
     this.enemyBadges();
     this.bursts = this.bursts.filter((b) => b.life > 0);
@@ -258,6 +281,46 @@ export class Arena {
       }
     }
     if (this.state.loss && inspectingLoss) this.lossMarker();
+  }
+  private followFruit(fruit: Point, showEnemies: boolean): void {
+    const { width, height } = VIEWPORT;
+    const left = Phaser.Math.Clamp(
+      fruit.x - width / 2,
+      0,
+      this.state.level.width * CELL - width,
+    );
+    const top = Phaser.Math.Clamp(
+      fruit.y - height / 2,
+      0,
+      this.state.level.height * CELL - height,
+    );
+    this.scene.cameras.main.setScroll(left, top);
+    if (!showEnemies) return;
+    // 只标记已经进场的蛇的位置；不会提示直冲方向或路径。
+    for (const snake of this.state.snakes) {
+      if (!snake.alive) continue;
+      const p = this.positions.get(`head${snake.id}`)!;
+      if (
+        p.x >= left &&
+        p.x <= left + width &&
+        p.y >= top &&
+        p.y <= top + height
+      )
+        continue;
+      const x = Phaser.Math.Clamp(p.x, left + 13, left + width - 13);
+      const y = Phaser.Math.Clamp(p.y, top + 13, top + height - 13);
+      const angle = Math.atan2(p.y - y, p.x - x);
+      const points = [0, 2.4, -2.4].map((offset) => ({
+        x: x + Math.cos(angle + offset) * 8,
+        y: y + Math.sin(angle + offset) * 8,
+      }));
+      this.signals.fillStyle(
+        { normal: 0xb5d98d, swift: 0xf7d78b, cautious: 0xd4bce8 }[snake.kind],
+      );
+      this.signals.lineStyle(1.8, INK);
+      this.signals.fillPoints(points, true);
+      this.signals.strokePoints(points, true);
+    }
   }
   private enemyBadges(): void {
     const alive = this.state.snakes.filter((s) => s.alive);
