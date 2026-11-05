@@ -67,7 +67,7 @@ export function createGame(
       ) {
         stepEndless(state, options.command());
         accumulator -= TICK_MS;
-        this.arena.events(state.events, options.reducedMotion());
+        this.arena.afterStep(options.reducedMotion());
         options.onTick(state.events);
       }
       // 终止帧直接对齐规则格，现场标记不能落在尚未追上的插值位置。
@@ -75,6 +75,7 @@ export function createGame(
         Math.min(delta, 100),
         options.reducedMotion(),
         options.inspectingLoss?.() ?? false,
+        accumulator,
       );
     }
   }

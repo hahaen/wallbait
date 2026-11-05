@@ -14,7 +14,7 @@ test('首波清空后全览出现两个进场区，走位切换并原地接战',
   await page.getByRole('button', { name: '开始挑战' }).click();
   const canvas = page.locator('canvas');
   const original = await canvas.elementHandle();
-  // 一次直冲仅持续 400ms，逐帧观察才能稳定抓住第一次。
+  // 逐帧观察，确保信标放在第一次直冲结束后。
   await page.waitForFunction(
     () => document.querySelector('#play-status')?.textContent?.includes('直冲'),
     null,
@@ -185,7 +185,7 @@ test('镜头跟随到地图边界，左上全览标出苹果的实际移动', as
   for (const [key, time] of [
     ['ArrowLeft', 1050],
     ['ArrowUp', 1350],
-    ['ArrowLeft', 2850],
+    ['ArrowLeft', 3300],
   ] as const) {
     await page.keyboard.down(key);
     await page.waitForTimeout(time);
@@ -215,7 +215,7 @@ test('镜头跟随到地图边界，左上全览标出苹果的实际移动', as
 
   // 苹果进入左上角时，透过变淡的全览仍能看清整颗苹果。
   await page.keyboard.down('ArrowUp');
-  await page.waitForTimeout(2950);
+  await page.waitForTimeout(3450);
   await page.keyboard.up('ArrowUp');
   const corner = await applesOnCanvas(page);
   expect(corner.minimap.pixels).toBeGreaterThan(edge.minimap.pixels * 5);

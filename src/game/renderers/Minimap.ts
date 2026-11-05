@@ -48,16 +48,25 @@ export class Minimap {
       g.fillRect(origin + wall.x * tile, origin + wall.y * tile, tile, tile);
   }
 
-  draw(fruit: Point, left: number, top: number): void {
+  draw(
+    fruit: Point,
+    left: number,
+    top: number,
+    snakePosition: (id: number) => Point,
+  ): void {
     const g = this.markers;
     const choice = this.state.endless?.waveChoice;
     g.clear();
-    const overlaps = (x: number, y: number): boolean =>
-      x + 22 >= inset &&
-      x - 22 <= origin + this.width + padding &&
-      y + 22 >= inset &&
-      y - 22 <= origin + this.height + padding;
-    let faded = overlaps(fruit.x - left, fruit.y - top);
+    const opacity = (x: number, y: number): number => {
+      const gap = Math.max(
+        inset - x - 22,
+        x - 22 - (origin + this.width + padding),
+        inset - y - 22,
+        y - 22 - (origin + this.height + padding),
+      );
+      return 0.16 + 0.84 * Math.min(1, Math.max(0, gap / 16));
+    };
+    let alpha = opacity(fruit.x - left, fruit.y - top);
 
     for (const gate of this.state.level.gates ?? []) {
       const closed = this.state.gates.find((g) => g.id === gate.id)?.closed;
@@ -93,9 +102,8 @@ export class Minimap {
     });
     for (const snake of this.state.snakes) {
       if (!snake.alive) continue;
-      const x = (snake.x + 0.5) * CELL;
-      const y = (snake.y + 0.5) * CELL;
-      faded ||= overlaps(x - left, y - top);
+      const { x, y } = snakePosition(snake.id);
+      alpha = Math.min(alpha, opacity(x - left, y - top));
       g.fillStyle(snakeColors[snake.kind]);
       g.fillCircle(origin + x * scale, origin + y * scale, 1.8);
     }
@@ -103,7 +111,7 @@ export class Minimap {
     g.fillCircle(origin + fruit.x * scale, origin + fruit.y * scale, 3.7);
     g.fillStyle(0xc93425);
     g.fillCircle(origin + fruit.x * scale, origin + fruit.y * scale, 2.8);
-    this.ground.setAlpha(faded ? 0.16 : 1);
-    g.setAlpha(faded && !choice ? 0.16 : 1);
+    this.ground.setAlpha(alpha);
+    g.setAlpha(choice ? 1 : alpha);
   }
 }

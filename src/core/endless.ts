@@ -17,6 +17,11 @@ const WAVE_BREAK_MS = 2400;
 const SPAWN_GRACE_MS = 900;
 const MIN_SPAWN_DISTANCE = 6; // 在三类蛇的直冲触发范围之外。
 const WRECK_WAVES = 3;
+const endlessSnakePace = {
+  normal: { trackMs: 360, dashMs: 140 },
+  swift: { trackMs: 320, dashMs: 120 },
+  cautious: { trackMs: 440, dashMs: 140 },
+};
 
 const line = (
   x: number,
@@ -29,7 +34,13 @@ const line = (
     y: y + (vertical ? i : 0),
   }));
 const firstWave: Spawn[] = [
-  { x: 27, y: 24, kind: 'normal', delayMs: SPAWN_GRACE_MS },
+  {
+    x: 27,
+    y: 24,
+    kind: 'normal',
+    delayMs: SPAWN_GRACE_MS,
+    rules: endlessSnakePace.normal,
+  },
 ];
 export const ENDLESS_MAP: Level = {
   id: 21,
@@ -40,6 +51,7 @@ export const ENDLESS_MAP: Level = {
   width: 55,
   height: 61,
   apple: { x: 27, y: 30 },
+  appleMoveMs: 140,
   facing: 'up',
   snakes: firstWave,
   beaconEnabled: true,
@@ -271,6 +283,7 @@ function nextSpawns(
       kind,
       elite: wave >= 5 && (i === 0 || (wave >= 9 && i === 1 && random() < 0.5)),
       delayMs: SPAWN_GRACE_MS + i * 240,
+      rules: endlessSnakePace[kind],
     });
   }
   return spawns;

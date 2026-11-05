@@ -6,7 +6,7 @@ import {
   magnetMove,
   pulseTargets,
 } from '../../core/engine';
-import { BEACON_MS, MOVE_MS, TICK_MS, VECTOR } from '../../core/config';
+import { BEACON_MS, VECTOR } from '../../core/config';
 import type { GameEvent, GameState, Point, Snake } from '../../core/types';
 import { wallContains } from '../../core/walls';
 import { groupEnemies } from '../feedback';
@@ -36,6 +36,8 @@ export class Arena {
   private fruit: Phaser.GameObjects.Image;
   private fruitFrom: Point;
   private fruitTarget: Point;
+  private fruitMoveStartedMs = 0;
+  private fruitMoveDurationMs = 0;
   private fruitElapsedMs = 0;
   private endingMs = 0;
   private graphics: Phaser.GameObjects.Graphics;
@@ -172,8 +174,15 @@ export class Arena {
       );
     }
   }
-  events(events: GameEvent[], reducedMotion: boolean): void {
-    for (const event of events) {
+  afterStep(reducedMotion: boolean): void {
+    if (!same(this.state.apple, this.fruitTarget)) {
+      this.fruitFrom = this.fruitTarget;
+      this.fruitTarget = this.state.apple;
+      this.fruitMoveStartedMs = this.state.elapsedMs;
+      this.fruitMoveDurationMs = this.state.moveTimer;
+      this.fruitElapsedMs = 0;
+    }
+    for (const event of this.state.events) {
       if (event.type === 'lost' || event.type === 'won') this.endingMs = 0;
       if (event.type === 'dodge')
         this.fruitFrom = this.fruitTarget = this.state.apple;
@@ -189,23 +198,17 @@ export class Arena {
         this.scene.cameras.main.shake(100, 0.004);
     }
   }
-  private fruitPosition(delta: number, snap: boolean): Point {
-    const next = this.state.apple;
-    if (snap) this.fruitFrom = this.fruitTarget = next;
-    if (!same(next, this.fruitTarget)) {
-      this.fruitFrom = this.fruitTarget;
-      this.fruitTarget = next;
-      this.fruitElapsedMs = 0;
-    }
-    if (same(this.fruitFrom, next)) return center(next);
-    this.fruitElapsedMs += delta;
-    const from = center(this.fruitFrom),
-      to = center(next),
-      distance = Math.hypot(to.x - from.x, to.y - from.y) / CELL;
-    const t = Math.min(
-      1,
-      this.fruitElapsedMs / ((MOVE_MS - TICK_MS) * distance),
+  private fruitPosition(stepRemainderMs: number, snap: boolean): Point {
+    if (snap) this.fruitFrom = this.fruitTarget;
+    const to = center(this.fruitTarget);
+    if (same(this.fruitFrom, this.fruitTarget)) return to;
+    // 固定步时钟覆盖整段移动，暂停恢复时保留已绘制的进度。
+    this.fruitElapsedMs = Math.max(
+      this.fruitElapsedMs,
+      this.state.elapsedMs - this.fruitMoveStartedMs + stepRemainderMs,
     );
+    const t = Math.min(1, this.fruitElapsedMs / this.fruitMoveDurationMs);
+    const from = center(this.fruitFrom);
     return {
       x: Phaser.Math.Linear(from.x, to.x, t),
       y: Phaser.Math.Linear(from.y, to.y, t),
@@ -227,7 +230,12 @@ export class Arena {
     this.positions.set(key, result);
     return result;
   }
-  draw(delta: number, reducedMotion: boolean, inspectingLoss = false): void {
+  draw(
+    delta: number,
+    reducedMotion: boolean,
+    inspectingLoss = false,
+    stepRemainderMs = 0,
+  ): void {
     this.syncSnakes();
     const ended = this.state.status !== 'playing';
     if (ended) this.endingMs += delta;
@@ -260,7 +268,10 @@ export class Arena {
         g.strokeCircle(head.x, head.y, 19);
       }
     }
-    const fruitPoint = this.fruitPosition(delta, reducedMotion || ended);
+    const fruitPoint = this.fruitPosition(
+      stepRemainderMs,
+      reducedMotion || ended,
+    );
     if (this.state.endless) this.followFruit(fruitPoint, !ended);
     this.apple(fruitPoint, reducedMotion, inspectingLoss);
     this.enemyBadges();
@@ -298,7 +309,9 @@ export class Arena {
       this.state.level.height * CELL - height,
     );
     this.scene.cameras.main.setScroll(left, top);
-    this.minimap?.draw(fruit, left, top);
+    this.minimap?.draw(fruit, left, top, (id) =>
+      this.positions.get(`head${id}`)!,
+    );
     if (!showEnemies) return;
     // 只标记已经进场的蛇的位置；不会提示直冲方向或路径。
     for (const snake of this.state.snakes) {

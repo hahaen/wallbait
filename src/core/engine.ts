@@ -293,7 +293,8 @@ function walkApple(
   movement?: Point,
 ): void {
   const primary = ahead(state.apple, direction);
-  state.moveTimer = MOVE_MS;
+  const moveMs = state.level.appleMoveMs ?? MOVE_MS;
+  state.moveTimer = moveMs;
   if (!movement?.x || !movement.y) {
     moveApple(state, primary);
     return;
@@ -327,7 +328,7 @@ function walkApple(
     !outlines.some((outline) => crossesWall(outline, state.apple, diagonal)) &&
     moveApple(state, diagonal)
   ) {
-    state.moveTimer = Math.ceil((MOVE_MS * Math.SQRT2) / TICK_MS) * TICK_MS;
+    state.moveTimer = Math.ceil((moveMs * Math.SQRT2) / TICK_MS) * TICK_MS;
     return;
   }
   if (!moveApple(state, primary)) moveApple(state, secondary);
@@ -592,7 +593,7 @@ export function step(state: GameState, command: Command): void {
       if (!moveApple(state, ahead(state.apple, state.facing))) break;
     }
     state.moveCarry = 0;
-    state.moveTimer = MOVE_MS;
+    state.moveTimer = state.level.appleMoveMs ?? MOVE_MS;
   }
   if (state.status !== 'playing') return;
   if (

@@ -34,6 +34,19 @@ const nextWave = (state: EndlessState): void => {
 };
 
 describe('无尽挑战', () => {
+  it('苹果起步即时，后续直步按无尽步时移动', () => {
+    const state = createEndless(12, 'dodge');
+    const right = { direction: 'right' } as const;
+    stepEndless(state, right);
+    expect(state.apple).toEqual({ x: 28, y: 30 });
+    for (let elapsed = TICK_MS; elapsed < 140; elapsed += TICK_MS) {
+      stepEndless(state, right);
+      expect(state.apple).toEqual({ x: 28, y: 30 });
+    }
+    stepEndless(state, right);
+    expect(state.apple).toEqual({ x: 29, y: 30 });
+  });
+
   it('地图尺寸正确，两组闸门任意开合时，所有可走格仍连通', () => {
     expect(ENDLESS_MAP).toMatchObject({ width: 55, height: 61 });
     expect(validateLevel(ENDLESS_MAP)).toEqual([]);
@@ -57,7 +70,9 @@ describe('无尽挑战', () => {
     const gate = state.gates[0]!;
     gate.closed = true;
     // 首次冲刺结束后，利用苹果下方的石墙，贴墙把信标投到脚下。
-    tick(state, 90);
+    for (let i = 0; i < 120 && state.snakes[0]!.y !== 29; i++) {
+      stepEndless(state, idle);
+    }
     expect(state.snakes[0]).toMatchObject({
       x: 27,
       y: 29,

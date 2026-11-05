@@ -55,6 +55,7 @@ export interface Level {
   beaconEnabled?: boolean;
   chip?: MemoryChip;
   apple: Point;
+  appleMoveMs?: number;
   facing: Direction;
   snakes: Spawn[];
   parMs: number;
