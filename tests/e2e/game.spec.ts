@@ -5,9 +5,9 @@ async function start(page: Page): Promise<void> {
   await page.goto('/');
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
   await expect(page.locator('canvas')).toBeVisible();
-  await page.getByRole('button', { name: '开始挑战', exact: true }).click();
+  await expect(page.locator('dialog')).toHaveCount(0);
 }
-test('空存档直接进入无尽，装备与设置刷新后恢复', async ({ page }) => {
+test('空存档直接进入无尽，掉落可见且设置刷新后恢复', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
@@ -34,19 +34,11 @@ test('空存档直接进入无尽，装备与设置刷新后恢复', async ({ pa
   await page.getByRole('button', { name: '完成', exact: true }).click();
   await expect(settings).toBeFocused();
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '无尽挑战' })).toBeVisible();
-  await expect(page.locator('#clock')).toHaveText('0.0s');
-  const equipment = page.getByRole('region', { name: '选择装备' });
-  await expect(page.locator('.loadout-options button')).toHaveCount(3);
-  await expect(equipment).toBeVisible();
-  const magnet = page.getByRole('dialog').getByRole('button', { name: /磁推/ });
-  await magnet.click();
-  await expect(magnet).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('button', { name: '开始挑战' }).click();
+  await expect(page.locator('dialog')).toHaveCount(0);
   await expect(page.locator('#round-label')).toHaveText('第 1 波');
   await expect(page.locator('.level-name')).toHaveText('回环石园');
-  await expect(page.getByRole('button', { name: '磁推' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '信标' })).toBeEnabled();
+  await expect(page.locator('#drop-guide')).toContainText(/护盾|冰冻|诱饵/);
+  await expect(page.getByRole('button', { name: '放下诱饵' })).toBeDisabled();
   await page.reload();
   await expect(page.getByRole('button', { name: '选择关卡' })).toHaveCount(0);
   await page.getByRole('button', { name: '设置', exact: true }).click();
@@ -54,11 +46,11 @@ test('空存档直接进入无尽，装备与设置刷新后恢复', async ({ pa
   await expect(motion).toBeChecked();
   await page.getByRole('button', { name: '完成', exact: true }).click();
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
-  await expect(magnet).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('dialog')).toHaveCount(0);
   expect(errors).toEqual([]);
 });
 
-test('暂停冻结时间与冷却、后台暂停、连续重开无重复监听', async ({ page }) => {
+test('暂停冻结时间与掉落、后台暂停、连续重开无重复监听', async ({ page }) => {
   await start(page);
   await page.keyboard.down('ArrowRight');
   await page.keyboard.press('Space');
@@ -67,10 +59,10 @@ test('暂停冻结时间与冷却、后台暂停、连续重开无重复监听',
   await page.keyboard.press('p');
   await expect(page.getByRole('heading', { name: '歇一口气' })).toBeVisible();
   const time = await page.locator('#clock').textContent(),
-    cooldown = await page.locator('#cooldown').textContent();
+    drop = await page.locator('#drop-guide').textContent();
   await page.waitForTimeout(500);
   expect(await page.locator('#clock').textContent()).toBe(time);
-  expect(await page.locator('#cooldown').textContent()).toBe(cooldown);
+  expect(await page.locator('#drop-guide').textContent()).toBe(drop);
   await page.getByRole('button', { name: '继续游戏' }).click();
   await page.evaluate(() => window.dispatchEvent(new Event('blur')));
   await expect(page.getByRole('heading', { name: '歇一口气' })).toBeVisible();
@@ -150,7 +142,7 @@ test('地图与触控区无重叠、竖屏安全空间', async ({ page }) => {
   }
 });
 
-test('真实浏览器多点触控移动与闪避同时按、取消后释放', async ({
+test('真实浏览器多点触控可边移动边放下拾到的诱饵', async ({
   page,
   context,
   browserName,
@@ -159,22 +151,37 @@ test('真实浏览器多点触控移动与闪避同时按、取消后释放', as
     browserName !== 'chromium',
     'CDP 多点触控仅 Chromium；WebKit 流程另测',
   );
+  // 固定种子使第一个诱饵落在苹果右边第一格。
+  await page.addInitScript(() => {
+    const random = Math.random;
+    Math.random = () => {
+      Math.random = random;
+      return 1033 / 0x100000000;
+    };
+  });
   await start(page);
   const client = await context.newCDPSession(page);
-  const left = (await page.locator('[data-direction="left"]').boundingBox())!,
-    dodge = (await page.locator('[data-dodge]').boundingBox())!;
-  const a = { x: left.x + left.width / 2, y: left.y + left.height / 2, id: 1 },
-    b = { x: dodge.x + dodge.width / 2, y: dodge.y + dodge.height / 2, id: 2 };
+  const right = (await page.locator('[data-direction="right"]').boundingBox())!;
+  const lure = page.getByRole('button', { name: '放下诱饵' });
+  const tool = (await lure.boundingBox())!;
+  const a = {
+    x: right.x + right.width / 2,
+    y: right.y + right.height / 2,
+    id: 1,
+  };
+  const b = { x: tool.x + tool.width / 2, y: tool.y + tool.height / 2, id: 2 };
   await client.send('Input.dispatchTouchEvent', {
     type: 'touchStart',
     touchPoints: [a],
   });
+  await expect(lure).toBeEnabled();
   await client.send('Input.dispatchTouchEvent', {
     type: 'touchStart',
     touchPoints: [a, b],
   });
-  await expect(page.locator('#cooldown')).toContainText('▰▱');
-  await expect(page.locator('[data-direction="left"]')).toHaveClass(/pressed/);
+  await expect(page.locator('#mechanisms')).toContainText('诱饵');
+  await expect(lure).toBeDisabled();
+  await expect(page.locator('[data-direction="right"]')).toHaveClass(/pressed/);
   await client.send('Input.dispatchTouchEvent', {
     type: 'touchCancel',
     touchPoints: [],

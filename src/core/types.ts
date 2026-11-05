@@ -1,6 +1,7 @@
 export type Direction = 'up' | 'right' | 'down' | 'left';
 export type SnakeKind = 'normal' | 'swift' | 'cautious';
 export type UtilitySkill = 'dodge' | 'pulse' | 'magnet';
+export type DropKind = 'shield' | 'freeze' | 'lure';
 export type Tactic =
   'first-lure' | 'beacon' | 'wreck' | 'chip' | 'split' | 'gate';
 export type Phase =
@@ -95,11 +96,21 @@ export type GameEvent =
       obstacle: 'wall' | 'wreck';
     }
   | {
-      type: 'dodge' | 'pulse' | 'magnet' | 'ability' | 'chip' | 'won' | 'lost';
+      type:
+        | 'dodge'
+        | 'pulse'
+        | 'magnet'
+        | 'ability'
+        | 'chip'
+        | 'lure'
+        | 'won'
+        | 'lost';
       x: number;
       y: number;
     }
-  | { type: 'highlight'; id: HighlightId; x: number; y: number };
+  | { type: 'highlight'; id: HighlightId; x: number; y: number }
+  | { type: 'pickup'; kind: DropKind; x: number; y: number }
+  | { type: 'shield-break'; x: number; y: number };
 export interface LossDetails {
   enemy: number;
   kind: 'contact' | 'tracking' | 'dash';
@@ -118,6 +129,13 @@ export interface EndlessProgress extends EndlessScore {
   seed: number;
   wave: number;
   nextWaveMs: number;
+  drop: (Point & { kind: DropKind }) | null;
+  nextDropAtMs: number;
+  dropRoll: number;
+  shield: boolean;
+  shieldGraceMs: number;
+  freezeMs: number;
+  hasLure: boolean;
   waveChoice?: {
     regions: [WaveRegion, WaveRegion];
     selected: 0 | 1;

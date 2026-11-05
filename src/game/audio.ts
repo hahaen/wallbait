@@ -27,6 +27,9 @@ export class Sound {
       pulse: [180, 720],
       magnet: [420, 180],
       ability: [220, 330],
+      pickup: [640, 960],
+      'shield-break': [460, 180],
+      lure: [360, 620],
     };
     try {
       const ctx = this.context,

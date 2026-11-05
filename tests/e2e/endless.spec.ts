@@ -5,32 +5,28 @@ test('首波清空后全览出现两个进场区，走位切换并原地接战',
 }, info) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
+  await page.addInitScript(() => {
+    const random = Math.random;
+    Math.random = () => {
+      Math.random = random;
+      return 1033 / 0x100000000;
+    };
+  });
   await page.goto('/');
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
-  await expect(page.getByText('回环石园 · 55 × 61 格')).toBeVisible();
-  await expect(
-    page.getByRole('dialog').getByRole('button', { name: /磁推/ }),
-  ).toBeVisible();
-  await page.getByRole('button', { name: '开始挑战' }).click();
+  await expect(page.locator('dialog')).toHaveCount(0);
   const canvas = page.locator('canvas');
   const original = await canvas.elementHandle();
-  // 逐帧观察，确保信标放在第一次直冲结束后。
-  await page.waitForFunction(
-    () => document.querySelector('#play-status')?.textContent?.includes('直冲'),
-    null,
-    { polling: 'raf', timeout: 8000 },
-  );
-  await page.waitForFunction(
-    () => document.querySelector('#play-status')?.textContent === '',
-    null,
-    { polling: 'raf', timeout: 2000 },
-  );
-  await page.keyboard.down('ArrowDown');
-  await page.keyboard.press('e');
-  await page.keyboard.up('ArrowDown');
-  await expect(page.locator('#mechanisms')).toContainText('信标');
+  const lure = page.getByRole('button', { name: '放下诱饵' });
+  await page.keyboard.press('ArrowRight');
+  await expect(lure).toBeEnabled();
+  await expect(page.locator('#field-notes')).toContainText('拾到诱饵');
+  await expect(page.locator('#mechanisms')).not.toContainText('诱饵');
+  await page.keyboard.press('Space');
+  await expect(page.locator('#mechanisms')).toContainText('诱饵');
+  await expect(lure).toBeDisabled();
   await page.keyboard.down('ArrowRight');
-  await page.waitForTimeout(700);
+  await page.waitForTimeout(360);
   await page.keyboard.up('ArrowRight');
   const status = page.locator('#play-status');
   await expect(status).toContainText('可移向另一框换区');
@@ -91,6 +87,48 @@ test('首波清空后全览出现两个进场区，走位切换并原地接战',
   expect(errors).toEqual([]);
 });
 
+test('护盾和冰冻踩到就生效，诱饵按钮仍等拾取', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-11-06T04:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-11-06T04:00:01Z'));
+  await page.addInitScript(() => {
+    const seed = Number(new URLSearchParams(location.search).get('seed'));
+    const random = Math.random;
+    Math.random = () => {
+      Math.random = random;
+      return seed / 0x100000000;
+    };
+  });
+  for (const [seed, name] of [
+    [1957, '护盾'],
+    [148, '冰冻'],
+  ] as const) {
+    await page.goto(`/?seed=${seed}`);
+    await page
+      .getByRole('button', { name: '开始游戏', exact: true })
+      .click({ force: true });
+    await expect(page.locator('dialog')).toHaveCount(0);
+    await expect(page.locator('#drop-guide')).toContainText(name);
+    await page.keyboard.press('ArrowLeft');
+    await page.clock.runFor(240);
+    await expect(page.locator('#field-notes')).toContainText(`拾到${name}`);
+    await expect(page.getByRole('button', { name: '放下诱饵' })).toBeDisabled();
+    if (name === '护盾') {
+      await expect(page.locator('#shield-status')).toHaveText('护盾 · 就绪');
+      await page.keyboard.press('ArrowRight');
+      await page.clock.runFor(3800);
+      await expect(page.locator('#shield-status')).toHaveText('护盾 · 已挡');
+      await expect(page.locator('#field-notes')).toContainText(
+        '护盾挡住了撞击',
+      );
+      await expect(page.locator('.play-screen')).not.toHaveClass(/ending/);
+    } else {
+      await expect(page.locator('#mechanisms')).toContainText('蛇已冰冻');
+      await page.clock.runFor(1800);
+      await expect(page.locator('#mechanisms')).not.toContainText('蛇已冰冻');
+    }
+  }
+});
+
 type Marker = { x: number; y: number; pixels: number };
 
 async function waveZonesOnCanvas(page: Page): Promise<Marker[]> {
@@ -116,7 +154,7 @@ async function waveZonesOnCanvas(page: Page): Promise<Marker[]> {
         // 桌面缩放会混合边缘像素，用色相区分粗紫框与细蓝框。
         const matches = selected
           ? b > r + 5 && r > g + 20 && g < 145
-          : b > g + 4 && g > r + 8;
+          : b > g + 4 && g > r + 8 && g < 170;
         if (!matches) continue;
         x += (i / 4) % width;
         y += Math.floor(i / 4 / width);
@@ -171,7 +209,7 @@ test('镜头跟随到地图边界，左上全览标出苹果的实际移动', as
 }, info) => {
   await page.goto('/');
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
-  await page.getByRole('button', { name: '开始挑战' }).click();
+  await expect(page.locator('dialog')).toHaveCount(0);
   const start = await applesOnCanvas(page);
   expect(start.world.pixels).toBeGreaterThan(60);
   expect(start.world.x).toBeCloseTo(0.5, 1);
@@ -183,9 +221,9 @@ test('镜头跟随到地图边界，左上全览标出苹果的实际移动', as
   expect(start.minimap.y).toBeLessThan(0.13);
   // 先走到中部短墙东侧，再沿北侧开口走向外墙。
   for (const [key, time] of [
-    ['ArrowLeft', 1050],
-    ['ArrowUp', 1350],
-    ['ArrowLeft', 3300],
+    ['ArrowLeft', 1500],
+    ['ArrowUp', 1900],
+    ['ArrowLeft', 4500],
   ] as const) {
     await page.keyboard.down(key);
     await page.waitForTimeout(time);
@@ -215,7 +253,7 @@ test('镜头跟随到地图边界，左上全览标出苹果的实际移动', as
 
   // 苹果进入左上角时，透过变淡的全览仍能看清整颗苹果。
   await page.keyboard.down('ArrowUp');
-  await page.waitForTimeout(3450);
+  await page.waitForTimeout(4600);
   await page.keyboard.up('ArrowUp');
   const corner = await applesOnCanvas(page);
   expect(corner.minimap.pixels).toBeGreaterThan(edge.minimap.pixels * 5);

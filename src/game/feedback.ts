@@ -107,7 +107,7 @@ export function dangerText(state: GameState): string {
 export function lossAdvice(state: GameState): string {
   if (!state.loss) return state.level.focus;
   return {
-    contact: '任何工具都不能穿过敌人头部；先确认相邻格与工具作用范围。',
+    contact: '贴近蛇头前先留一条侧路，看到护盾可以顺路拾取。',
     tracking: '恢复结束后仍会追踪；绕墙拉开距离，别贴着敌头等待。',
     dash: '蛇直冲时不会转弯；留好侧路，横向闪开。',
   }[state.loss.kind];

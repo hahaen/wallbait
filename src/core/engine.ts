@@ -7,9 +7,13 @@ import {
   COOLDOWN_MS,
   DIRECTIONS,
   DODGE_CELLS,
+  DROP_RESPAWN_MS,
+  FREEZE_MS,
+  LURE_MS,
   MOVE_MS,
   MAX_ENERGY,
   RECHARGE_MS,
+  SHIELD_GRACE_MS,
   SNAKE_RULES,
   TICK_MS,
   VECTOR,
@@ -249,12 +253,34 @@ function enterSwitches(state: GameState, previous: Point, next: Point): void {
   }
   applyPendingTerrain(state);
 }
+function collectDrop(state: GameState): void {
+  const run = state.endless;
+  if (!run?.drop || !same(run.drop, state.apple)) return;
+  const drop = run.drop;
+  run.drop = null;
+  run.nextDropAtMs = state.elapsedMs + DROP_RESPAWN_MS;
+  if (drop.kind === 'shield') run.shield = true;
+  if (drop.kind === 'freeze') run.freezeMs = FREEZE_MS;
+  if (drop.kind === 'lure') run.hasLure = true;
+  state.events.push({ type: 'pickup', ...drop });
+}
+function blockHitWithShield(state: GameState): boolean {
+  const run = state.endless;
+  if (!run) return false;
+  if (run.shieldGraceMs) return true;
+  if (!run.shield) return false;
+  run.shield = false;
+  run.shieldGraceMs = SHIELD_GRACE_MS;
+  state.events.push({ type: 'shield-break', ...state.apple });
+  return true;
+}
 function moveApple(state: GameState, next: Point): boolean {
   if (blocked(state, next)) return false;
   const previous = state.apple;
-  state.apple = next;
   // 即使同一时间蛇准备离开此格，也不能与蛇头换位穿越。
   const head = headAt(state, next);
+  if (head && blockHitWithShield(state)) return true;
+  state.apple = next;
   if (head)
     hitPlayer(
       state,
@@ -263,6 +289,7 @@ function moveApple(state: GameState, next: Point): boolean {
       'contact',
     );
   else {
+    collectDrop(state);
     for (const snake of state.snakes) {
       if (!snake.alive) continue;
       const wasInside = snake.attackPath.some((p) => same(p, previous));
@@ -541,6 +568,12 @@ export function step(state: GameState, command: Command): void {
   state.events = [];
   if (state.paused || state.status !== 'playing') return;
   state.elapsedMs += TICK_MS;
+  const run = state.endless;
+  if (run) {
+    run.shieldGraceMs = Math.max(0, run.shieldGraceMs - TICK_MS);
+    if (run.freezeMs && state.snakes.some((snake) => snake.alive))
+      run.freezeMs = Math.max(0, run.freezeMs - TICK_MS);
+  }
   state.moveTimer = Math.max(0, state.moveTimer - TICK_MS);
   state.cooldownMs = Math.max(0, state.cooldownMs - TICK_MS);
   state.pulseMs = Math.max(0, state.pulseMs - TICK_MS);
@@ -576,8 +609,15 @@ export function step(state: GameState, command: Command): void {
     );
     return;
   }
+  if (run?.hasLure && (command.utility || command.dodge) && !state.beacon) {
+    run.hasLure = false;
+    state.beacons++;
+    state.beacon = { ...state.apple, remainingMs: LURE_MS };
+    state.events.push({ type: 'lure', ...state.apple });
+  }
   let dodged = false;
   if (
+    !run &&
     (command.dodge || command.utility) &&
     state.utility === 'dodge' &&
     state.energy > 0 &&
@@ -597,6 +637,7 @@ export function step(state: GameState, command: Command): void {
   }
   if (state.status !== 'playing') return;
   if (
+    !run &&
     (command.dodge || command.utility) &&
     state.utility !== 'dodge' &&
     state.energy > 0 &&
@@ -628,6 +669,7 @@ export function step(state: GameState, command: Command): void {
     }
   }
   if (
+    !run &&
     command.beacon &&
     state.level.beaconEnabled &&
     state.energy > 0 &&
@@ -648,6 +690,7 @@ export function step(state: GameState, command: Command): void {
     { snake: Snake; kind: 'tracking' | 'dash'; path: Point[] } | undefined;
   for (const snake of state.snakes) {
     if (!snake.alive) continue;
+    if (run?.freezeMs) continue;
     snake.abilityCooldownMs = Math.max(0, snake.abilityCooldownMs - TICK_MS);
     if (snake.stunMs > 0) {
       snake.stunMs = Math.max(0, snake.stunMs - TICK_MS);
@@ -749,8 +792,10 @@ export function step(state: GameState, command: Command): void {
           }
         }
         if (chosen) {
+          const next = ahead(snake, chosen);
           snake.facing = chosen;
-          moveSnake(snake, ahead(snake, chosen));
+          if (!same(next, state.apple) || !blockHitWithShield(state))
+            moveSnake(snake, next);
         }
         snake.timer += snake.rules.trackMs;
       }
@@ -797,6 +842,14 @@ export function step(state: GameState, command: Command): void {
               active: false,
               ...(state.endless ? { wave: state.endless.wave } : {}),
             });
+          break;
+        }
+        if (same(next, state.apple) && blockHitWithShield(state)) {
+          snake.closeEscape = false;
+          snake.followup = false;
+          snake.remaining = 0;
+          snake.phase = 'recovering';
+          snake.timer = snake.rules.recoverMs;
           break;
         }
         moveSnake(snake, next);

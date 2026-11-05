@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('资源就绪前不能用按钮或快捷键开局，就绪后才推进时间', async ({ page }) => {
+test('资源就绪前冻结，就绪后自动开局', async ({ page }) => {
   let release!: () => void;
   const pending = new Promise<void>((resolve) => {
     release = resolve;
@@ -15,19 +15,12 @@ test('资源就绪前不能用按钮或快捷键开局，就绪后才推进时�
   await expect(begin).toBeDisabled();
   await page.keyboard.press('p');
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('heading', { name: '无尽挑战' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '正在准备' })).toBeVisible();
   await expect(page.locator('#clock')).toHaveText('0.0s');
   release();
-  await expect(begin).toBeEnabled();
+  await expect(page.locator('dialog')).toHaveCount(0);
   await expect(page.locator('#arena')).toHaveAttribute('aria-busy', 'false');
   await expect(page.locator('canvas')).toBeVisible();
-  await expect(page.locator('#clock')).toHaveText('0.0s');
-  await page.keyboard.press('p');
-  await page.keyboard.press('Escape');
-  await expect(begin).toBeVisible();
-  await expect(page.locator('#clock')).toHaveText('0.0s');
-  await begin.focus();
-  await page.keyboard.press('Enter');
   await expect(page.locator('#clock')).not.toHaveText('0.0s');
 });
 
@@ -48,7 +41,7 @@ test('加载失败保持冻结，快捷键不能关闭错误，重新加载页�
   await page.unroute('**/src/game/createGame.ts*');
   await page.getByRole('button', { name: '重新加载页面' }).click();
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
-  await expect(page.locator('[data-action="begin"]')).toBeEnabled();
+  await expect(page.locator('dialog')).toHaveCount(0);
   await expect(page.locator('canvas')).toBeVisible();
 });
 
@@ -78,7 +71,7 @@ test('离开加载中的无尽地图后，迟到的资源不会复活旧场景',
   await expect(page.locator('canvas')).toHaveCount(0);
 });
 
-test('无尽准备页在小屏、横屏和放大文字下始终保留开始与返回入口', async ({
+test('小屏、横屏和放大文字下，道具提示与操作始终在视窗内', async ({
   page,
 }, info) => {
   test.setTimeout(120000);
@@ -92,35 +85,28 @@ test('无尽准备页在小屏、横屏和放大文字下始终保留开始与�
     await page.setViewportSize(size);
     await page.goto('/');
     await page.getByRole('button', { name: '开始游戏' }).click();
-    await expect(page.locator('[data-action="begin"]')).toBeEnabled();
+    await expect(page.locator('dialog')).toHaveCount(0);
     await page.evaluate(() => {
       document.documentElement.style.fontSize = '125%';
     });
-    await page.locator('summary').click();
     for (const selector of [
-      '[data-action="begin"]',
-      '.panel-actions [data-action="home"]',
+      '[data-action="pause"]',
+      '#drop-guide',
+      '[data-dodge]',
     ]) {
       const bounds = (await page.locator(selector).boundingBox())!;
       expect(bounds.y).toBeGreaterThanOrEqual(0);
       expect(bounds.y + bounds.height).toBeLessThanOrEqual(size.height);
+      expect(bounds.x).toBeGreaterThanOrEqual(0);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(size.width);
       expect(bounds.height).toBeGreaterThanOrEqual(44);
-    }
-    for (const option of await page.locator('.loadout-options button').all()) {
-      await option.focus();
-      const bounds = (await option.boundingBox())!;
-      const content = (await page.locator('.brief-content').boundingBox())!;
-      expect(bounds.y).toBeGreaterThanOrEqual(content.y - 1);
-      expect(bounds.y + bounds.height).toBeLessThanOrEqual(
-        content.y + content.height + 1,
-      );
     }
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),
     ).toBeLessThanOrEqual(size.width);
     if (size.width === 375)
       await page.screenshot({
-        path: `test-results/optimization-prepare-${info.project.name}.png`,
+        path: `test-results/optimization-drop-${info.project.name}.png`,
       });
   }
 });

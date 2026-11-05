@@ -11,7 +11,7 @@ async function startFrozen(page: Page): Promise<void> {
     .getByRole('button', { name: '开始游戏', exact: true })
     .click({ force: true });
   await expect(page.locator('canvas')).toBeVisible();
-  await page.getByRole('button', { name: '开始挑战' }).click({ force: true });
+  await expect(page.locator('dialog')).toHaveCount(0);
 }
 
 test('失败现场可查看、冻结、返回结算和快速重试', async ({ page }, info) => {
@@ -55,7 +55,7 @@ test('失败现场可查看、冻结、返回结算和快速重试', async ({ pa
   await expect(page.locator('.loss-inspection')).toBeHidden();
   await expect(page.locator('.controls')).toBeVisible();
   await expect(page.locator('#clock')).toHaveText('0.0s');
-  await expect(page.locator('#cooldown')).toContainText('▰▰');
+  await expect(page.locator('#shield-status')).toHaveText('护盾 · 空');
 });
 
 test('原生指针捕获支持滑动换向、滑出停止、取消与多指释放', async ({

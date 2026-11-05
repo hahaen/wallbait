@@ -6,11 +6,17 @@ import {
   magnetMove,
   pulseTargets,
 } from '../../core/engine';
-import { BEACON_MS, VECTOR } from '../../core/config';
-import type { GameEvent, GameState, Point, Snake } from '../../core/types';
+import { BEACON_MS, LURE_MS, VECTOR } from '../../core/config';
+import type {
+  DropKind,
+  GameEvent,
+  GameState,
+  Point,
+  Snake,
+} from '../../core/types';
 import { wallContains } from '../../core/walls';
 import { groupEnemies } from '../feedback';
-import { CELL, VIEWPORT } from '../config';
+import { CELL, DROP_COLORS, VIEWPORT } from '../config';
 import { Minimap } from './Minimap';
 import {
   CHARACTER_FRAMES,
@@ -190,7 +196,9 @@ export class Arena {
         (event.type === 'wall' ||
           event.type === 'dodge' ||
           event.type === 'pulse' ||
-          event.type === 'magnet') &&
+          event.type === 'magnet' ||
+          event.type === 'pickup' ||
+          event.type === 'shield-break') &&
         !reducedMotion
       )
         this.bursts.push({ ...center(event), type: event.type, life: 360 });
@@ -263,9 +271,11 @@ export class Arena {
       face.setFrame(CHARACTER_FRAMES[s.kind][caught ? 'happy' : 'head']);
       face.setPosition(head.x, head.y - 1);
       face.setDisplaySize(56, 56);
-      if (s.stunMs) {
-        g.lineStyle(2, 0x9478b1, 0.8);
-        g.strokeCircle(head.x, head.y, 19);
+      if (s.stunMs || this.state.endless?.freezeMs) {
+        g.fillStyle(0xa6dff3, 0.6);
+        g.fillCircle(head.x, head.y, 24);
+        g.lineStyle(3, 0x4d92ac);
+        g.strokeCircle(head.x, head.y, 24);
       }
     }
     const fruitPoint = this.fruitPosition(
@@ -280,7 +290,7 @@ export class Arena {
       b.life -= delta;
       g.lineStyle(
         3,
-        b.type === 'wall' ? 0xefac40 : 0xf46c50,
+        b.type === 'wall' || b.type === 'shield-break' ? 0xefac40 : 0xf46c50,
         Math.max(0, b.life / 360),
       );
       for (let i = 0; i < 8; i++) {
@@ -380,6 +390,8 @@ export class Arena {
   }
   private mechanisms(reducedMotion: boolean): void {
     const g = this.graphics;
+    const drop = this.state.endless?.drop;
+    if (drop) this.dropMarker(center(drop), drop.kind);
     for (const field of this.state.interference)
       this.interferenceArea(field, false);
     for (const snake of this.state.snakes) {
@@ -523,7 +535,37 @@ export class Arena {
       g.fillStyle(0xfff7e7);
       g.fillCircle(c.x, c.y, 4);
       g.fillStyle(0x9478b1);
-      g.fillRect(c.x - 12, c.y + 13, (24 * b.remainingMs) / BEACON_MS, 3);
+      const duration = this.state.endless ? LURE_MS : BEACON_MS;
+      g.fillRect(c.x - 12, c.y + 13, (24 * b.remainingMs) / duration, 3);
+    }
+  }
+  private dropMarker({ x, y }: Point, kind: DropKind): void {
+    const g = this.graphics;
+    g.fillStyle(DROP_COLORS[kind]);
+    g.fillRoundedRect(x - 15, y - 15, 30, 30, 8);
+    g.lineStyle(2, INK);
+    g.strokeRoundedRect(x - 15, y - 15, 30, 30, 8);
+    if (kind === 'shield') {
+      g.strokePoints(
+        [
+          { x, y: y - 9 },
+          { x: x + 8, y: y - 5 },
+          { x: x + 6, y: y + 4 },
+          { x, y: y + 9 },
+          { x: x - 6, y: y + 4 },
+          { x: x - 8, y: y - 5 },
+        ],
+        true,
+      );
+      g.lineBetween(x - 4, y, x - 1, y + 3);
+      g.lineBetween(x - 1, y + 3, x + 4, y - 3);
+    } else if (kind === 'freeze') {
+      g.lineBetween(x, y - 9, x, y + 9);
+      g.lineBetween(x - 8, y - 5, x + 8, y + 5);
+      g.lineBetween(x - 8, y + 5, x + 8, y - 5);
+    } else {
+      g.strokeCircle(x, y, 8);
+      g.strokeCircle(x, y, 3);
     }
   }
   private interferenceArea(point: Point, preparing: boolean): void {
@@ -556,6 +598,13 @@ export class Arena {
     }
   }
   private apple(p: Point, reducedMotion: boolean, inspecting: boolean): void {
+    const run = this.state.endless;
+    if (run?.shield || run?.shieldGraceMs) {
+      this.graphics.fillStyle(DROP_COLORS.shield, 0.24);
+      this.graphics.fillCircle(p.x, p.y, 25);
+      this.graphics.lineStyle(3, 0xa36f26, run.shield ? 0.95 : 0.45);
+      this.graphics.strokeCircle(p.x, p.y, 25);
+    }
     const caught = Boolean(this.state.loss) && !inspecting;
     const t = reducedMotion ? 1 : Math.min(1, this.endingMs / 420);
     this.fruit.setFrame(caught ? CAUGHT_APPLE_FRAME : APPLE_FRAME);

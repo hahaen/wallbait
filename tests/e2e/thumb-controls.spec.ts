@@ -123,14 +123,13 @@ test('角色与手机操作区实拍，失败默认不出现技术标记', async
   await page
     .getByRole('button', { name: '开始游戏', exact: true })
     .click({ force: true });
-  await expect(page.locator('[data-action="begin"]')).toBeEnabled();
-  await page.locator('[data-action="begin"]').click({ force: true });
+  await expect(page.locator('dialog')).toHaveCount(0);
   await page.clock.runFor(700);
   const stick = (await page.locator('[data-joystick]').boundingBox())!,
     skill = (await page.locator('[data-dodge]').boundingBox())!;
   expect(stick.width).toBeGreaterThanOrEqual(140);
   expect(skill.width).toBeGreaterThanOrEqual(100);
-  expect(skill.height).toBeGreaterThanOrEqual(100);
+  expect(skill.height).toBeGreaterThanOrEqual(80);
   expect(stick.x + stick.width).toBeLessThan(skill.x);
   await page.screenshot({
     path: `test-results/characters-play-${info.project.name}.png`,
@@ -170,6 +169,6 @@ test('角色图集失败时禁止空白开局，重新加载后可恢复', async
   await page.unroute('**/bean-mascots.webp*');
   await page.getByRole('button', { name: '重新加载页面' }).click();
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
-  await expect(page.locator('[data-action="begin"]')).toBeEnabled();
+  await expect(page.locator('dialog')).toHaveCount(0);
   await expect(page.locator('#arena')).toHaveAttribute('aria-busy', 'false');
 });

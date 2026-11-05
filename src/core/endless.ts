@@ -1,7 +1,15 @@
 import { TICK_MS } from './config';
-import { createState, routeDistances, same, spawnSnakes, step } from './engine';
+import {
+  blocked,
+  createState,
+  routeDistances,
+  same,
+  spawnSnakes,
+  step,
+} from './engine';
 import type {
   Command,
+  DropKind,
   EndlessScore,
   GameState,
   EndlessState,
@@ -9,7 +17,6 @@ import type {
   Point,
   SnakeKind,
   Spawn,
-  UtilitySkill,
   WaveRegion,
 } from './types';
 
@@ -17,10 +24,11 @@ const WAVE_BREAK_MS = 2400;
 const SPAWN_GRACE_MS = 900;
 const MIN_SPAWN_DISTANCE = 6; // 在三类蛇的直冲触发范围之外。
 const WRECK_WAVES = 3;
+const DROP_LIFETIME_MS = 10000;
 const endlessSnakePace = {
-  normal: { trackMs: 360, dashMs: 140 },
-  swift: { trackMs: 320, dashMs: 120 },
-  cautious: { trackMs: 440, dashMs: 140 },
+  normal: { trackMs: 520, dashMs: 200 },
+  swift: { trackMs: 460, dashMs: 180 },
+  cautious: { trackMs: 600, dashMs: 200 },
 };
 
 const line = (
@@ -46,16 +54,14 @@ export const ENDLESS_MAP: Level = {
   id: 21,
   name: '回环石园',
   chapter: '无尽挑战',
-  focus: '清完一波，可以留守，也可以走向小地图上的另一个进场区。',
+  focus: '走过去捡道具，贴着墙放诱饵。引蛇直冲，再横向脱身。',
   intent: '用固定大地图的环路和残骸持续创造新的撞墙机会。',
   width: 55,
   height: 61,
   apple: { x: 27, y: 30 },
-  appleMoveMs: 140,
+  appleMoveMs: 200,
   facing: 'up',
   snakes: firstWave,
-  beaconEnabled: true,
-  utilitySkills: ['dodge', 'pulse', 'magnet'],
   parMs: 1,
   parDodges: 0,
   walls: [
@@ -205,20 +211,71 @@ function randomFor(seed: number, wave: number): () => number {
   };
 }
 
-export function createEndless(
-  seed: number,
-  utility: UtilitySkill,
-): EndlessState {
-  return {
-    ...createState(ENDLESS_MAP, utility),
+export function createEndless(seed: number): EndlessState {
+  const state: EndlessState = {
+    ...createState(ENDLESS_MAP),
     endless: {
       seed: seed >>> 0,
       wave: 1,
       cleared: 0,
       defeated: 0,
       nextWaveMs: 0,
+      drop: null,
+      nextDropAtMs: 0,
+      dropRoll: 0,
+      shield: false,
+      shieldGraceMs: 0,
+      freezeMs: 0,
+      hasLure: false,
     },
   };
+  refreshDrop(state, false);
+  return state;
+}
+
+function refreshDrop(state: EndlessState, needLure: boolean): void {
+  const run = state.endless;
+  const { width, height, gates } = state.level;
+  const distances = routeDistances(state, state.apple);
+  const reserved = (gates ?? []).flatMap((gate) => [
+    ...gate.cells,
+    ...gate.switches,
+  ]);
+  const enemies = state.snakes.filter((snake) => snake.alive);
+  const candidates: Point[] = [];
+  const radius = 6;
+  for (
+    let y = Math.max(1, state.apple.y - radius);
+    y < Math.min(height - 1, state.apple.y + radius + 1);
+    y++
+  ) {
+    for (
+      let x = Math.max(1, state.apple.x - radius);
+      x < Math.min(width - 1, state.apple.x + radius + 1);
+      x++
+    ) {
+      const point = { x, y };
+      const distance = distances[y * width + x]!;
+      if (
+        distance < 1 ||
+        distance > radius ||
+        reserved.some((cell) => same(cell, point)) ||
+        state.wrecks.some((wreck) => same(wreck, point)) ||
+        (state.beacon && same(state.beacon, point)) ||
+        enemies.some((enemy) => taxi(enemy, point) < 2)
+      )
+        continue;
+      candidates.push(point);
+    }
+  }
+  const random = randomFor(run.seed ^ 0xc2b2ae35, ++run.dropRoll);
+  const kinds: DropKind[] = ['freeze'];
+  if (!run.shield) kinds.push('shield');
+  if (!run.hasLure && !state.beacon) kinds.push('lure');
+  const kind = needLure ? 'lure' : kinds[Math.floor(random() * kinds.length)]!;
+  const point = candidates[Math.floor(random() * candidates.length)];
+  run.drop = point ? { ...point, kind } : null;
+  run.nextDropAtMs = state.elapsedMs + (point ? DROP_LIFETIME_MS : 1000);
 }
 
 function nextSpawns(
@@ -240,6 +297,7 @@ function nextSpawns(
     taxi(state.apple, p) >= MIN_SPAWN_DISTANCE &&
     !reserved.some((cell) => same(p, cell)) &&
     !state.wrecks.some((wreck) => same(p, wreck)) &&
+    !(state.endless?.drop && same(p, state.endless.drop)) &&
     !(state.beacon && same(p, state.beacon));
   const candidates = entrances.filter(
     (p) =>
@@ -281,7 +339,10 @@ function nextSpawns(
     spawns.push({
       ...choice,
       kind,
-      elite: wave >= 5 && (i === 0 || (wave >= 9 && i === 1 && random() < 0.5)),
+      elite:
+        kind !== 'cautious' &&
+        wave >= 5 &&
+        (i === 0 || (wave >= 9 && i === 1 && random() < 0.5)),
       delayMs: SPAWN_GRACE_MS + i * 240,
       rules: endlessSnakePace[kind],
     });
@@ -295,6 +356,17 @@ export function stepEndless(state: EndlessState, command: Command): void {
   step(state, command);
   run.defeated += state.events.filter((event) => event.type === 'wall').length;
   if (state.status !== 'playing') return;
+  const needLure =
+    !run.hasLure &&
+    !state.beacon &&
+    state.snakes.some((snake) => snake.alive && snake.kind === 'cautious') &&
+    state.snakes.every((snake) => !snake.alive || snake.kind === 'cautious');
+  if (
+    state.elapsedMs >= run.nextDropAtMs ||
+    (run.drop &&
+      (blocked(state, run.drop) || (needLure && run.drop.kind !== 'lure')))
+  )
+    refreshDrop(state, needLure);
   if (run.nextWaveMs > 0) {
     const choice = run.waveChoice;
     if (choice) {

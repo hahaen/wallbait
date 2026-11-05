@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { RECHARGE_MS, TICK_MS } from '../src/core/config';
+import {
+  DROP_RESPAWN_MS,
+  FREEZE_MS,
+  LURE_MS,
+  SHIELD_GRACE_MS,
+  TICK_MS,
+} from '../src/core/config';
 import { blocked, routeDistances, setPaused } from '../src/core/engine';
 import {
   beatsEndlessScore,
@@ -35,11 +41,11 @@ const nextWave = (state: EndlessState): void => {
 
 describe('无尽挑战', () => {
   it('苹果起步即时，后续直步按无尽步时移动', () => {
-    const state = createEndless(12, 'dodge');
+    const state = createEndless(12);
     const right = { direction: 'right' } as const;
     stepEndless(state, right);
     expect(state.apple).toEqual({ x: 28, y: 30 });
-    for (let elapsed = TICK_MS; elapsed < 140; elapsed += TICK_MS) {
+    for (let elapsed = TICK_MS; elapsed < 200; elapsed += TICK_MS) {
       stepEndless(state, right);
       expect(state.apple).toEqual({ x: 28, y: 30 });
     }
@@ -47,10 +53,105 @@ describe('无尽挑战', () => {
     expect(state.apple).toEqual({ x: 29, y: 30 });
   });
 
+  it('同一局的掉落可重现，落点在安全可达的近处且会刷新', () => {
+    const kinds = new Set<string>();
+    for (const seed of [0, 42, 148, 950, 1033, 1957, 2729]) {
+      const state = createEndless(seed);
+      const drop = state.endless.drop!;
+      kinds.add(drop.kind);
+      expect(drop).toEqual(createEndless(seed).endless.drop);
+      const distance = routeDistances(state, state.apple)[
+        drop.y * state.level.width + drop.x
+      ]!;
+      expect(distance).toBeGreaterThanOrEqual(1);
+      expect(distance).toBeLessThanOrEqual(6);
+    }
+    expect(kinds).toEqual(new Set(['shield', 'freeze', 'lure']));
+    const state = createEndless(0);
+    const snapshot = structuredClone(state.endless);
+    setPaused(state, true);
+    tick(state, 600);
+    expect(state.endless).toEqual(snapshot);
+    setPaused(state, false);
+    state.endless.nextDropAtMs = TICK_MS;
+    tick(state, 1);
+    expect(state.endless.dropRoll).toBe(2);
+    expect(state.endless.drop).toBeTruthy();
+  });
+
+  it('护盾自动挡住同刻追击，蛇头和苹果仍各在原格', () => {
+    const state = createEndless(1957);
+    stepEndless(state, { direction: 'left' });
+    expect(state.endless.shield).toBe(true);
+    expect(state.endless.nextDropAtMs).toBe(state.elapsedMs + DROP_RESPAWN_MS);
+    const [snake] = state.snakes;
+    Object.assign(snake!, {
+      x: 26,
+      y: 29,
+      phase: 'dashing',
+      locked: 'down',
+      timer: 0,
+      remaining: 2,
+    });
+    state.snakes.push({ ...snake!, id: 1, x: 27, y: 30, locked: 'left' });
+    tick(state, 1);
+    expect(state.status).toBe('playing');
+    expect(state.apple).toEqual({ x: 26, y: 30 });
+    expect(state.snakes.map(({ x, y, phase }) => ({ x, y, phase }))).toEqual([
+      { x: 26, y: 29, phase: 'recovering' },
+      { x: 27, y: 30, phase: 'recovering' },
+    ]);
+    expect(
+      state.events.filter((event) => event.type === 'shield-break'),
+    ).toHaveLength(1);
+    expect(state.endless).toMatchObject({
+      shield: false,
+      shieldGraceMs: SHIELD_GRACE_MS,
+    });
+    state.endless.shieldGraceMs = TICK_MS;
+    stepEndless(state, { direction: 'up' });
+    expect(state.status).toBe('playing'); // 仍在上一格的步时内。
+    state.moveTimer = 0;
+    stepEndless(state, { direction: 'up' });
+    expect(state.status).toBe('lost');
+  });
+
+  it('踩到冰冻就冻结蛇的行动，波间拾取会留到下一波', () => {
+    const state = createEndless(148);
+    const snake = state.snakes[0]!;
+    const before = snake.timer;
+    stepEndless(state, { direction: 'left' });
+    expect(state.endless.freezeMs).toBe(FREEZE_MS);
+    expect(snake.timer).toBe(before);
+    tick(state, FREEZE_MS / TICK_MS - 1);
+    expect(snake.timer).toBe(before);
+    tick(state, 1);
+    expect(snake.timer).toBe(before - TICK_MS);
+
+    const between = createEndless(148);
+    between.snakes[0]!.alive = false;
+    between.endless.nextWaveMs = TICK_MS * 3;
+    stepEndless(between, { direction: 'left' });
+    tick(between, 2);
+    expect(between.endless.wave).toBe(2);
+    expect(between.endless.freezeMs).toBe(FREEZE_MS);
+    const timer = between.snakes[0]!.timer;
+    tick(between, 1);
+    expect(between.snakes[0]!.timer).toBe(timer);
+  });
+
+  it('只剩侦察蛇时附近补投诱饵，拾取前按键不消耗或部署道具', () => {
+    const state = createEndless(148);
+    state.snakes[0]!.kind = 'cautious';
+    stepEndless(state, { direction: null, utility: true, beacon: true });
+    expect(state.beacon).toBeNull();
+    expect(state.endless.drop?.kind).toBe('lure');
+  });
+
   it('地图尺寸正确，两组闸门任意开合时，所有可走格仍连通', () => {
     expect(ENDLESS_MAP).toMatchObject({ width: 55, height: 61 });
     expect(validateLevel(ENDLESS_MAP)).toEqual([]);
-    const state = createEndless(12, 'dodge');
+    const state = createEndless(12);
     for (const mask of [0, 1, 2, 3]) {
       state.gates.forEach(
         (gate, i) => (gate.closed = Boolean(mask & (1 << i))),
@@ -65,23 +166,19 @@ describe('无尽挑战', () => {
   });
 
   it('正常诱撞首波后，可以留守或走到另一区接战，波间状态连续', () => {
-    const state = createEndless(12, 'dodge');
+    const state = createEndless(1033);
     const level = state.level;
     const gate = state.gates[0]!;
     gate.closed = true;
-    // 首次冲刺结束后，利用苹果下方的石墙，贴墙把信标投到脚下。
-    for (let i = 0; i < 120 && state.snakes[0]!.y !== 29; i++) {
-      stepEndless(state, idle);
-    }
-    expect(state.snakes[0]).toMatchObject({
-      x: 27,
-      y: 29,
-      phase: 'recovering',
-    });
-    stepEndless(state, { direction: 'down', beacon: true });
-    expect(state.beacon).toMatchObject({ x: 27, y: 30 });
-    stepEndless(state, { direction: 'right', dodge: true });
-    for (let i = 0; i < 150 && !state.endless.nextWaveMs; i++)
+    // 固定种子让诱饵落在右手第一格。拾取后贴墙放下，再向右离开。
+    stepEndless(state, { direction: 'right' });
+    expect(state.endless.hasLure).toBe(true);
+    expect(state.beacon).toBeNull();
+    stepEndless(state, { direction: null, utility: true });
+    expect(state.beacon).toMatchObject({ x: 28, y: 30, remainingMs: LURE_MS });
+    expect(state.endless.hasLure).toBe(false);
+    for (let i = 0; i < 18; i++) stepEndless(state, { direction: 'right' });
+    for (let i = 0; i < 230 && !state.endless.nextWaveMs; i++)
       stepEndless(state, idle);
     expect(state.status).toBe('playing');
     expect(state.endless).toMatchObject({
@@ -91,7 +188,7 @@ describe('无尽挑战', () => {
       nextWaveMs: 2400,
     });
     expect(state.wrecks).toContainEqual({
-      x: 27,
+      x: 28,
       y: 30,
       active: true,
       wave: 1,
@@ -131,13 +228,8 @@ describe('无尽挑战', () => {
     expect(state.apple.x).toBeGreaterThan(snapshot.apple.x);
     expect(state.gates[0]).toBe(gate);
     expect(gate.closed).toBe(true);
-    const recharge = snapshot.rechargeMs + gapTicks * TICK_MS;
-    expect(state.energy).toBe(
-      snapshot.energy + Math.floor(recharge / RECHARGE_MS),
-    );
-    expect(state.rechargeMs).toBe(recharge % RECHARGE_MS);
     expect(state.wrecks).toContainEqual({
-      x: 27,
+      x: 28,
       y: 30,
       active: true,
       wave: 1,
@@ -158,8 +250,8 @@ describe('无尽挑战', () => {
       { x: 36, y: 31 },
       { x: 10, y: 48 },
     ]) {
-      const a = createEndless(45, 'magnet');
-      const b = createEndless(45, 'magnet');
+      const a = createEndless(45);
+      const b = createEndless(45);
       for (const state of [a, b]) {
         state.apple = { ...apple };
         state.gates[0]!.closed = apple.x !== 36;
@@ -194,7 +286,7 @@ describe('无尽挑战', () => {
   });
 
   it('同刻被抓与最后一蛇撞墙时按失败结算，不增加完成波数', () => {
-    const state = createEndless(10, 'dodge');
+    const state = createEndless(10);
     nextWave(state);
     Object.assign(state.snakes[0]!, {
       x: 27,
@@ -225,7 +317,7 @@ describe('无尽挑战', () => {
   });
 
   it('撞墙残骸不会封死边角的最后一条退路', () => {
-    const state = createEndless(12, 'dodge');
+    const state = createEndless(12);
     state.apple = { x: 1, y: 1 };
     state.wrecks.push({ x: 2, y: 1, active: true, wave: 1 });
     Object.assign(state.snakes[0]!, {

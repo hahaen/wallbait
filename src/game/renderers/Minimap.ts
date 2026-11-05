@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import type { GameState, Point } from '../../core/types';
-import { CELL, VIEWPORT } from '../config';
+import { CELL, DROP_COLORS, VIEWPORT } from '../config';
 
 const inset = 8;
 const padding = 4;
@@ -100,6 +100,15 @@ export class Minimap {
       g.lineStyle(selected ? 2.15 : 1.35, color);
       g.strokeRect(x, y, width, height);
     });
+    const drop = this.state.endless?.drop;
+    if (drop) {
+      const x = origin + (drop.x + 0.5) * tile;
+      const y = origin + (drop.y + 0.5) * tile;
+      g.fillStyle(DROP_COLORS[drop.kind]);
+      g.fillRect(x - 2, y - 2, 4, 4);
+      g.lineStyle(1, 0x59462f);
+      g.strokeRect(x - 2, y - 2, 4, 4);
+    }
     for (const snake of this.state.snakes) {
       if (!snake.alive) continue;
       const { x, y } = snakePosition(snake.id);

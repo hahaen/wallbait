@@ -1,4 +1,4 @@
-import type { EndlessScore, UtilitySkill } from '../core/types';
+import type { EndlessScore } from '../core/types';
 
 export const SAVE_KEY = 'wallbait.save.v3';
 const PREVIOUS_SAVE_KEY = 'wallbait.save.v2';
@@ -8,7 +8,6 @@ export interface Save {
   version: 3;
   muted: boolean;
   reducedMotion: boolean;
-  utility: UtilitySkill;
   endlessBest?: EndlessScore;
 }
 export interface StoragePort {
@@ -19,7 +18,6 @@ export const defaults = (): Save => ({
   version: 3,
   muted: false,
   reducedMotion: false,
-  utility: 'dodge',
 });
 const record = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -42,8 +40,6 @@ function readSettings(save: Save, data: Record<string, unknown>): void {
 }
 function readEndlessSave(save: Save, data: Record<string, unknown>): Save {
   readSettings(save, data);
-  if (data.utility === 'pulse' || data.utility === 'magnet')
-    save.utility = data.utility;
   const best = data.endlessBest;
   if (
     record(best) &&

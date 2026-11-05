@@ -30,7 +30,7 @@ it('默认、损坏、版本不兼容和存储异常都能启动', () => {
   expect(writeSave(broken, defaults())).toBe(false);
 });
 
-it('继承旧版设置、装备和无尽纪录，保存后旧键内容原样保留', () => {
+it('继承旧版设置和无尽纪录，保存后旧键内容原样保留', () => {
   const previous = JSON.stringify({
     version: 2,
     campaign: 'foundry-v2',
@@ -48,7 +48,6 @@ it('继承旧版设置、装备和无尽纪录，保存后旧键内容原样保�
     version: 3,
     muted: true,
     reducedMotion: true,
-    utility: 'magnet',
     endlessBest: { cleared: 6, defeated: 16 },
   });
   expect(storage.getItem(SAVE_KEY)).toBeNull();
@@ -72,7 +71,7 @@ it('旧键分别容错，v1 只继承设置', () => {
   expect(readSave(storage)).toEqual({ ...defaults(), muted: true });
 });
 
-it('从旧版读取时忽略不兼容的关卡集与无效装备、纪录', () => {
+it('从旧版读取时忽略不兼容的关卡集、旧装备字段和无效纪录', () => {
   const storage = memory({
     [previousKey]: JSON.stringify({
       version: 2,

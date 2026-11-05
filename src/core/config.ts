@@ -8,6 +8,10 @@ export const MAX_ENERGY = 2;
 export const RECHARGE_MS = 3000;
 export const BEACON_MS = 2200;
 export const BEACON_CELLS = 2;
+export const LURE_MS = 6400;
+export const FREEZE_MS = 1800;
+export const SHIELD_GRACE_MS = 1000;
+export const DROP_RESPAWN_MS = 3200;
 export const DIRECTIONS: Direction[] = ['up', 'right', 'down', 'left'];
 export const VECTOR: Record<Direction, Point> = {
   up: { x: 0, y: -1 },

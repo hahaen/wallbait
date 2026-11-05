@@ -1,22 +1,20 @@
-import { setPaused, inInterference } from '../core/engine';
-import { availableSkills, SKILLS } from '../core/loadout';
+import { setPaused } from '../core/engine';
 import { HIGHLIGHTS } from '../core/highlights';
 import { beatsEndlessScore, createEndless } from '../core/endless';
-import { RECHARGE_MS } from '../core/config';
-import type { EndlessState, Level, UtilitySkill } from '../core/types';
+import type { DropKind, EndlessState } from '../core/types';
 import type { createGame } from '../game/createGame';
 import { Sound } from '../game/audio';
-import {
-  dangerText,
-  lossAdvice,
-  lossTitle,
-  utilityFeedback,
-} from '../game/feedback';
+import { dangerText, lossAdvice, lossTitle } from '../game/feedback';
 import { Controls } from '../input/controls';
 import { browserStorage, readSave, writeSave } from '../storage/save';
 import { appleArt, heroArt } from './art';
-import { utilityIcons, beaconIcon } from './icons';
+import { dropIcons } from './icons';
 
+const dropNames: Record<DropKind, string> = {
+  shield: '护盾',
+  freeze: '冰冻',
+  lure: '诱饵',
+};
 const seconds = (ms: number): string => (ms / 1000).toFixed(1);
 const button = (action: string, text: string, cls = ''): string =>
   `<button type="button" data-action="${action}" class="${cls}">${text}</button>`;
@@ -37,6 +35,7 @@ export class App {
   private resultTimer?: number;
   private resultPending = false;
   private endlessRecord = false;
+  private pickupNotice?: { text: string; until: number };
   constructor(private root: HTMLElement) {
     this.sound.muted = this.save.muted;
     const signal = this.abort.signal;
@@ -84,6 +83,7 @@ export class App {
     this.resultTimer = undefined;
     this.resultPending = false;
     this.endlessRecord = false;
+    this.pickupNotice = undefined;
     this.controls?.destroy();
     this.controls = undefined;
     this.game?.destroy();
@@ -120,34 +120,31 @@ export class App {
     </section>`,
     );
   }
-  private start(
-    seed = Math.floor(Math.random() * 0x100000000),
-    brief = true,
-  ): void {
-    this.play(createEndless(seed, this.save.utility), brief);
+  private start(seed = Math.floor(Math.random() * 0x100000000)): void {
+    this.play(createEndless(seed));
   }
-  private restart(brief: boolean): void {
-    if (this.state) this.start(this.state.endless.seed, brief);
+  private restart(): void {
+    if (this.state) this.start(this.state.endless.seed);
   }
-  private play(state: EndlessState, brief: boolean): void {
+  private play(state: EndlessState): void {
     const { level } = state;
     const back = button('home', '返回首页', 'text-button');
     this.setScreen(
       'play',
       `<section class="play-screen screen"><header class="play-header"><div><small id="round-label" aria-live="polite">第 1 波</small><h1 tabindex="-1">撞墙了么</h1><small class="level-name">${level.name}</small></div>${button('pause', 'Ⅱ', 'pause-button')} </header>
-      <div class="hud"><span id="enemy-count"></span><span id="clock">0.0s</span><span id="cooldown" class="ready">电量 ▰▰</span></div>
+      <div class="hud"><span id="enemy-count"></span><span id="clock">0.0s</span><span id="shield-status">护盾 · 空</span></div>
       <div class="arena-slot"><div id="arena" role="img" aria-busy="true" aria-label="无尽地图：镜头跟随红苹果，左上角显示全览"><span class="loading">正在摆好墙…</span></div></div>
       <div class="field-info"><span id="mechanisms" class="mechanisms"></span><span id="field-notes" class="field-notes" role="status" aria-live="polite"></span><span class="play-status" id="play-status" aria-live="polite"></span></div>
       <aside class="loss-inspection" hidden aria-label="失败现场说明"><b id="loss-title" tabindex="-1"></b><p id="loss-advice"></p><small>红圈 ×：碰撞格 · 金色框：致命敌人的路线</small><div>${button('result', '返回结算')}${button('retry', '再试一次', 'primary')}</div></aside>
-      <div class="controls"><div class="dpad joystick" data-joystick role="group" aria-label="全向移动摇杆"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span class="stick-knob" aria-hidden="true"></span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="skills"><button class="skill dodge" data-dodge aria-label="闪避"><span class="skill-symbol" aria-hidden="true">↟</span><b>闪避</b><small id="dodge-text">1 格电</small></button><button class="skill beacon" data-beacon aria-label="信标"><span aria-hidden="true">${beaconIcon}</span><b>信标</b><small id="beacon-text">1 格电</small></button></div></div>
-      <footer class="play-footer"><span>方向键 / WASD · 空格闪避 · E 信标 · P 暂停</span></footer></section>`,
+      <div class="controls"><div class="dpad joystick" data-joystick role="group" aria-label="全向移动摇杆"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span class="stick-knob" aria-hidden="true"></span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="drop-controls"><div id="drop-guide" class="drop-guide" role="status"></div><button type="button" class="skill lure" data-dodge disabled aria-label="放下诱饵"><span aria-hidden="true">${dropIcons.lure}</span><b>放诱饵</b><small id="lure-note">拾取后可用</small></button></div></div>
+      <footer class="play-footer"><span>方向键 / WASD 移动 · 空格放诱饵 · P 暂停</span></footer></section>`,
     );
     this.root
       .querySelector('[data-action="pause"]')
       ?.setAttribute('aria-label', '暂停游戏');
     this.state = state;
     setPaused(state, true);
-    this.autoStart = !brief;
+    this.autoStart = true;
     this.controls = new Controls(
       this.root,
       () => this.gameReady && state.status === 'playing' && !state.paused,
@@ -197,50 +194,28 @@ export class App {
             matchMedia('(prefers-reduced-motion: reduce)').matches,
           onTick: (events) => {
             if (this.state !== state) return;
-            events.forEach((e) => this.sound.play(e.type));
+            for (const event of events) {
+              this.sound.play(event.type);
+              if (event.type === 'pickup' || event.type === 'shield-break') {
+                this.pickupNotice = {
+                  text:
+                    event.type === 'pickup'
+                      ? `拾到${dropNames[event.kind]}`
+                      : '护盾挡住了撞击',
+                  until: state.elapsedMs + 1800,
+                };
+              }
+            }
             this.hud();
             if (events.some((e) => e.type === 'lost')) this.finishRound();
           },
         });
       })
       .catch(fail);
-    this.refreshUtility();
     this.hud();
     this.dialog(
-      `<div class="brief-content"><p class="result-kicker">${level.name} · ${level.width} × ${level.height} 格</p><h2 id="dialog-title">${brief ? '无尽挑战' : '正在准备'}</h2>${brief ? `<p>${level.focus}</p>${this.loadout(level)}<details class="brief-details"><summary>规则与纪录</summary><p>地图全程不换，镜头跟随苹果。被抓时结算：先比完成波数，同波比撞毁数。</p><p>小地图红点是苹果。波间出现两个进场区，粗框是当前选择。留守或朝另一个区走，就能决定从哪边接战。旧残骸会在几波后碎掉。</p></details>` : '<p>地图就绪后立即开始。</p>'}</div><div class="panel-actions"><button type="button" data-action="begin" class="primary" disabled>正在准备…</button>${back}</div>`,
-      'preparation',
+      `<h2 id="dialog-title">正在准备</h2><p>地图就绪后立即开始。</p><button type="button" data-action="begin" class="primary" disabled>正在准备…</button>${back}`,
     );
-  }
-  private loadout(level: Level): string {
-    return `<section class="loadout" aria-label="选择装备"><h3>选个工具</h3><div class="loadout-options">${availableSkills(
-      level,
-    )
-      .map(
-        (id) =>
-          `<button data-action="equip:${id}" aria-pressed="${this.state?.utility === id}"><b>${SKILLS[id].symbol} ${SKILLS[id].name}</b><small>${{ dodge: '快速移动两格', pulse: '暂停近处的蛇', magnet: '推开面前残骸' }[id]}</small></button>`,
-      )
-      .join('')}</div></section>`;
-  }
-  private refreshUtility(): void {
-    if (!this.state) return;
-    const skill = SKILLS[this.state.utility];
-    const node = this.root.querySelector<HTMLButtonElement>('[data-dodge]');
-    node?.setAttribute('aria-label', skill.name);
-    if (node) node.dataset.utility = this.state.utility;
-    const name = node?.querySelector('b'),
-      icon = node?.querySelector('span');
-    if (name) name.textContent = skill.name;
-    if (icon) icon.innerHTML = utilityIcons[this.state.utility];
-    const keys = this.root.querySelector('.play-footer span');
-    if (keys)
-      keys.textContent = `方向键 / WASD · 空格${skill.name} · E 信标 · P 暂停`;
-    for (const option of this.root.querySelectorAll<HTMLElement>(
-      '[data-action^="equip:"]',
-    ))
-      option.setAttribute(
-        'aria-pressed',
-        String(option.dataset.action === `equip:${this.state.utility}`),
-      );
   }
   private hud(): void {
     const s = this.state;
@@ -258,37 +233,25 @@ export class App {
         : `剩余 ${s.snakes.filter((v) => v.alive).length} 条`,
     );
     text('clock', `${seconds(s.elapsedMs)}s`);
+    const { drop, shield, shieldGraceMs, hasLure, freezeMs } = s.endless;
     text(
-      'cooldown',
-      `电量 ${'▰'.repeat(s.energy)}${'▱'.repeat(2 - s.energy)}${s.energy < 2 ? (inInterference(s) ? ' · 干扰' : ` ${Math.ceil((RECHARGE_MS - s.rechargeMs) / 1000)}s`) : ''}`,
-    );
-    const utility = utilityFeedback(s);
-    const dodgeReady = utility.ready;
-    const beaconReady = s.energy > 0 && !s.beacon;
-    text('dodge-text', utility.text);
-    const utilityNote = this.root.querySelector<HTMLElement>('#dodge-text');
-    if (utilityNote) utilityNote.hidden = utility.ready;
-    text(
-      'beacon-text',
-      s.beacon
-        ? `${seconds(s.beacon.remainingMs)}s`
-        : beaconReady
-          ? ''
-          : inInterference(s)
-            ? '干扰停充'
-            : '充电中',
+      'shield-status',
+      shield ? '护盾 · 就绪' : shieldGraceMs ? '护盾 · 已挡' : '护盾 · 空',
     );
     this.root
-      .querySelector('#cooldown')
-      ?.classList.toggle('ready', s.energy > 0);
-    for (const [selector, ready] of [
-      ['.dodge', dodgeReady],
-      ['.beacon', beaconReady],
-    ] as const) {
-      const skill = this.root.querySelector<HTMLElement>(selector);
-      skill?.classList.toggle('cooling', !ready);
-      skill?.setAttribute('aria-disabled', String(!ready));
+      .querySelector('#shield-status')
+      ?.classList.toggle('ready', shield || shieldGraceMs > 0);
+    const guide = this.root.querySelector<HTMLElement>('#drop-guide')!;
+    const kind = drop?.kind ?? '';
+    if (guide.dataset.kind !== kind) {
+      guide.dataset.kind = kind;
+      guide.innerHTML = drop
+        ? `<span aria-hidden="true">${dropIcons[drop.kind]}</span><b>${dropNames[drop.kind]}</b><small>${drop.kind === 'lure' ? '踩上拾取' : '踩上生效'}</small>`
+        : '<b>下一件道具</b><small>马上掉落</small>';
     }
+    const lure = this.root.querySelector<HTMLButtonElement>('[data-dodge]')!;
+    if (lure.disabled === hasLure) lure.disabled = !hasLure;
+    text('lure-note', hasLure ? '原地放下' : '拾取后可用');
     const gateText = s.gates
       .map(
         (gate) =>
@@ -299,8 +262,8 @@ export class App {
       'mechanisms',
       [
         gateText,
-        inInterference(s) ? '干扰场：离开条纹区恢复回充' : '',
-        s.beacon ? `信标 ${seconds(s.beacon.remainingMs)}s` : '',
+        s.beacon ? `诱饵 ${seconds(s.beacon.remainingMs)}s` : '',
+        freezeMs ? (waveBreak ? '冰冻留到下波' : '蛇已冰冻') : '',
         s.wrecks.length
           ? s.wrecks.some((w) => !w.active)
             ? '残骸待生效'
@@ -313,8 +276,15 @@ export class App {
     const recent = s.highlights
       .filter((h) => s.elapsedMs - h.atMs < 3000)
       .at(-1);
-    text('field-notes', recent ? `✓ ${HIGHLIGHTS[recent.id].title}` : '');
-    const danger = dangerText(s);
+    text(
+      'field-notes',
+      this.pickupNotice && s.elapsedMs < this.pickupNotice.until
+        ? this.pickupNotice.text
+        : recent
+          ? `✓ ${HIGHLIGHTS[recent.id].title}`
+          : '',
+    );
+    const danger = freezeMs ? '' : dangerText(s);
     const choice = s.endless.waveChoice;
     const waveMessage = choice
       ? choice.selected === 0
@@ -366,7 +336,7 @@ export class App {
     this.game?.resetClock();
     const run = this.state.endless;
     this.dialog(
-      `<h2 id="dialog-title">歇一口气</h2><p>完成 ${run.cleared} 波 · 撞毁 ${run.defeated} 条</p>${button('resume', '继续游戏', 'primary')}${button('retry', '重试同一局')}${button('loadout', '更换装备并重开')}${button('home', '返回首页', 'text-button')}`,
+      `<h2 id="dialog-title">歇一口气</h2><p>完成 ${run.cleared} 波 · 撞毁 ${run.defeated} 条</p>${button('resume', '继续游戏', 'primary')}${button('retry', '重试同一局')}${button('home', '返回首页', 'text-button')}`,
     );
   }
   private resume(): void {
@@ -432,7 +402,7 @@ export class App {
       <div class="result-stats"><span><b>${s.endless.cleared}</b>完成波数</span><span><b>${s.endless.defeated}</b>撞毁蛇数</span></div>
       ${best && !this.endlessRecord ? `<p>个人纪录 · ${best.cleared} 波 / ${best.defeated} 条</p>` : ''}
       ${this.storageWarning ? '<p class="save-warning">保存暂不可用，刷新前请保留页面。</p>' : ''}
-      <details class="result-options"><summary>更多选择</summary>${button('inspect-loss', '查看失败现场')}${button('loadout', '更换装备')}</details></div>
+      <details class="result-options"><summary>更多选择</summary>${button('inspect-loss', '查看失败现场')}</details></div>
       <div class="panel-actions">${button('endless-new', '再来一局', 'primary')}<div class="action-row">${button('retry', '重试同一局')}${button('home', '返回首页', 'text-button')}</div></div>`,
       'lose',
     );
@@ -455,14 +425,14 @@ export class App {
   private help(): void {
     this.dialog(
       `<h2 id="dialog-title">你是苹果，借墙脱身</h2><div class="help-art">${heroArt}</div>
-      <ol class="instructions"><li><b>引到墙边。</b>蛇冲出后不会转弯。</li><li><b>横向闪开。</b>普通走位或闪避都行，别碰蛇头。</li><li><b>撞完一波，下一波接着来。</b>蛇身不伤人。</li></ol>
-      <details class="brief-details"><summary>技能与机关</summary><p>闪避走两格；信标朝前投出，骗蛇追它。共用两格电，每 ${RECHARGE_MS / 1000} 秒恢复一格。</p><p>每局可选闪避、脉冲或磁推。脉冲暂停近处的蛇，磁推能推开面前的残骸。</p><p>踩字母踏板切换同字母门。空心残骸可通过，实心残骸会挡路。</p><p>嫩绿直追，奶黄预判，浅紫用信标骗。小星星表示强化。</p></details>
-      <details class="brief-details"><summary>按键与纪录</summary><p>拖摇杆自由走位，方向键 / WASD 可组合斜走。空格用工具，E 放信标，P 暂停。</p><p>被抓后结算。先比完成波数，同波比撞毁蛇数。</p></details>${button('close', '知道了', 'primary')}`,
+      <ol class="instructions"><li><b>引到墙边。</b>蛇冲出后不会转弯。</li><li><b>横向闪开。</b>留一条侧路，别碰蛇头。</li><li><b>撞完一波，下一波接着来。</b>蛇身不伤人。</li></ol>
+      <details class="brief-details"><summary>道具与机关</summary><p>附近会随机掉落道具。踩到护盾会挡一次撞击，踩到冰冻会暂停所有蛇。</p><p>捡到诱饵后，靠墙按「放诱饵」或空格，蛇会转去追你放下的位置。</p><p>踩字母踏板切换同字母门。空心残骸可通过，实心残骸会挡路。</p><p>嫩绿直追，奶黄预判，浅紫用诱饵骗。小星星表示强化。</p></details>
+      <details class="brief-details"><summary>按键与纪录</summary><p>拖摇杆自由走位，方向键 / WASD 可组合斜走。空格放诱饵，P 暂停。</p><p>被抓后结算。先比完成波数，同波比撞毁蛇数。</p></details>${button('close', '知道了', 'primary')}`,
     );
   }
   private settings(): void {
     this.dialog(
-      `<h2 id="dialog-title">按你的节奏来</h2><div class="setting-row"><span><b id="audio-label">游戏音效</b><small>工具、撞墙与被抓提示</small></span><button type="button" data-action="mute" class="toggle" role="switch" aria-labelledby="audio-label"></button></div><div class="setting-row"><span><b id="motion-label">减少动态效果</b><small>关闭震动镜头和位移插值</small></span><button type="button" data-action="motion" class="toggle" role="switch" aria-labelledby="motion-label"></button></div><p class="score-rule">无尽纪录和设置保存在当前浏览器。</p><p id="settings-save-warning" class="save-warning" role="status"></p>${button('close', '完成', 'primary')}`,
+      `<h2 id="dialog-title">按你的节奏来</h2><div class="setting-row"><span><b id="audio-label">游戏音效</b><small>拾取、撞墙与被抓提示</small></span><button type="button" data-action="mute" class="toggle" role="switch" aria-labelledby="audio-label"></button></div><div class="setting-row"><span><b id="motion-label">减少动态效果</b><small>关闭震动镜头和位移插值</small></span><button type="button" data-action="motion" class="toggle" role="switch" aria-labelledby="motion-label"></button></div><p class="score-rule">无尽纪录和设置保存在当前浏览器。</p><p id="settings-save-warning" class="save-warning" role="status"></p>${button('close', '完成', 'primary')}`,
     );
     this.refreshSettings();
   }
@@ -486,22 +456,6 @@ export class App {
     if (warning.textContent !== message) warning.textContent = message;
   }
   private act(action: string): void {
-    if (action.startsWith('equip:')) {
-      const skill = action.split(':')[1] as UtilitySkill;
-      if (
-        this.state?.paused &&
-        this.state.elapsedMs === 0 &&
-        availableSkills(this.state.level).includes(skill)
-      ) {
-        this.state.utility = skill;
-        this.save.utility = skill;
-        this.persist();
-        this.controls?.clear();
-        this.refreshUtility();
-        this.hud();
-      }
-      return;
-    }
     switch (action) {
       case 'inspect-loss':
         this.inspectLoss();
@@ -523,13 +477,10 @@ export class App {
         this.resume();
         break;
       case 'endless-new':
-        this.start(undefined, false);
-        break;
-      case 'loadout':
-        this.restart(true);
+        this.start();
         break;
       case 'retry':
-        this.restart(false);
+        this.restart();
         break;
       case 'reload':
         window.location.reload();

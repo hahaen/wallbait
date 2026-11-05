@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('生产包在 /game/wallbait/ 加载全部资源并完成一局，保存实际截图', async ({
+test('生产包在 /game/wallbait/ 加载全部资源并完成一局，并继承旧纪录', async ({
   page,
 }) => {
   const failures: string[] = [],
@@ -39,11 +39,8 @@ test('生产包在 /game/wallbait/ 加载全部资源并完成一局，保存实
   await expect(page.getByRole('button', { name: '选择关卡' })).toHaveCount(0);
   await page.screenshot({ path: 'test-results/mobile-home.png' });
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '无尽挑战' })).toBeVisible();
-  const magnet = page.getByRole('dialog').getByRole('button', { name: /磁推/ });
-  await expect(magnet).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('dialog').getByRole('button', { name: /脉冲/ }).click();
-  await page.getByRole('button', { name: '开始挑战' }).click();
+  await expect(page.locator('dialog')).toHaveCount(0);
+  await expect(page.locator('#drop-guide')).toContainText(/护盾|冰冻|诱饵/);
   await expect(page.locator('canvas')).toBeVisible();
   await expect(page.locator('#round-label')).toHaveText('第 1 波');
   await expect(page.locator('#clock')).not.toHaveText('0.0s');
@@ -56,9 +53,8 @@ test('生产包在 /game/wallbait/ 加载全部资源并完成一局，保存实
   await page.reload();
   await expect(record).toBeVisible();
   await page.getByRole('button', { name: '开始游戏', exact: true }).click();
-  await expect(
-    page.getByRole('dialog').getByRole('button', { name: /脉冲/ }),
-  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('dialog')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '放下诱饵' })).toBeDisabled();
   expect(scripts.length).toBeGreaterThanOrEqual(2);
   expect(
     scripts.every((path) => path.startsWith('/game/wallbait/assets/')),

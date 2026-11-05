@@ -232,12 +232,12 @@ button.text-button:hover {
   font-variant-numeric: tabular-nums;
   padding: 0 2px;
 }
-#cooldown {
+#shield-status {
   color: #8a6230;
   white-space: nowrap;
 }
-#cooldown.ready {
-  color: #58702d;
+#shield-status.ready {
+  color: #825517;
 }
 .arena-slot {
   min-height: 0;
@@ -390,126 +390,82 @@ button.text-button:hover {
   border-color: #634c32;
   box-shadow: 0 3px 6px #69513230;
 }
-.skills {
-  display: grid;
-  grid-template-rows: 48px 112px;
-  gap: 12px;
-  justify-items: center;
+.drop-controls {
   flex: 0 0 120px;
+  display: grid;
+  gap: 10px;
+  align-self: center;
 }
-button.skill {
-  width: 116px;
-  height: 112px;
-  min-height: 112px;
-  padding: 8px;
+.drop-guide {
+  display: grid;
+  grid-template-columns: 25px 1fr;
+  align-items: center;
+  gap: 2px 6px;
+  min-height: 60px;
+  padding: 7px 8px;
+  border: 1.5px solid #c9b697;
+  border-radius: 16px;
+  background: #fffaf1;
+  color: #4d3c30;
+  line-height: 1.25;
+}
+.drop-guide > span {
+  grid-row: span 2;
+}
+.drop-guide:not([data-kind='']) {
+  background: var(--drop-surface);
+}
+.drop-guide[data-kind='shield'] {
+  --drop-surface: #ffedbd;
+}
+.drop-guide[data-kind='freeze'] {
+  --drop-surface: #dcf3fa;
+}
+.drop-guide[data-kind='lure'] {
+  --drop-surface: #ecdcf6;
+}
+.drop-guide > b,
+.drop-guide > small {
+  grid-column: 2;
+}
+.drop-guide[data-kind=''] > * {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+.drop-guide b {
+  font-size: 14px;
+}
+.drop-guide small,
+.lure small {
+  font-size: 12px;
+}
+.drop-guide svg,
+.lure svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+button.lure {
+  min-height: 80px;
+  padding: 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  border: 2.5px solid #713e2b;
-  border-radius: 32px;
+  gap: 2px;
+  border: 2px solid #664578;
+  border-radius: 20px;
+  background: #ddc2ee;
+  color: #4d2d62;
+  box-shadow: 0 4px 0 #9f7cb3;
   touch-action: none;
 }
-.skill > span svg {
-  display: block;
-  width: 30px;
-  height: 30px;
-}
-.skill > span {
-  font-size: 34px;
-  line-height: 30px;
-  height: 30px;
-  font-weight: 900;
-}
-.skill b {
-  font-size: 23px;
-}
-.skill small {
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.3;
-}
-.skill small[hidden] {
-  display: none;
-}
-button.dodge {
-  grid-row: 2;
-  background: linear-gradient(155deg, #ff9672, #f27050 52%, #e95e43);
-  color: #fffaf0;
-  box-shadow:
-    inset 0 3px 0 #ffc1a0,
-    0 6px 0 #b74f37,
-    0 9px 16px #b2683d20;
-}
-button.dodge:hover {
-  background: linear-gradient(155deg, #ffab85, #f67b57 52%, #ec6748);
-}
-button.dodge:active,
-button.dodge.pressed {
-  transform: translateY(3px);
-  box-shadow:
-    inset 0 2px 0 #ffc1a0,
-    0 3px 0 #b74f37;
-}
-button.beacon {
-  position: relative;
-  grid-row: 1;
-  width: 112px;
-  height: 48px;
-  min-height: 48px;
-  flex-direction: row;
-  gap: 6px;
-  border-radius: 18px;
-  background: #edf0d4;
-  border-color: #7f8850;
-  box-shadow:
-    inset 0 2px 0 #fafbe4,
-    0 3px 0 #b9bd8d;
-  color: #59612f;
-}
-.beacon b {
-  font-size: 16px;
-}
-.beacon > span {
-  font-size: 23px;
-  height: 24px;
-  line-height: 24px;
-}
-.beacon > span svg {
-  width: 22px;
-  height: 22px;
-}
-.beacon small {
-  position: absolute;
-  top: -8px;
-  right: -4px;
-  font-size: 11px;
-  padding: 2px 5px;
-  border-radius: 8px;
-  background: #fff5e4;
-  color: #766044;
-}
-.beacon small:empty {
-  display: none;
-}
-button.skill.cooling {
-  background: #e7dbc5;
+button.lure:disabled {
+  opacity: 1;
+  background: #f1e4cf;
   border-color: #b4a181;
-  color: #786950;
-  box-shadow:
-    inset 0 2px 0 #fff7e5,
-    0 4px 0 #c9b797;
-}
-.skill[data-utility='pulse'] {
-  background: linear-gradient(145deg, #b7dfd1, #7db7aa);
-  color: #294d47;
-  border-color: #486e62;
-}
-.skill[data-utility='magnet'] {
-  background: linear-gradient(145deg, #f4dca0, #e0b768);
-  color: #59451c;
-  border-color: #8f6b30;
+  color: #6e5945;
+  box-shadow: none;
 }
 .play-footer {
   display: flex;
@@ -587,13 +543,11 @@ button.skill.cooling {
   width: 100%;
   margin-top: 12px;
 }
-.panel.preparation[open],
 .panel.lose[open] {
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
-.brief-content,
 .result-content {
   min-height: 0;
   overflow-y: auto;
@@ -715,39 +669,6 @@ summary:focus-visible {
 .save-warning:empty {
   margin: 0;
 }
-.loadout h3 {
-  margin: 12px 0 8px;
-  font-size: 1rem;
-}
-.loadout h3 small {
-  display: block;
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 400;
-}
-.loadout-options {
-  display: grid;
-  gap: 8px;
-}
-.loadout-options button {
-  min-height: 52px;
-  padding: 10px 12px;
-  text-align: left;
-  box-shadow: none;
-  border-color: var(--line);
-}
-.loadout-options button[aria-pressed='true'] {
-  border-color: #6f823f;
-  background: #e5edc5;
-}
-.loadout-options small {
-  display: block;
-  margin-top: 4px;
-  font-size: 0.78rem;
-  line-height: 1.5;
-  color: var(--muted);
-}
 @media (pointer: coarse) {
   .play-footer {
     display: none;
@@ -788,20 +709,8 @@ summary:focus-visible {
     width: 144px;
     height: 144px;
   }
-  .skills {
-    grid-template-rows: 48px 104px;
-    gap: 12px;
+  .drop-controls {
     flex-basis: 112px;
-  }
-  button.skill {
-    width: 108px;
-    height: 104px;
-    min-height: 104px;
-  }
-  button.beacon {
-    width: 108px;
-    height: 48px;
-    min-height: 48px;
   }
 }
 @media (max-height: 740px) {
@@ -859,7 +768,7 @@ summary:focus-visible {
     align-self: center;
     justify-self: center;
   }
-  .skills {
+  .drop-controls {
     grid-column: 3;
     grid-row: 3;
     align-self: center;

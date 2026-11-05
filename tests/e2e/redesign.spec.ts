@@ -7,8 +7,7 @@ async function begin(page: Page): Promise<void> {
   await page
     .getByRole('button', { name: '开始游戏', exact: true })
     .click({ force: true });
-  await expect(page.locator('[data-action="begin"]')).toBeEnabled();
-  await page.locator('[data-action="begin"]').click({ force: true });
+  await expect(page.locator('dialog')).toHaveCount(0);
 }
 async function endRound(page: Page): Promise<void> {
   await begin(page);
