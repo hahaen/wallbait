@@ -11,6 +11,7 @@ import type { GameEvent, GameState, Point, Snake } from '../../core/types';
 import { wallContains } from '../../core/walls';
 import { groupEnemies } from '../feedback';
 import { CELL, VIEWPORT } from '../config';
+import { Minimap } from './Minimap';
 import {
   CHARACTER_FRAMES,
   APPLE_FRAME,
@@ -40,6 +41,7 @@ export class Arena {
   private graphics: Phaser.GameObjects.Graphics;
   private inspection: Phaser.GameObjects.Graphics;
   private signals: Phaser.GameObjects.Graphics;
+  private minimap?: Minimap;
   private positions = new Map<string, Point>();
   private bursts: Burst[] = [];
   constructor(
@@ -116,6 +118,7 @@ export class Arena {
       );
       background.destroy();
       scene.add.image(0, 0, 'endless-ground').setOrigin(0).setDepth(-1);
+      this.minimap = new Minimap(scene, state);
     }
     for (const gate of state.level.gates ?? []) {
       for (const p of [...gate.cells, ...gate.switches]) {
@@ -295,6 +298,7 @@ export class Arena {
       this.state.level.height * CELL - height,
     );
     this.scene.cameras.main.setScroll(left, top);
+    this.minimap?.draw(fruit, left, top);
     if (!showEnemies) return;
     // 只标记已经进场的蛇的位置；不会提示直冲方向或路径。
     for (const snake of this.state.snakes) {

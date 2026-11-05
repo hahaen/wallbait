@@ -228,7 +228,7 @@ export class App {
       'play',
       `<section class="play-screen screen" data-zone="${endless ? 0 : Math.floor((id - 1) / 5)}"><header class="play-header"><div><small id="round-label"${endless ? ' aria-live="polite"' : ''}>${endless ? '第 1 波' : `第 ${String(id).padStart(2, '0')} 关 / 20`}</small><h1 tabindex="-1">撞墙了么</h1><small class="level-name">${level.name}</small></div>${button('pause', 'Ⅱ', 'pause-button')} </header>
       <div class="hud"><span id="enemy-count"></span><span id="clock">0.0s</span><span id="cooldown" class="ready">电量 ▰▰</span></div>
-      <div class="arena-slot"><div id="arena" role="img" aria-busy="true" aria-label="${endless ? '无尽地图：镜头跟随红苹果' : '对局地图：红苹果、三种蛇、石墙、字母闸门、残骸与可选收藏'}"><span class="loading">正在摆好墙…</span></div></div>
+      <div class="arena-slot"><div id="arena" role="img" aria-busy="true" aria-label="${endless ? '无尽地图：镜头跟随红苹果，左上角显示全览' : '对局地图：红苹果、三种蛇、石墙、字母闸门、残骸与可选收藏'}"><span class="loading">正在摆好墙…</span></div></div>
       <div class="field-info"><span id="mechanisms" class="mechanisms"></span><span id="field-notes" class="field-notes" role="status" aria-live="polite"></span><span class="play-status" id="play-status" aria-live="polite"></span></div>
       <aside class="loss-inspection" hidden aria-label="失败现场说明"><b id="loss-title" tabindex="-1"></b><p id="loss-advice"></p><small>红圈 ×：碰撞格 · 金色框：致命敌人的路线</small><div>${button('result', '返回结算')}${button('retry', '再试一次', 'primary')}</div></aside>
       <div class="controls"><div class="dpad joystick" data-joystick role="group" aria-label="全向移动摇杆"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span class="stick-knob" aria-hidden="true"></span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="skills"><button class="skill dodge" data-dodge aria-label="闪避"><span class="skill-symbol" aria-hidden="true">↟</span><b>闪避</b><small id="dodge-text">1 格电</small></button><button class="skill beacon" data-beacon aria-label="信标" ${level.beaconEnabled ? '' : 'disabled'}><span aria-hidden="true">${beaconIcon}</span><b>信标</b><small id="beacon-text">${level.beaconEnabled ? '1 格电' : '未启用'}</small></button></div></div>
@@ -301,7 +301,7 @@ export class App {
     this.hud();
     if (endless) {
       this.dialog(
-        `<div class="brief-content"><p class="result-kicker">${level.name} · ${level.width} × ${level.height} 格</p><h2 id="dialog-title">${brief ? '无尽挑战' : '准备重试'}</h2>${brief ? `<p>${level.focus}</p>${this.loadout(level)}<details class="brief-details"><summary>规则与纪录</summary><p>地图全程不换，镜头跟随苹果。被抓时结算：先比完成波数，同波比撞毁数。</p><p>场边小箭头指向已经进场、还在屏幕外的蛇。旧残骸会在几波后碎掉。</p></details>` : '<p>就绪后立即重试同一局。</p>'}</div><div class="panel-actions"><button type="button" data-action="begin" class="primary" disabled>正在准备…</button>${back}</div>`,
+        `<div class="brief-content"><p class="result-kicker">${level.name} · ${level.width} × ${level.height} 格</p><h2 id="dialog-title">${brief ? '无尽挑战' : '准备重试'}</h2>${brief ? `<p>${level.focus}</p>${this.loadout(level)}<details class="brief-details"><summary>规则与纪录</summary><p>地图全程不换，镜头跟随苹果。被抓时结算：先比完成波数，同波比撞毁数。</p><p>左上小地图的红点是苹果，方框是当前视野。场边箭头指向屏幕外的蛇。旧残骸会在几波后碎掉。</p></details>` : '<p>就绪后立即重试同一局。</p>'}</div><div class="panel-actions"><button type="button" data-action="begin" class="primary" disabled>正在准备…</button>${back}</div>`,
         'preparation',
       );
       return;

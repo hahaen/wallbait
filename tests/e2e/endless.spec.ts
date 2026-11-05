@@ -36,7 +36,7 @@ test('走位、贴墙投信标、原地进入第二波、暂停与本地纪录',
   await unlock(page);
   await page.goto('/');
   await page.getByRole('button', { name: '无尽挑战', exact: true }).click();
-  await expect(page.getByText('回环石园 · 39 × 45 格')).toBeVisible();
+  await expect(page.getByText('回环石园 · 55 × 61 格')).toBeVisible();
   await expect(page.getByRole('button', { name: /磁推/ })).toBeVisible();
   await page.getByRole('button', { name: '开始挑战' }).click();
   const canvas = page.locator('canvas');
@@ -88,9 +88,11 @@ test('走位、贴墙投信标、原地进入第二波、暂停与本地纪录',
   expect(errors).toEqual([]);
 });
 
-async function appleOnCanvas(
+type Marker = { x: number; y: number; pixels: number };
+
+async function applesOnCanvas(
   page: Page,
-): Promise<{ x: number; y: number; pixels: number }> {
+): Promise<{ world: Marker; minimap: Marker }> {
   const image = (await page.locator('canvas').screenshot()).toString('base64');
   return page.evaluate(async (source) => {
     const img = new Image();
@@ -102,60 +104,81 @@ async function appleOnCanvas(
     const ctx = canvas.getContext('2d')!;
     ctx.drawImage(img, 0, 0);
     const pixels = ctx.getImageData(0, 0, img.width, img.height).data;
-    let x = 0,
-      y = 0,
-      count = 0;
+    const world = { x: 0, y: 0, pixels: 0 };
+    const minimap = { x: 0, y: 0, pixels: 0 };
     for (let i = 0; i < pixels.length; i += 4) {
       const [r, g, b] = [pixels[i]!, pixels[i + 1]!, pixels[i + 2]!];
       if (r < 150 || r < g * 1.6 || r < b * 1.5) continue;
       const point = i / 4;
-      x += point % img.width;
-      y += Math.floor(point / img.width);
-      count++;
+      const x = (point % img.width) / img.width;
+      const y = Math.floor(point / img.width) / img.height;
+      const marker = x < 0.22 && y < 0.21 ? minimap : world;
+      marker.x += x;
+      marker.y += y;
+      marker.pixels++;
     }
-    return {
-      x: x / count / img.width,
-      y: y / count / img.height,
-      pixels: count,
-    };
+    for (const marker of [world, minimap]) {
+      marker.x /= marker.pixels;
+      marker.y /= marker.pixels;
+    }
+    return { world, minimap };
   }, image);
 }
 
-test('保持格子比例，移动穿过多个屏幕时镜头跟随并停在地图边界', async ({
+test('镜头跟随到地图边界，左上全览标出苹果的实际移动', async ({
   page,
 }, info) => {
   await unlock(page);
   await page.goto('/');
   await page.getByRole('button', { name: '无尽挑战', exact: true }).click();
   await page.getByRole('button', { name: '开始挑战' }).click();
-  const start = await appleOnCanvas(page);
-  expect(start.pixels).toBeGreaterThan(60);
-  expect(start.x).toBeCloseTo(0.5, 1);
-  expect(start.y).toBeCloseTo(0.5, 1);
+  const start = await applesOnCanvas(page);
+  expect(start.world.pixels).toBeGreaterThan(60);
+  expect(start.world.x).toBeCloseTo(0.5, 1);
+  expect(start.world.y).toBeCloseTo(0.5, 1);
+  expect(start.minimap.pixels).toBeGreaterThan(8);
+  expect(start.minimap.x).toBeGreaterThan(0.09);
+  expect(start.minimap.x).toBeLessThan(0.14);
+  expect(start.minimap.y).toBeGreaterThan(0.08);
+  expect(start.minimap.y).toBeLessThan(0.13);
   // 先走到中部短墙东侧，再沿北侧开口走向外墙。
   for (const [key, time] of [
     ['ArrowLeft', 1050],
     ['ArrowUp', 1350],
-    ['ArrowLeft', 1850],
+    ['ArrowLeft', 2850],
   ] as const) {
     await page.keyboard.down(key);
     await page.waitForTimeout(time);
     await page.keyboard.up(key);
     if (key === 'ArrowUp') {
-      const middle = await appleOnCanvas(page);
-      expect(middle.x).toBeCloseTo(0.5, 1);
-      expect(middle.y).toBeCloseTo(0.5, 1);
+      const middle = await applesOnCanvas(page);
+      expect(middle.world.x).toBeCloseTo(0.5, 1);
+      expect(middle.world.y).toBeCloseTo(0.5, 1);
+      expect(middle.minimap.x).toBeLessThan(start.minimap.x - 0.012);
+      expect(middle.minimap.y).toBeLessThan(start.minimap.y - 0.012);
     }
   }
-  const edge = await appleOnCanvas(page);
-  expect(edge.pixels).toBeGreaterThan(60);
-  expect(edge.x).toBeGreaterThan(0.06);
-  expect(edge.x).toBeLessThan(0.17);
-  expect(edge.y).toBeCloseTo(0.5, 1);
+  const edge = await applesOnCanvas(page);
+  expect(edge.world.pixels).toBeGreaterThan(60);
+  expect(edge.world.x).toBeGreaterThan(0.06);
+  expect(edge.world.x).toBeLessThan(0.17);
+  expect(edge.world.y).toBeCloseTo(0.5, 1);
+  expect(edge.minimap.pixels).toBeGreaterThan(8);
+  expect(edge.minimap.x).toBeGreaterThan(0.025);
+  expect(edge.minimap.x).toBeLessThan(0.045);
   const canvas = page.locator('canvas');
   await canvas.screenshot({ path: info.outputPath('endless-map-edge.png') });
   const view = (await canvas.boundingBox())!;
   const controls = (await page.locator('.controls').boundingBox())!;
   expect(view.height / view.width).toBeCloseTo(480 / 416, 2);
   expect(view.y + view.height).toBeLessThanOrEqual(controls.y + 1);
+
+  // 苹果进入左上角时，透过变淡的全览仍能看清整颗苹果。
+  await page.keyboard.down('ArrowUp');
+  await page.waitForTimeout(2950);
+  await page.keyboard.up('ArrowUp');
+  const corner = await applesOnCanvas(page);
+  expect(corner.minimap.pixels).toBeGreaterThan(edge.minimap.pixels * 5);
+  expect(corner.minimap.x).toBeCloseTo(0.115, 1);
+  expect(corner.minimap.y).toBeCloseTo(0.1, 1);
 });

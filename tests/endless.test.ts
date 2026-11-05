@@ -32,7 +32,7 @@ const nextWave = (state: GameState): void => {
 
 describe('无尽挑战', () => {
   it('地图尺寸正确，两组闸门任意开合时，所有可走格仍连通', () => {
-    expect(ENDLESS_MAP).toMatchObject({ width: 39, height: 45 });
+    expect(ENDLESS_MAP).toMatchObject({ width: 55, height: 61 });
     expect(validateLevel(ENDLESS_MAP)).toEqual([]);
     const state = createEndless(12, 'dodge', 6);
     for (const mask of [0, 1, 2, 3]) {
@@ -56,12 +56,12 @@ describe('无尽挑战', () => {
     // 首次冲刺结束后，利用苹果下方的石墙，贴墙把信标投到脚下。
     tick(state, 90);
     expect(state.snakes[0]).toMatchObject({
-      x: 19,
-      y: 21,
+      x: 27,
+      y: 29,
       phase: 'recovering',
     });
     stepEndless(state, { direction: 'down', beacon: true });
-    expect(state.beacon).toMatchObject({ x: 19, y: 22 });
+    expect(state.beacon).toMatchObject({ x: 27, y: 30 });
     stepEndless(state, { direction: 'right', dodge: true });
     for (let i = 0; i < 150 && !state.endless!.nextWaveMs; i++)
       stepEndless(state, idle);
@@ -73,8 +73,8 @@ describe('无尽挑战', () => {
       nextWaveMs: 1200,
     });
     expect(state.wrecks).toContainEqual({
-      x: 19,
-      y: 22,
+      x: 27,
+      y: 30,
       active: true,
       wave: 1,
     });
@@ -92,8 +92,8 @@ describe('无尽挑战', () => {
     expect(state.energy).toBe(0);
     expect(state.rechargeMs).toBeGreaterThan(snapshot.rechargeMs);
     expect(state.wrecks).toContainEqual({
-      x: 19,
-      y: 22,
+      x: 27,
+      y: 30,
       active: true,
       wave: 1,
     });
@@ -109,15 +109,15 @@ describe('无尽挑战', () => {
   it('不同区域能连续安全刷波，种子可重试，旧残骸按波次退场', () => {
     for (const apple of [
       { x: 1, y: 1 },
-      { x: 37, y: 43 },
-      { x: 28, y: 23 },
-      { x: 7, y: 34 },
+      { x: 53, y: 59 },
+      { x: 36, y: 31 },
+      { x: 10, y: 48 },
     ]) {
       const a = createEndless(45, 'magnet', 9);
       const b = createEndless(45, 'magnet', 9);
       for (const state of [a, b]) {
         state.apple = { ...apple };
-        state.gates[0]!.closed = apple.x !== 28;
+        state.gates[0]!.closed = apple.x !== 36;
       }
       for (let wave = 2; wave <= 15; wave++) {
         nextWave(a);
@@ -152,8 +152,8 @@ describe('无尽挑战', () => {
     const state = createEndless(10, 'dodge', 6);
     nextWave(state);
     Object.assign(state.snakes[0]!, {
-      x: 19,
-      y: 21,
+      x: 27,
+      y: 29,
       phase: 'dashing',
       locked: 'down',
       timer: 0,
