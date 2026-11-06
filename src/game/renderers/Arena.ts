@@ -6,7 +6,7 @@ import {
   magnetMove,
   pulseTargets,
 } from '../../core/engine';
-import { BEACON_MS, LURE_MS, VECTOR } from '../../core/config';
+import { BEACON_MS, VECTOR } from '../../core/config';
 import type {
   DropKind,
   GameEvent,
@@ -18,6 +18,13 @@ import { wallContains } from '../../core/walls';
 import { groupEnemies } from '../feedback';
 import { CELL, DROP_COLORS, VIEWPORT } from '../config';
 import { Minimap } from './Minimap';
+import {
+  drawDropBurst,
+  drawFrost,
+  drawLure,
+  drawShield,
+  DROP_BURST_MS,
+} from './dropEffects';
 import {
   CHARACTER_FRAMES,
   APPLE_FRAME,
@@ -32,6 +39,7 @@ const center = (p: Point): Point => ({
 interface Burst extends Point {
   life: number;
   type: GameEvent['type'];
+  kind?: DropKind;
 }
 
 /** 只读规则状态：画面插值从不参与碰撞或计时。 */
@@ -47,6 +55,7 @@ export class Arena {
   private fruitElapsedMs = 0;
   private endingMs = 0;
   private graphics: Phaser.GameObjects.Graphics;
+  private accents: Phaser.GameObjects.Graphics;
   private inspection: Phaser.GameObjects.Graphics;
   private signals: Phaser.GameObjects.Graphics;
   private minimap?: Minimap;
@@ -144,6 +153,7 @@ export class Arena {
       }
     }
     this.graphics = scene.add.graphics();
+    this.accents = scene.add.graphics().setDepth(2.25);
     this.inspection = scene.add.graphics().setDepth(3);
     this.signals = scene.add.graphics().setDepth(2.5);
     this.fruit = scene.add
@@ -193,12 +203,20 @@ export class Arena {
       if (event.type === 'dodge')
         this.fruitFrom = this.fruitTarget = this.state.apple;
       if (
+        (event.type === 'pickup' || event.type === 'shield-break') &&
+        !reducedMotion
+      ) {
+        this.bursts.push({
+          ...center(event),
+          type: event.type,
+          kind: event.type === 'pickup' ? event.kind : 'shield',
+          life: DROP_BURST_MS,
+        });
+      } else if (
         (event.type === 'wall' ||
           event.type === 'dodge' ||
           event.type === 'pulse' ||
-          event.type === 'magnet' ||
-          event.type === 'pickup' ||
-          event.type === 'shield-break') &&
+          event.type === 'magnet') &&
         !reducedMotion
       )
         this.bursts.push({ ...center(event), type: event.type, life: 360 });
@@ -249,9 +267,11 @@ export class Arena {
     if (ended) this.endingMs += delta;
     const g = this.graphics;
     g.clear();
+    this.accents.clear();
     this.inspection.clear();
     this.signals.clear();
     this.mechanisms(reducedMotion);
+    const freezeMs = inspectingLoss ? 0 : (this.state.endless?.freezeMs ?? 0);
     for (const s of this.state.snakes) {
       this.heads.get(s.id)!.setVisible(s.alive);
       for (const segment of this.segments.get(s.id)!) segment.setVisible(false);
@@ -271,11 +291,17 @@ export class Arena {
       face.setFrame(CHARACTER_FRAMES[s.kind][caught ? 'happy' : 'head']);
       face.setPosition(head.x, head.y - 1);
       face.setDisplaySize(56, 56);
-      if (s.stunMs || this.state.endless?.freezeMs) {
-        g.fillStyle(0xa6dff3, 0.6);
-        g.fillCircle(head.x, head.y, 24);
-        g.lineStyle(3, 0x4d92ac);
-        g.strokeCircle(head.x, head.y, 24);
+      if (freezeMs) {
+        face.setTint(0xd4efff);
+        drawFrost(g, this.accents, head, freezeMs, reducedMotion || ended);
+      } else {
+        if (face.isTinted) face.clearTint();
+        if (s.stunMs) {
+          g.fillStyle(0xa6dff3, 0.6);
+          g.fillCircle(head.x, head.y, 24);
+          g.lineStyle(3, 0x4d92ac);
+          g.strokeCircle(head.x, head.y, 24);
+        }
       }
     }
     const fruitPoint = this.fruitPosition(
@@ -288,9 +314,20 @@ export class Arena {
     this.bursts = this.bursts.filter((b) => b.life > 0);
     for (const b of this.bursts) {
       b.life -= delta;
+      if (b.kind) {
+        if (!reducedMotion && !inspectingLoss && b.life > 0)
+          drawDropBurst(
+            this.accents,
+            b,
+            b.kind,
+            b.type === 'shield-break',
+            1 - b.life / DROP_BURST_MS,
+          );
+        continue;
+      }
       g.lineStyle(
         3,
-        b.type === 'wall' || b.type === 'shield-break' ? 0xefac40 : 0xf46c50,
+        b.type === 'wall' ? 0xefac40 : 0xf46c50,
         Math.max(0, b.life / 360),
       );
       for (let i = 0; i < 8; i++) {
@@ -524,6 +561,15 @@ export class Arena {
     if (this.state.beacon) {
       const b = this.state.beacon,
         c = center(b);
+      if (this.state.endless) {
+        drawLure(
+          g,
+          c,
+          b.remainingMs,
+          reducedMotion || this.state.status !== 'playing',
+        );
+        return;
+      }
       const pulse = reducedMotion ? 0 : (this.state.elapsedMs % 700) / 700;
       g.lineStyle(2, 0x876398, 1 - pulse * 0.7);
       g.strokeCircle(c.x, c.y, 11 + pulse * 15);
@@ -535,8 +581,7 @@ export class Arena {
       g.fillStyle(0xfff7e7);
       g.fillCircle(c.x, c.y, 4);
       g.fillStyle(0x9478b1);
-      const duration = this.state.endless ? LURE_MS : BEACON_MS;
-      g.fillRect(c.x - 12, c.y + 13, (24 * b.remainingMs) / duration, 3);
+      g.fillRect(c.x - 12, c.y + 13, (24 * b.remainingMs) / BEACON_MS, 3);
     }
   }
   private dropMarker({ x, y }: Point, kind: DropKind): void {
@@ -599,12 +644,8 @@ export class Arena {
   }
   private apple(p: Point, reducedMotion: boolean, inspecting: boolean): void {
     const run = this.state.endless;
-    if (run?.shield || run?.shieldGraceMs) {
-      this.graphics.fillStyle(DROP_COLORS.shield, 0.24);
-      this.graphics.fillCircle(p.x, p.y, 25);
-      this.graphics.lineStyle(3, 0xa36f26, run.shield ? 0.95 : 0.45);
-      this.graphics.strokeCircle(p.x, p.y, 25);
-    }
+    if (!inspecting && (run?.shield || run?.shieldGraceMs))
+      drawShield(this.graphics, this.accents, p, run.shield);
     const caught = Boolean(this.state.loss) && !inspecting;
     const t = reducedMotion ? 1 : Math.min(1, this.endingMs / 420);
     this.fruit.setFrame(caught ? CAUGHT_APPLE_FRAME : APPLE_FRAME);
