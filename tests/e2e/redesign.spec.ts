@@ -18,6 +18,31 @@ async function endRound(page: Page): Promise<void> {
   await expect(page.locator('.play-screen')).toHaveClass(/ending/);
 }
 
+test('手机首页均分剩余空间，开始与帮助都在首屏', async ({ page }) => {
+  await page.setViewportSize({ width: 393, height: 755 });
+  await page.goto('/');
+  const title = page.locator('.home h1');
+  const top = page.locator('.home-top');
+  const actions = page.locator('.home-actions');
+  const start = page.getByRole('button', { name: '开始游戏', exact: true });
+  const help = page.getByRole('button', { name: '怎么玩', exact: true });
+
+  for (const height of [755, 740, 741, 844, 568]) {
+    await test.step(`393 × ${height}`, async () => {
+      await page.setViewportSize({ width: 393, height });
+      await expect(start).toBeInViewport({ ratio: 1 });
+      await expect(help).toBeInViewport({ ratio: 1 });
+      const titleBox = (await title.boundingBox())!;
+      const topBox = (await top.boundingBox())!;
+      const actionsBox = (await actions.boundingBox())!;
+      const above = titleBox.y - (topBox.y + topBox.height);
+      const below = height - (actionsBox.y + actionsBox.height);
+      // 旋转标题和屏幕底部内边距会让可见间距略有不同。
+      expect(Math.abs(above - below)).toBeLessThan(40);
+    });
+  }
+});
+
 test('被抓后先停留现场，禁止继续输入，1.2秒后才结算', async ({
   page,
 }, info) => {
