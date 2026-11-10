@@ -8,8 +8,7 @@ import { dangerText, lossAdvice, lossTitle } from '../game/feedback';
 import { Controls } from '../input/controls';
 import { browserStorage, readSave, writeSave } from '../storage/save';
 import type { Save } from '../storage/save';
-import { createArt } from './art';
-import { dropIcons } from './icons';
+import { cloneArt, cloneTemplate } from './templates';
 
 const dropNames: Record<DropKind, string> = {
   shield: '护盾',
@@ -17,8 +16,6 @@ const dropNames: Record<DropKind, string> = {
   lure: '诱饵',
 };
 const seconds = (ms: number): string => (ms / 1000).toFixed(1);
-const button = (action: string, text: string, cls = ''): string =>
-  `<button type="button" data-action="${action}" class="${cls}">${text}</button>`;
 
 interface AppOptions {
   atlasUrl: string;
@@ -30,7 +27,6 @@ interface AppOptions {
 export class App {
   private save: Save;
   private sound: Sound;
-  private art: ReturnType<typeof createArt>;
   private state?: EndlessState;
   private game?: ReturnType<typeof createGame>;
   private controls?: Controls;
@@ -51,7 +47,6 @@ export class App {
   ) {
     this.save = options.initialSave ?? readSave(browserStorage);
     this.sound = new Sound(options.audioEnabled);
-    this.art = createArt(options.atlasUrl);
     this.sound.muted = this.save.muted;
     const signal = this.abort.signal;
     root.addEventListener(
@@ -119,11 +114,14 @@ export class App {
       this.storageWarning = !writeSave(browserStorage, this.save);
     }
   }
-  private setScreen(screen: typeof this.screen, html: string): void {
+  private setScreen(
+    screen: typeof this.screen,
+    content: DocumentFragment,
+  ): void {
     this.closeDialog();
     this.cleanupGame();
     this.screen = screen;
-    this.root.innerHTML = html;
+    this.root.replaceChildren(content);
     this.root.dataset.screen = screen;
     this.root
       .querySelector<HTMLElement>('h1, h2')
@@ -131,17 +129,16 @@ export class App {
   }
   private home(): void {
     const best = this.save.endlessBest;
-    this.setScreen(
-      'home',
-      `<section class="home screen">
-      <div class="home-top"><span class="edition">一颗苹果 · 无尽挑战</span>${button('settings', '设置', 'quiet')}</div>
-      <h1 tabindex="-1">撞墙了么<span class="title-spark" aria-hidden="true">!</span></h1>
-      <p class="tagline">你追你的，墙就在那儿。</p>
-      <div class="hero-art">${this.art.heroArt}</div>
-      <div class="home-actions">${button('start', '开始游戏', 'primary')}${button('help', '怎么玩')}
-      ${best ? `<p class="endless-best">无尽纪录 · 完成 ${best.cleared} 波 · 撞毁 ${best.defeated} 条</p>` : ''}</div>
-    </section>`,
-    );
+    const content = cloneTemplate('home');
+    content
+      .querySelector('.hero-art')!
+      .append(cloneArt('hero-art', this.options.atlasUrl));
+    if (best) {
+      const record = content.querySelector<HTMLElement>('.endless-best')!;
+      record.hidden = false;
+      record.textContent = `无尽纪录 · 完成 ${best.cleared} 波 · 撞毁 ${best.defeated} 条`;
+    }
+    this.setScreen('home', content);
   }
   private start(seed = Math.floor(Math.random() * 0x100000000)): void {
     this.play(createEndless(seed));
@@ -150,21 +147,12 @@ export class App {
     if (this.state) this.start(this.state.endless.seed);
   }
   private play(state: EndlessState): void {
-    const { level } = state;
-    const back = button('home', '返回首页', 'text-button');
-    this.setScreen(
-      'play',
-      `<section class="play-screen screen"><header class="play-header"><div><small id="round-label" aria-live="polite">第 1 波</small><h1 tabindex="-1">撞墙了么</h1><small class="level-name">${level.name}</small></div>${button('pause', 'Ⅱ', 'pause-button')} </header>
-      <div class="hud"><span id="enemy-count"></span><span id="clock">0.0s</span><span id="shield-status">护盾 · 空</span></div>
-      <div class="arena-slot"><div id="arena" role="img" aria-busy="true" aria-label="无尽地图：镜头跟随红苹果，左上角显示全览"><span class="loading">正在摆好墙…</span></div></div>
-      <div class="field-info"><span id="mechanisms" class="mechanisms"></span><span id="field-notes" class="field-notes" role="status" aria-live="polite"></span><span class="play-status" id="play-status" aria-live="polite"></span></div>
-      <aside class="loss-inspection" hidden aria-label="失败现场说明"><b id="loss-title" tabindex="-1"></b><p id="loss-advice"></p><small>红圈 ×：碰撞格 · 金色框：致命敌人的路线</small><div>${button('result', '返回结算')}${button('retry', '再试一次', 'primary')}</div></aside>
-      <div class="controls"><div class="dpad joystick" data-joystick role="group" aria-label="全向移动摇杆"><button data-direction="up" aria-label="向上移动">▲</button><button data-direction="left" aria-label="向左移动">◀</button><span class="stick-knob" aria-hidden="true"></span><button data-direction="right" aria-label="向右移动">▶</button><button data-direction="down" aria-label="向下移动">▼</button></div><div class="drop-controls"><div id="drop-guide" class="drop-guide" role="status"></div><button type="button" class="skill lure" data-dodge disabled aria-label="放下诱饵"><span aria-hidden="true">${dropIcons.lure}</span><b>放诱饵</b><small id="lure-note">拾取后可用</small></button></div></div>
-      <footer class="play-footer"><span>方向键 / WASD 移动 · 空格放诱饵 · P 暂停</span></footer></section>`,
-    );
-    this.root
-      .querySelector('[data-action="pause"]')
-      ?.setAttribute('aria-label', '暂停游戏');
+    const content = cloneTemplate('play');
+    content.querySelector('.level-name')!.textContent = state.level.name;
+    content
+      .querySelector('[data-dodge] span')!
+      .append(cloneTemplate('icon-lure'));
+    this.setScreen('play', content);
     this.state = state;
     setPaused(state, true);
     this.autoStart = true;
@@ -186,9 +174,7 @@ export class App {
       setPaused(state, true);
       this.controls?.clear();
       arena.setAttribute('aria-busy', 'false');
-      this.dialog(
-        `<h2 id="dialog-title">游戏还没准备好</h2><p>重新加载试试，已存纪录会保留。</p>${button('reload', '重新加载页面', 'primary')}${back}`,
-      );
+      this.dialog(cloneTemplate('load-error'));
     };
     void import('../game/createGame')
       .then(({ createGame }) => {
@@ -237,9 +223,7 @@ export class App {
       })
       .catch(fail);
     this.hud();
-    this.dialog(
-      `<h2 id="dialog-title">正在准备</h2><p>地图就绪后立即开始。</p><button type="button" data-action="begin" class="primary" disabled>正在准备…</button>${back}`,
-    );
+    this.dialog(cloneTemplate('loading'));
   }
   private hud(): void {
     const s = this.state;
@@ -269,9 +253,19 @@ export class App {
     const kind = drop?.kind ?? '';
     if (guide.dataset.kind !== kind) {
       guide.dataset.kind = kind;
-      guide.innerHTML = drop
-        ? `<span aria-hidden="true">${dropIcons[drop.kind]}</span><b>${dropNames[drop.kind]}</b><small>${drop.kind === 'lure' ? '踩上拾取' : '踩上生效'}</small>`
-        : '<b>下一件道具</b><small>马上掉落</small>';
+      const content = cloneTemplate('drop-guide');
+      const icon = content.querySelector('span')!;
+      icon.hidden = !drop;
+      if (drop) icon.append(cloneTemplate(`icon-${drop.kind}`));
+      content.querySelector('b')!.textContent = drop
+        ? dropNames[drop.kind]
+        : '下一件道具';
+      content.querySelector('small')!.textContent = drop
+        ? drop.kind === 'lure'
+          ? '踩上拾取'
+          : '踩上生效'
+        : '马上掉落';
+      guide.replaceChildren(content);
     }
     const lure = this.root.querySelector<HTMLButtonElement>('[data-dodge]')!;
     if (lure.disabled === hasLure) lure.disabled = !hasLure;
@@ -327,7 +321,7 @@ export class App {
       .querySelector('#play-status')
       ?.classList.toggle('danger', Boolean(danger) || s.status === 'lost');
   }
-  private dialog(html: string, cls = ''): void {
+  private dialog(content: DocumentFragment, cls = ''): void {
     this.closeDialog();
     this.previousFocus =
       document.activeElement instanceof HTMLElement
@@ -336,7 +330,7 @@ export class App {
     const dialog = document.createElement('dialog');
     dialog.className = `panel ${cls}`;
     dialog.setAttribute('aria-labelledby', 'dialog-title');
-    dialog.innerHTML = html;
+    dialog.append(content);
     this.root.append(dialog);
     dialog.showModal();
     const title = dialog.querySelector<HTMLElement>('#dialog-title');
@@ -359,9 +353,10 @@ export class App {
     this.controls?.clear();
     this.game?.resetClock();
     const run = this.state.endless;
-    this.dialog(
-      `<h2 id="dialog-title">歇一口气</h2><p>完成 ${run.cleared} 波 · 撞毁 ${run.defeated} 条</p>${button('resume', '继续游戏', 'primary')}${button('retry', '重试同一局')}${button('home', '返回首页', 'text-button')}`,
-    );
+    const content = cloneTemplate('pause');
+    content.querySelector('.pause-score')!.textContent =
+      `完成 ${run.cleared} 波 · 撞毁 ${run.defeated} 条`;
+    this.dialog(content);
   }
   private resume(): void {
     if (!this.state?.paused || !this.gameReady) return;
@@ -421,15 +416,27 @@ export class App {
     const inspection = this.root.querySelector<HTMLElement>('.loss-inspection');
     if (inspection) inspection.hidden = true;
     const best = this.save.endlessBest;
-    this.dialog(
-      `<div class="result-content"><div class="result-apple sad">${this.art.appleArt}</div><p class="result-kicker">无尽挑战</p><h2 id="dialog-title">${this.endlessRecord ? '新的无尽纪录！' : '再骗它一次'}</h2>
-      <div class="result-stats"><span><b>${s.endless.cleared}</b>完成波数</span><span><b>${s.endless.defeated}</b>撞毁蛇数</span></div>
-      ${best && !this.endlessRecord ? `<p>个人纪录 · ${best.cleared} 波 / ${best.defeated} 条</p>` : ''}
-      <p id="result-save-warning" class="save-warning" role="status"${this.storageWarning ? '' : ' hidden'}>保存暂不可用，刷新前请保留页面。</p>
-      <details class="result-options"><summary>更多选择</summary>${button('inspect-loss', '查看失败现场')}</details></div>
-      <div class="panel-actions">${button('endless-new', '再来一局', 'primary')}<div class="action-row">${button('retry', '重试同一局')}${button('home', '返回首页', 'text-button')}</div></div>`,
-      'lose',
+    const content = cloneTemplate('result');
+    content
+      .querySelector('.result-apple')!
+      .append(cloneArt('apple-art', this.options.atlasUrl));
+    content.querySelector('#dialog-title')!.textContent = this.endlessRecord
+      ? '新的无尽纪录！'
+      : '再骗它一次';
+    content.querySelector('.result-cleared')!.textContent = String(
+      s.endless.cleared,
     );
+    content.querySelector('.result-defeated')!.textContent = String(
+      s.endless.defeated,
+    );
+    if (best && !this.endlessRecord) {
+      const record = content.querySelector<HTMLElement>('.result-best')!;
+      record.hidden = false;
+      record.textContent = `个人纪录 · ${best.cleared} 波 / ${best.defeated} 条`;
+    }
+    content.querySelector<HTMLElement>('#result-save-warning')!.hidden =
+      !this.storageWarning;
+    this.dialog(content, 'lose');
   }
   private inspectLoss(): void {
     const s = this.state;
@@ -447,17 +454,14 @@ export class App {
     title.focus({ preventScroll: true });
   }
   private help(): void {
-    this.dialog(
-      `<h2 id="dialog-title">你是苹果，借墙脱身</h2><div class="help-art">${this.art.heroArt}</div>
-      <ol class="instructions"><li><b>引到墙边。</b>蛇冲出后不会转弯。</li><li><b>横向闪开。</b>留一条侧路，别碰蛇头。</li><li><b>撞完一波，下一波接着来。</b>蛇身不伤人。</li></ol>
-      <details class="brief-details"><summary>道具与机关</summary><p>附近会随机掉落道具。踩到护盾会挡一次撞击，踩到冰冻会暂停所有蛇。</p><p>捡到诱饵后，靠墙按「放诱饵」或空格，蛇会转去追你放下的位置。</p><p>踩字母踏板切换同字母门。空心残骸可通过，实心残骸会挡路。</p><p>嫩绿直追，奶黄预判，浅紫用诱饵骗。小星星表示强化。</p></details>
-      <details class="brief-details"><summary>按键与纪录</summary><p>拖摇杆自由走位，方向键 / WASD 可组合斜走。空格放诱饵，P 暂停。</p><p>被抓后结算。先比完成波数，同波比撞毁蛇数。</p></details>${button('close', '知道了', 'primary')}`,
-    );
+    const content = cloneTemplate('help');
+    content
+      .querySelector('.help-art')!
+      .append(cloneArt('hero-art', this.options.atlasUrl));
+    this.dialog(content);
   }
   private settings(): void {
-    this.dialog(
-      `<h2 id="dialog-title">按你的节奏来</h2><div class="setting-row"><span><b id="audio-label">游戏音效</b><small>拾取、撞墙与被抓提示</small></span><button type="button" data-action="mute" class="toggle" role="switch" aria-labelledby="audio-label"></button></div><div class="setting-row"><span><b id="motion-label">减少动态效果</b><small>关闭震动镜头和位移插值</small></span><button type="button" data-action="motion" class="toggle" role="switch" aria-labelledby="motion-label"></button></div><p class="score-rule">无尽纪录和设置保存在当前浏览器。</p><p id="settings-save-warning" class="save-warning" role="status"></p>${button('close', '完成', 'primary')}`,
-    );
+    this.dialog(cloneTemplate('settings'));
     this.refreshSettings();
   }
   private refreshSettings(): void {

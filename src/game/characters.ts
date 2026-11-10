@@ -26,9 +26,3 @@ export function characterFrame(frame: number): {
     height: Math.round(((row + 1) * ATLAS_SIZE) / 4) - y,
   };
 }
-
-/** 首页与实际对局共用一张角色图集，不再另画一套角色。 */
-export function characterArt(frame: number, atlasUrl: string): string {
-  const { x, y, width, height } = characterFrame(frame);
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x} ${y} ${width} ${height}" overflow="hidden" aria-hidden="true"><image href="${atlasUrl}" width="${ATLAS_SIZE}" height="${ATLAS_SIZE}"/></svg>`;
-}

@@ -6,12 +6,12 @@ import type { Save } from '../src/storage/save';
 import '../src/ui/styles.css';
 
 async function start(root: HTMLElement): Promise<void> {
-  let sdk: MiniAppSDK | undefined;
   let atlasUrl: string | undefined;
   try {
-    sdk = getSDK();
-    const host = sdk;
+    const host: MiniAppSDK = getSDK();
     await host.ready;
+    // HTML 已有加载提示，先让宿主显示它，再读取图集和存档。
+    await host.lifecycle.ready();
     const [atlas, rawSave] = await Promise.all([
       host.assets.readBytes('images/bean-mascots.webp', { timeoutMs: 10000 }),
       host.permissions.has('storage.read')
@@ -50,10 +50,6 @@ async function start(root: HTMLElement): Promise<void> {
     if (atlasUrl) URL.revokeObjectURL(atlasUrl);
     root.textContent = '游戏还没准备好，请关闭后重新打开。';
     console.error(error);
-  } finally {
-    await sdk?.lifecycle
-      .ready()
-      .catch((error: unknown) => console.error(error));
   }
 }
 

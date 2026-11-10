@@ -22,6 +22,49 @@ const sdkRepo = 'https://github.com/linux-do/mapp-developer-guide.git';
 const sdkCommit = '7792ce37b3e09684b9e3d918f968f2cbd79df3fb';
 const require = createRequire(import.meta.url);
 
+// 沙箱只允许 Blob 图片。Phaser 的混色检测和内置纹理默认使用 data: PNG。
+const phaserImages = {
+  name: 'wallbait-mapp-phaser-images',
+  transform(source, id) {
+    if (!/\/node_modules\/phaser\/dist\/phaser(?:\.esm)?\.js$/.test(id)) return;
+    const assignments = [
+      [
+        "yellow.src = pngHead + '/wCKxvRF' + pngEnd;",
+        "yellow, pngHead + '/wCKxvRF' + pngEnd",
+      ],
+      [
+        "magenta.src = pngHead + 'AP804Oa6' + pngEnd;",
+        "magenta, pngHead + 'AP804Oa6' + pngEnd",
+      ],
+      ['image.src = data;', 'image, data'],
+    ];
+    for (const [assignment, args] of assignments) {
+      if (!source.includes(assignment)) {
+        throw new Error('Phaser 图片加载实现已变更，请核对微应用沙箱兼容性。');
+      }
+      source = source.replace(assignment, `setWallbaitImageSource(${args});`);
+    }
+    return (
+      source +
+      `
+      function setWallbaitImageSource(image, source) {
+        const prefix = 'data:image/png;base64,';
+        if (!source.startsWith(prefix)) {
+          image.src = source;
+          return;
+        }
+        const bytes = Uint8Array.from(atob(source.slice(prefix.length)), char => char.charCodeAt(0));
+        const url = URL.createObjectURL(new Blob([bytes], { type: 'image/png' }));
+        const release = () => URL.revokeObjectURL(url);
+        image.addEventListener('load', release, { once: true });
+        image.addEventListener('error', release, { once: true });
+        image.src = url;
+      }
+    `
+    );
+  },
+};
+
 async function buildMapp() {
   const env = await readFile(join(root, '.env.mapp.local'), 'utf8').catch(
     (err) => {
@@ -75,6 +118,7 @@ async function buildMapp() {
       configFile: false,
       envFile: false,
       publicDir: false,
+      plugins: [phaserImages],
       resolve: {
         alias: { '@discourse-mini-app/sdk': join(sdk, 'index.mjs') },
       },
@@ -93,12 +137,20 @@ async function buildMapp() {
     });
 
     const { pack } = await import(pathToFileURL(join(sdk, 'pack.mjs')).href);
+    const html = await readFile(
+      join(import.meta.dirname, 'index.html'),
+      'utf8',
+    );
+    const templates = await readFile(
+      join(root, 'src/ui/templates.html'),
+      'utf8',
+    );
     const result = await pack({
       outputDirectory: temp,
       manifest: {
         format: 1,
         id,
-        version: '1.0.0',
+        version: '1.0.1',
         entry: 'index.html',
         script: 'app.js',
         style: 'app.css',
@@ -106,7 +158,7 @@ async function buildMapp() {
         assets: [atlasPath],
       },
       files: {
-        'index.html': await readFile(join(import.meta.dirname, 'index.html')),
+        'index.html': html + templates,
         'app.js': await readFile(join(web, 'app.js')),
         'app.css': await readFile(join(web, 'app.css')),
         'strings.json': '{}',

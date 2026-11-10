@@ -1,0 +1,380 @@
+<template id="wallbait-home">
+  <section class="home screen">
+    <div class="home-top">
+      <span class="edition">一颗苹果 · 无尽挑战</span
+      ><button type="button" data-action="settings" class="quiet">设置</button>
+    </div>
+    <h1 tabindex="-1">
+      撞墙了么<span class="title-spark" aria-hidden="true">!</span>
+    </h1>
+    <p class="tagline">你追你的，墙就在那儿。</p>
+    <div class="hero-art"></div>
+    <div class="home-actions">
+      <button type="button" data-action="start" class="primary">开始游戏</button
+      ><button type="button" data-action="help">怎么玩</button>
+      <p class="endless-best" hidden></p>
+    </div>
+  </section>
+</template>
+<template id="wallbait-play">
+  <section class="play-screen screen">
+    <header class="play-header">
+      <div>
+        <small id="round-label" aria-live="polite">第 1 波</small>
+        <h1 tabindex="-1">撞墙了么</h1>
+        <small class="level-name"></small>
+      </div>
+      <button
+        type="button"
+        data-action="pause"
+        class="pause-button"
+        aria-label="暂停游戏"
+      >
+        Ⅱ
+      </button>
+    </header>
+    <div class="hud">
+      <span id="enemy-count"></span><span id="clock">0.0s</span
+      ><span id="shield-status">护盾 · 空</span>
+    </div>
+    <div class="arena-slot">
+      <div
+        id="arena"
+        role="img"
+        aria-busy="true"
+        aria-label="无尽地图：镜头跟随红苹果，左上角显示全览"
+      >
+        <span class="loading">正在摆好墙…</span>
+      </div>
+    </div>
+    <div class="field-info">
+      <span id="mechanisms" class="mechanisms"></span
+      ><span
+        id="field-notes"
+        class="field-notes"
+        role="status"
+        aria-live="polite"
+      ></span
+      ><span class="play-status" id="play-status" aria-live="polite"></span>
+    </div>
+    <aside class="loss-inspection" hidden aria-label="失败现场说明">
+      <b id="loss-title" tabindex="-1"></b>
+      <p id="loss-advice"></p>
+      <small>红圈 ×：碰撞格 · 金色框：致命敌人的路线</small>
+      <div>
+        <button type="button" data-action="result">返回结算</button
+        ><button type="button" data-action="retry" class="primary">
+          再试一次
+        </button>
+      </div>
+    </aside>
+    <div class="controls">
+      <div
+        class="dpad joystick"
+        data-joystick
+        role="group"
+        aria-label="全向移动摇杆"
+      >
+        <button data-direction="up" aria-label="向上移动">▲</button
+        ><button data-direction="left" aria-label="向左移动">◀</button
+        ><span class="stick-knob" aria-hidden="true"></span
+        ><button data-direction="right" aria-label="向右移动">▶</button
+        ><button data-direction="down" aria-label="向下移动">▼</button>
+      </div>
+      <div class="drop-controls">
+        <div id="drop-guide" class="drop-guide" role="status"></div>
+        <button
+          type="button"
+          class="skill lure"
+          data-dodge
+          disabled
+          aria-label="放下诱饵"
+        >
+          <span aria-hidden="true"></span><b>放诱饵</b
+          ><small id="lure-note">拾取后可用</small>
+        </button>
+      </div>
+    </div>
+    <footer class="play-footer">
+      <span>方向键 / WASD 移动 · 空格放诱饵 · P 暂停</span>
+    </footer>
+  </section>
+</template>
+<template id="wallbait-load-error">
+  <h2 id="dialog-title">游戏还没准备好</h2>
+  <p>重新加载试试，已存纪录会保留。</p>
+  <button type="button" data-action="reload" class="primary">
+    重新加载页面</button
+  ><button type="button" data-action="home" class="text-button">
+    返回首页
+  </button>
+</template>
+<template id="wallbait-loading">
+  <h2 id="dialog-title">正在准备</h2>
+  <p>地图就绪后立即开始。</p>
+  <button type="button" data-action="begin" class="primary" disabled>
+    正在准备…</button
+  ><button type="button" data-action="home" class="text-button">
+    返回首页
+  </button>
+</template>
+<template id="wallbait-pause">
+  <h2 id="dialog-title">歇一口气</h2>
+  <p class="pause-score"></p>
+  <button type="button" data-action="resume" class="primary">继续游戏</button
+  ><button type="button" data-action="retry">重试同一局</button
+  ><button type="button" data-action="home" class="text-button">
+    返回首页
+  </button>
+</template>
+<template id="wallbait-result">
+  <div class="result-content">
+    <div class="result-apple sad"></div>
+    <p class="result-kicker">无尽挑战</p>
+    <h2 id="dialog-title"></h2>
+    <div class="result-stats">
+      <span><b class="result-cleared"></b>完成波数</span
+      ><span><b class="result-defeated"></b>撞毁蛇数</span>
+    </div>
+    <p class="result-best" hidden></p>
+    <p id="result-save-warning" class="save-warning" role="status" hidden>
+      保存暂不可用，刷新前请保留页面。
+    </p>
+    <details class="result-options">
+      <summary>更多选择</summary>
+      <button type="button" data-action="inspect-loss">查看失败现场</button>
+    </details>
+  </div>
+  <div class="panel-actions">
+    <button type="button" data-action="endless-new" class="primary">
+      再来一局
+    </button>
+    <div class="action-row">
+      <button type="button" data-action="retry">重试同一局</button
+      ><button type="button" data-action="home" class="text-button">
+        返回首页
+      </button>
+    </div>
+  </div>
+</template>
+<template id="wallbait-help">
+  <h2 id="dialog-title">你是苹果，借墙脱身</h2>
+  <div class="help-art"></div>
+  <ol class="instructions">
+    <li><b>引到墙边。</b>蛇冲出后不会转弯。</li>
+    <li><b>横向闪开。</b>留一条侧路，别碰蛇头。</li>
+    <li><b>撞完一波，下一波接着来。</b>蛇身不伤人。</li>
+  </ol>
+  <details class="brief-details">
+    <summary>道具与机关</summary>
+    <p>附近会随机掉落道具。踩到护盾会挡一次撞击，踩到冰冻会暂停所有蛇。</p>
+    <p>捡到诱饵后，靠墙按「放诱饵」或空格，蛇会转去追你放下的位置。</p>
+    <p>踩字母踏板切换同字母门。空心残骸可通过，实心残骸会挡路。</p>
+    <p>嫩绿直追，奶黄预判，浅紫用诱饵骗。小星星表示强化。</p>
+  </details>
+  <details class="brief-details">
+    <summary>按键与纪录</summary>
+    <p>拖摇杆自由走位，方向键 / WASD 可组合斜走。空格放诱饵，P 暂停。</p>
+    <p>被抓后结算。先比完成波数，同波比撞毁蛇数。</p>
+  </details>
+  <button type="button" data-action="close" class="primary">知道了</button>
+</template>
+<template id="wallbait-settings">
+  <h2 id="dialog-title">按你的节奏来</h2>
+  <div class="setting-row">
+    <span
+      ><b id="audio-label">游戏音效</b><small>拾取、撞墙与被抓提示</small></span
+    ><button
+      type="button"
+      data-action="mute"
+      class="toggle"
+      role="switch"
+      aria-labelledby="audio-label"
+    ></button>
+  </div>
+  <div class="setting-row">
+    <span
+      ><b id="motion-label">减少动态效果</b
+      ><small>关闭震动镜头和位移插值</small></span
+    ><button
+      type="button"
+      data-action="motion"
+      class="toggle"
+      role="switch"
+      aria-labelledby="motion-label"
+    ></button>
+  </div>
+  <p class="score-rule">无尽纪录和设置保存在当前浏览器。</p>
+  <p id="settings-save-warning" class="save-warning" role="status"></p>
+  <button type="button" data-action="close" class="primary">完成</button>
+</template>
+<template id="wallbait-hero-art">
+  <svg
+    viewBox="0 0 420 270"
+    role="img"
+    aria-label="绿蛇追着红苹果，苹果闪开，让蛇一头撞向石墙"
+  >
+    <defs>
+      <pattern
+        id="garden-grid"
+        width="30"
+        height="30"
+        patternUnits="userSpaceOnUse"
+      >
+        <rect width="30" height="30" fill="#e1e9bc" />
+        <path d="M30 0H0V30" fill="none" stroke="#b8c68f" stroke-opacity=".5" />
+      </pattern>
+    </defs>
+    <rect x="14" y="30" width="392" height="222" rx="36" fill="#dac9ac" />
+    <rect
+      x="14"
+      y="22"
+      width="392"
+      height="222"
+      rx="34"
+      fill="url(#garden-grid)"
+      stroke="#3d2c24"
+      stroke-width="5"
+    />
+    <path d="M159 172h191" stroke="#e7b549" stroke-width="22" opacity=".6" />
+    <path
+      d="m336 156 18 16-18 16"
+      fill="none"
+      stroke="#e6a631"
+      stroke-width="9"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <svg
+      x="32"
+      y="168"
+      width="52"
+      height="52"
+      data-frame="2"
+      overflow="hidden"
+      aria-hidden="true"
+    >
+      <image /></svg
+    ><svg
+      x="58"
+      y="158"
+      width="60"
+      height="60"
+      data-frame="2"
+      overflow="hidden"
+      aria-hidden="true"
+    >
+      <image /></svg
+    ><svg
+      x="86"
+      y="140"
+      width="64"
+      height="64"
+      data-frame="2"
+      overflow="hidden"
+      aria-hidden="true"
+    >
+      <image /></svg
+    ><svg
+      x="113"
+      y="132"
+      width="68"
+      height="68"
+      data-frame="2"
+      overflow="hidden"
+      aria-hidden="true"
+    >
+      <image /></svg
+    ><svg
+      x="137"
+      y="118"
+      width="86"
+      height="86"
+      data-frame="0"
+      overflow="hidden"
+      aria-hidden="true"
+    >
+      <image /></svg
+    ><svg
+      x="225"
+      y="54"
+      width="102"
+      height="102"
+      data-frame="3"
+      overflow="hidden"
+      aria-hidden="true"
+    >
+      <image />
+    </svg>
+    <path
+      d="m266 174 11-10 11 10m-22 14 11-10 11 10"
+      fill="none"
+      stroke="#fff5e4"
+      stroke-width="5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <g fill="#b3a292" stroke="#3d2c24" stroke-width="4">
+      <rect x="358" y="106" width="32" height="39" rx="9" />
+      <rect x="358" y="147" width="32" height="39" rx="9" />
+      <rect x="358" y="188" width="32" height="39" rx="9" />
+    </g>
+    <path
+      d="m349 121-10-10m13-5-2-13m18 9 5-11"
+      stroke="#e9b344"
+      stroke-width="5"
+      stroke-linecap="round"
+    />
+    <path
+      d="m188 66 7-15m6 23 13-7"
+      stroke="#f27650"
+      stroke-width="5"
+      stroke-linecap="round"
+    />
+  </svg>
+</template>
+<template id="wallbait-apple-art">
+  <svg data-frame="3" overflow="hidden" aria-hidden="true"><image /></svg>
+</template>
+<template id="wallbait-icon-shield">
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M12 3 20 6v6c0 4-3 7-8 10-5-3-8-6-8-10V6z" />
+    <path d="m8 12 3 3 5-6" />
+  </svg>
+</template>
+<template id="wallbait-icon-freeze">
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M12 3v18M4 7l16 10M4 17 20 7M9 5l3 3 3-3m-6 14 3-3 3 3" />
+  </svg>
+</template>
+<template id="wallbait-icon-lure">
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <circle cx="12" cy="12" r="8" />
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 2v3m0 14v3M2 12h3m14 0h3" />
+  </svg>
+</template>
+<template id="wallbait-drop-guide">
+  <span aria-hidden="true"></span><b></b><small></small>
+</template>

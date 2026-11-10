@@ -20,6 +20,8 @@ MINI_APP_ID=你的实际应用ID
 
 使用 Node.js 24 执行 `npm ci`，再运行 `npm run build:mapp`。微应用构建从 GitHub 获取固定提交的官方 SDK，校验入口类型并生成 `dist-mapp/app.zip`。版本号在 [打包脚本](../mapp/build.mjs) 中维护。H5 发布继续使用 `npm run check` 生成 `dist/`，并从该目录部署。
 
+打包后可运行 `npm run test:mapp`，用 Chromium 和 WebKit 在本地模拟宿主的启动握手和安全策略，验证加载、开局、暂停与结算。
+
 将原始 ZIP 上传到应用管理的「沙箱」。在沙箱验证触控、键盘、切后台暂停、音效和重开后读取纪录，再在「正式」页用同一构建提审，收到正式包就绪的通知后启用版本。
 
 `storage.read` 和 `storage.write` 用于当前浏览器的最高纪录和设置，`audio.webAudio` 用于合成游戏音效。微应用与 H5 各自保存纪录，沙箱和正式版也各用独立存档。参见 [官方开发指南](https://github.com/linux-do/mapp-developer-guide/blob/master/docs/developer-guide.md) 和 [提审说明](https://github.com/linux-do/mapp-developer-guide/blob/master/docs/submission-review.md)。
