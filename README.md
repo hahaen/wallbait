@@ -60,3 +60,5 @@ npm run test:static
 ## 友情链接
 
 [LinuxDo](https://linux.do/)：和佬友聊技术、分享开源项目，顺便看看大家又折腾出了什么。
+
+[LinuxDo试玩](https://linux.do/apps/01a1c36b-b96e-77c2-a693-a7f86ab29686)
