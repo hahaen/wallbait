@@ -18,6 +18,8 @@
 MINI_APP_ID=你的实际应用ID
 ```
 
+在应用资料的「应用图标」上传 [512×512 PNG](../mapp/icon.png)。[图标源文件](../mapp/icon.svg)沿用[网页图标](../src/assets/wallbait-icon.svg)的红苹果与石墙，移除外框并给圆形裁切留出余量。应用图标随应用资料上传，正式提审时随版本固定。参见 [LINUX DO 开发说明](https://github.com/linux-do/mapp-developer-guide/blob/master/docs/developer-guide.md#开发与发布)。
+
 使用 Node.js 24 执行 `npm ci`，再运行 `npm run build:mapp`。微应用构建从 GitHub 获取固定提交的官方 SDK，校验入口类型并生成 `dist-mapp/app.zip`。版本号在 [打包脚本](../mapp/build.mjs) 中维护。H5 发布继续使用 `npm run check` 生成 `dist/`，并从该目录部署。
 
 打包后可运行 `npm run test:mapp`，用 Chromium 和 WebKit 在本地模拟宿主的启动握手和安全策略，验证加载、开局、暂停与结算。
