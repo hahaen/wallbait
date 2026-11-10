@@ -16,6 +16,8 @@ const origin = 'http://wallbait.test';
 
 // 在宿主收到 ready 之前扣住素材，验证首次握手可以独立完成。
 const sdk = `
+  // 宿主禁止微应用使用媒体采集，并将旧版 API 锁为只读。
+  Object.defineProperty(navigator, 'getUserMedia', { value: undefined });
   window.miniApp = {
     ready: Promise.resolve(),
     permissions: { has: () => false },

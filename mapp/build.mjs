@@ -23,10 +23,17 @@ const sdkCommit = '7792ce37b3e09684b9e3d918f968f2cbd79df3fb';
 const require = createRequire(import.meta.url);
 
 // 沙箱只允许 Blob 图片。Phaser 的混色检测和内置纹理默认使用 data: PNG。
-const phaserImages = {
-  name: 'wallbait-mapp-phaser-images',
+const phaserSandbox = {
+  name: 'wallbait-mapp-phaser-sandbox',
   transform(source, id) {
     if (!/\/node_modules\/phaser\/dist\/phaser(?:\.esm)?\.js$/.test(id)) return;
+    // SDK 将媒体采集 API 锁为只读，保留 Phaser 后续的能力读取。
+    const mediaPolyfill =
+      /navigator\.getUserMedia = navigator\.getUserMedia[^;\r\n]*;/;
+    if (!mediaPolyfill.test(source)) {
+      throw new Error('Phaser 媒体能力检测已变更，请核对微应用沙箱兼容性。');
+    }
+    source = source.replace(mediaPolyfill, '');
     const assignments = [
       [
         "yellow.src = pngHead + '/wCKxvRF' + pngEnd;",
@@ -118,7 +125,7 @@ async function buildMapp() {
       configFile: false,
       envFile: false,
       publicDir: false,
-      plugins: [phaserImages],
+      plugins: [phaserSandbox],
       resolve: {
         alias: { '@discourse-mini-app/sdk': join(sdk, 'index.mjs') },
       },
@@ -150,7 +157,7 @@ async function buildMapp() {
       manifest: {
         format: 1,
         id,
-        version: '1.0.1',
+        version: '1.0.2',
         entry: 'index.html',
         script: 'app.js',
         style: 'app.css',
