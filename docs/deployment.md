@@ -9,3 +9,17 @@
 服务器只接收构建产物。`/home/hahaen/game/wallbait/dist` 指向当前发布目录，切换时一次更新链接，`releases/` 保留当前和上一次发布。共享 Nginx 容器将 `/home/hahaen/game/wallbait` 只读挂载到 `/srv/wallbait`，在 `hahaen.xyz` 的 HTTPS `server` 中包含[游戏路由](../deploy/nginx/wallbait.locations)。日常发布只更新游戏产物，无需重载 Nginx。
 
 更新 Nginx 路由时先用 `nginx -t` 验证，再重载。线上交互抽查可运行 `WALLBAIT_STATIC_ORIGIN=https://hahaen.xyz npx playwright test --config playwright.static.config.ts`，覆盖无尽开局、被抓结算、刷新后读取纪录和装备，以及子路径资源加载。
+
+## LINUX DO 微应用
+
+在 LINUX DO 的「个人资料 → 应用」创建应用，将平台分配的 ID 填到项目根目录的本地文件 `.env.mapp.local`。此文件由 Git 忽略。
+
+```dotenv
+MINI_APP_ID=你的实际应用ID
+```
+
+使用 Node.js 24 执行 `npm ci`，再运行 `npm run build:mapp`。微应用构建从 GitHub 获取固定提交的官方 SDK，校验入口类型并生成 `dist-mapp/app.zip`。版本号在 [打包脚本](../mapp/build.mjs) 中维护。H5 发布继续使用 `npm run check` 生成 `dist/`，并从该目录部署。
+
+将原始 ZIP 上传到应用管理的「沙箱」。在沙箱验证触控、键盘、切后台暂停、音效和重开后读取纪录，再在「正式」页用同一构建提审，收到正式包就绪的通知后启用版本。
+
+`storage.read` 和 `storage.write` 用于当前浏览器的最高纪录和设置，`audio.webAudio` 用于合成游戏音效。微应用与 H5 各自保存纪录，沙箱和正式版也各用独立存档。参见 [官方开发指南](https://github.com/linux-do/mapp-developer-guide/blob/master/docs/developer-guide.md) 和 [提审说明](https://github.com/linux-do/mapp-developer-guide/blob/master/docs/submission-review.md)。

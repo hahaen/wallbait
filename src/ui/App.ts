@@ -7,7 +7,8 @@ import { Sound } from '../game/audio';
 import { dangerText, lossAdvice, lossTitle } from '../game/feedback';
 import { Controls } from '../input/controls';
 import { browserStorage, readSave, writeSave } from '../storage/save';
-import { appleArt, heroArt } from './art';
+import type { Save } from '../storage/save';
+import { createArt } from './art';
 import { dropIcons } from './icons';
 
 const dropNames: Record<DropKind, string> = {
@@ -19,9 +20,17 @@ const seconds = (ms: number): string => (ms / 1000).toFixed(1);
 const button = (action: string, text: string, cls = ''): string =>
   `<button type="button" data-action="${action}" class="${cls}">${text}</button>`;
 
+interface AppOptions {
+  atlasUrl: string;
+  initialSave?: Save;
+  persist?: (save: Save) => Promise<boolean>;
+  audioEnabled?: boolean;
+}
+
 export class App {
-  private save = readSave(browserStorage);
-  private sound = new Sound();
+  private save: Save;
+  private sound: Sound;
+  private art: ReturnType<typeof createArt>;
   private state?: EndlessState;
   private game?: ReturnType<typeof createGame>;
   private controls?: Controls;
@@ -36,7 +45,13 @@ export class App {
   private resultPending = false;
   private endlessRecord = false;
   private pickupNotice?: { text: string; until: number };
-  constructor(private root: HTMLElement) {
+  constructor(
+    private root: HTMLElement,
+    private options: AppOptions,
+  ) {
+    this.save = options.initialSave ?? readSave(browserStorage);
+    this.sound = new Sound(options.audioEnabled);
+    this.art = createArt(options.atlasUrl);
     this.sound.muted = this.save.muted;
     const signal = this.abort.signal;
     root.addEventListener(
@@ -94,7 +109,15 @@ export class App {
     this.autoStart = false;
   }
   private persist(): void {
-    this.storageWarning = !writeSave(browserStorage, this.save);
+    if (this.options.persist) {
+      void this.options.persist(this.save).then((saved) => {
+        if (this.abort.signal.aborted) return;
+        this.storageWarning = !saved;
+        this.refreshSaveWarning();
+      });
+    } else {
+      this.storageWarning = !writeSave(browserStorage, this.save);
+    }
   }
   private setScreen(screen: typeof this.screen, html: string): void {
     this.closeDialog();
@@ -114,7 +137,7 @@ export class App {
       <div class="home-top"><span class="edition">一颗苹果 · 无尽挑战</span>${button('settings', '设置', 'quiet')}</div>
       <h1 tabindex="-1">撞墙了么<span class="title-spark" aria-hidden="true">!</span></h1>
       <p class="tagline">你追你的，墙就在那儿。</p>
-      <div class="hero-art">${heroArt}</div>
+      <div class="hero-art">${this.art.heroArt}</div>
       <div class="home-actions">${button('start', '开始游戏', 'primary')}${button('help', '怎么玩')}
       ${best ? `<p class="endless-best">无尽纪录 · 完成 ${best.cleared} 波 · 撞毁 ${best.defeated} 条</p>` : ''}</div>
     </section>`,
@@ -171,6 +194,7 @@ export class App {
       .then(({ createGame }) => {
         if (this.state !== state) return;
         this.game = createGame(arena, {
+          atlasUrl: this.options.atlasUrl,
           state,
           onError: fail,
           inspectingLoss: () => this.inspectingLoss,
@@ -398,10 +422,10 @@ export class App {
     if (inspection) inspection.hidden = true;
     const best = this.save.endlessBest;
     this.dialog(
-      `<div class="result-content"><div class="result-apple sad">${appleArt}</div><p class="result-kicker">无尽挑战</p><h2 id="dialog-title">${this.endlessRecord ? '新的无尽纪录！' : '再骗它一次'}</h2>
+      `<div class="result-content"><div class="result-apple sad">${this.art.appleArt}</div><p class="result-kicker">无尽挑战</p><h2 id="dialog-title">${this.endlessRecord ? '新的无尽纪录！' : '再骗它一次'}</h2>
       <div class="result-stats"><span><b>${s.endless.cleared}</b>完成波数</span><span><b>${s.endless.defeated}</b>撞毁蛇数</span></div>
       ${best && !this.endlessRecord ? `<p>个人纪录 · ${best.cleared} 波 / ${best.defeated} 条</p>` : ''}
-      ${this.storageWarning ? '<p class="save-warning">保存暂不可用，刷新前请保留页面。</p>' : ''}
+      <p id="result-save-warning" class="save-warning" role="status"${this.storageWarning ? '' : ' hidden'}>保存暂不可用，刷新前请保留页面。</p>
       <details class="result-options"><summary>更多选择</summary>${button('inspect-loss', '查看失败现场')}</details></div>
       <div class="panel-actions">${button('endless-new', '再来一局', 'primary')}<div class="action-row">${button('retry', '重试同一局')}${button('home', '返回首页', 'text-button')}</div></div>`,
       'lose',
@@ -424,7 +448,7 @@ export class App {
   }
   private help(): void {
     this.dialog(
-      `<h2 id="dialog-title">你是苹果，借墙脱身</h2><div class="help-art">${heroArt}</div>
+      `<h2 id="dialog-title">你是苹果，借墙脱身</h2><div class="help-art">${this.art.heroArt}</div>
       <ol class="instructions"><li><b>引到墙边。</b>蛇冲出后不会转弯。</li><li><b>横向闪开。</b>留一条侧路，别碰蛇头。</li><li><b>撞完一波，下一波接着来。</b>蛇身不伤人。</li></ol>
       <details class="brief-details"><summary>道具与机关</summary><p>附近会随机掉落道具。踩到护盾会挡一次撞击，踩到冰冻会暂停所有蛇。</p><p>捡到诱饵后，靠墙按「放诱饵」或空格，蛇会转去追你放下的位置。</p><p>踩字母踏板切换同字母门。空心残骸可通过，实心残骸会挡路。</p><p>嫩绿直追，奶黄预判，浅紫用诱饵骗。小星星表示强化。</p></details>
       <details class="brief-details"><summary>按键与纪录</summary><p>拖摇杆自由走位，方向键 / WASD 可组合斜走。空格放诱饵，P 暂停。</p><p>被抓后结算。先比完成波数，同波比撞毁蛇数。</p></details>${button('close', '知道了', 'primary')}`,
@@ -438,22 +462,40 @@ export class App {
   }
   private refreshSettings(): void {
     for (const [action, enabled, label] of [
-      ['mute', !this.save.muted, this.save.muted ? '已静音' : '已开启'],
+      [
+        'mute',
+        this.options.audioEnabled !== false && !this.save.muted,
+        this.options.audioEnabled === false
+          ? '不可用'
+          : this.save.muted
+            ? '已静音'
+            : '已开启',
+      ],
       [
         'motion',
         this.save.reducedMotion,
         this.save.reducedMotion ? '已开启' : '已关闭',
       ],
     ] as const) {
-      const toggle = this.root.querySelector(`[data-action="${action}"]`)!;
+      const toggle = this.root.querySelector<HTMLButtonElement>(
+        `[data-action="${action}"]`,
+      )!;
+      if (action === 'mute')
+        toggle.disabled = this.options.audioEnabled === false;
       toggle.setAttribute('aria-checked', String(enabled));
       toggle.textContent = label;
     }
-    const warning = this.root.querySelector('#settings-save-warning')!;
+    this.refreshSaveWarning();
+  }
+  private refreshSaveWarning(): void {
+    const warning = this.root.querySelector('#settings-save-warning');
     const message = this.storageWarning
       ? '保存暂不可用，设置会在本次游玩生效。'
       : '';
-    if (warning.textContent !== message) warning.textContent = message;
+    if (warning && warning.textContent !== message)
+      warning.textContent = message;
+    const result = this.root.querySelector<HTMLElement>('#result-save-warning');
+    if (result) result.hidden = !this.storageWarning;
   }
   private act(action: string): void {
     switch (action) {

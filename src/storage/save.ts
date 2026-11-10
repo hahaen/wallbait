@@ -24,7 +24,7 @@ const record = (value: unknown): value is Record<string, unknown> =>
 const count = (value: unknown, min: number): value is number =>
   typeof value === 'number' && Number.isSafeInteger(value) && value >= min;
 function readObject(
-  storage: StoragePort,
+  storage: Pick<StoragePort, 'getItem'>,
   key: string,
 ): Record<string, unknown> | null {
   try {
@@ -51,7 +51,7 @@ function readEndlessSave(save: Save, data: Record<string, unknown>): Save {
     save.endlessBest = { cleared: best.cleared, defeated: best.defeated };
   return save;
 }
-export function readSave(storage: StoragePort): Save {
+export function readSave(storage: Pick<StoragePort, 'getItem'>): Save {
   const save = defaults();
   const current = readObject(storage, SAVE_KEY);
   if (current?.version === 3) return readEndlessSave(save, current);

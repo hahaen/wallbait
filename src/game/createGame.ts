@@ -4,9 +4,10 @@ import { stepEndless } from '../core/endless';
 import type { Command, EndlessState, GameEvent } from '../core/types';
 import { Arena } from './renderers/Arena';
 import { VIEWPORT } from './config';
-import { CHARACTER_ATLAS, characterFrame } from './characters';
+import { characterFrame } from './characters';
 
 export interface GameOptions {
+  atlasUrl: string;
   state: EndlessState;
   command: () => Command;
   onTick: (events: GameEvent[]) => void;
@@ -30,7 +31,7 @@ export function createGame(
         this.failed = true;
         options.onError();
       });
-      this.load.image('characters', CHARACTER_ATLAS);
+      this.load.image('characters', options.atlasUrl);
     }
     create(): void {
       if (this.failed) return;
@@ -91,6 +92,9 @@ export function createGame(
       height: VIEWPORT.height * renderScale,
     },
     scene: [PlayScene],
+    loader: options.atlasUrl.startsWith('blob:')
+      ? { imageLoadType: 'HTMLImageElement' }
+      : undefined,
     audio: { noAudio: true },
     banner: false,
   });

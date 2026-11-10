@@ -4,8 +4,9 @@ import type { GameEvent } from '../core/types';
 export class Sound {
   private context?: AudioContext;
   muted = false;
+  constructor(private enabled = true) {}
   unlock(): void {
-    if (this.muted) return;
+    if (!this.enabled || this.muted) return;
     try {
       this.context ??= new AudioContext();
       if (this.context.state === 'suspended')
