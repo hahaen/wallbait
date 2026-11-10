@@ -2,7 +2,7 @@
 
 [在线试玩](https://hahaen.xyz/game/wallbait)。入口会跳转到 `/game/wallbait/`，使 Vite 生成的相对资源地址能在子路径下正常加载。
 
-按 [AGENTS.md](../AGENTS.md) 完成评审、验证、提交与推送后，在本机执行 `bash deploy/publish.sh`。日常交付由开发代理自动执行这一步。GitHub Actions 负责检查，手动在终端交付时在推送后运行相同命令。
+只有游戏功能或运行、构建、部署配置变更才触发 H5 发布和 ZIP 打包。按 [AGENTS.md](../AGENTS.md) 完成评审、验证和推送并确认本机 `main` 与 `origin/main` 一致后，在本机执行 `bash deploy/publish.sh` 发布 H5，并运行 `npm run build:mapp` 生成 LINUX DO 微应用 ZIP。日常交付由开发代理自动执行，GitHub Actions 负责检查。仅修改文档或注释时，仍提交并推送，但不发布 H5，也不打包 ZIP。
 
 发布需要 Node.js 24 和可用的 `hahaen-server` SSH 配置。本机脚本核对当前提交与 GitHub 的 `main` 一致，从已提交的源码构建，通过 SSH 上传产物，并逐字节比对线上首页和静态资源。发布失败时查看报错，确认 `main` 和服务器状态后可重试同一命令。
 

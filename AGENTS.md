@@ -9,5 +9,6 @@
 - 随功能建立文件，不堆叠空类、空系统或未使用的依赖。
 - 首次实现玩法时补关键规则测试。评审确认无问题后运行 `npm run check`，如已增加测试则同时运行测试。
 - 保持 README、开发计划的完成状态真实；启动页和效果图不算可玩版本。
-- 用户已授权持续发布。评审与必要验证通过、提交并成功推送到 `origin/main` 后，自动执行 `bash deploy/publish.sh`，无需再次确认。用户当次明确要求不发布时跳过。
+- 只有游戏功能或运行、构建、部署配置发生变更时，才发布 H5 并打包 LINUX DO 微应用。仅修改 `AGENTS.md`、README、其他文档或注释时，两项都跳过，仍按 `CONTRIBUTING.md` 完成 Git 交付。
+- 用户已授权持续发布。符合发布条件的改动通过评审和必要验证、推送成功且本机 `main` 与 `origin/main` 一致后，自动执行 `bash deploy/publish.sh` 和 `npm run build:mapp`。核对 `dist-mapp/app.zip`，并分别报告 H5 发布和 ZIP 打包结果。LINUX DO 仅生成本地压缩包；上传、提审和启用另行按用户要求执行。用户当次明确要求不发布时，两项都跳过。
 - 发布入口为 <https://hahaen.xyz/game/wallbait>，产物部署到 `/home/hahaen/game/wallbait/dist`。发布后核对 HTTPS 首页与资源；失败要如实报告并保留已推送的提交。不在仓库保存凭据。
