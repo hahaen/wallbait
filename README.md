@@ -56,3 +56,7 @@ npm run test:static
 [文档导航](docs/README.md) · [玩法设计](docs/game-design.md) · [历史关卡设计](docs/levels.md) · [架构](docs/architecture.md) · [开发计划](docs/development.md) · [协作规范](CONTRIBUTING.md)
 
 [在线试玩](https://hahaen.xyz/game/wallbait) · [线上发布流程](docs/deployment.md)
+
+## 友情链接
+
+[LinuxDo](https://linux.do/)：和佬友聊技术、分享开源项目，顺便看看大家又折腾出了什么。
