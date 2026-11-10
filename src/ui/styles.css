@@ -123,8 +123,7 @@ button.text-button:hover {
   line-height: 1.2;
   letter-spacing: -3px;
   font-weight: 900;
-  margin: auto 0 12px;
-  padding-top: 24px;
+  margin: clamp(20px, 4vh, 40px) 0 12px;
   transform: rotate(-3deg);
   text-shadow: 0 3px 0 #fffaf0;
 }
@@ -154,8 +153,9 @@ button.text-button:hover {
 }
 .hero-art {
   width: calc(100% + 20px);
-  max-width: 440px;
-  margin: 20px -10px 4px;
+  max-width: min(440px, 55vh);
+  max-width: min(440px, 55dvh);
+  margin: 16px -10px 4px;
   align-self: center;
 }
 .hero-art svg {
@@ -165,7 +165,6 @@ button.text-button:hover {
 .home-actions {
   display: grid;
   gap: 14px;
-  margin-bottom: auto;
 }
 .endless-best {
   margin: 0;
@@ -721,13 +720,6 @@ summary:focus-visible {
   }
   .play-screen {
     gap: 4px;
-  }
-  .home h1 {
-    padding-top: 18px;
-  }
-  .hero-art {
-    max-width: 310px;
-    margin-top: 8px;
   }
 }
 @media (max-height: 500px) and (min-width: 600px) {
